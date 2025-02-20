@@ -1,0 +1,246 @@
+<div class="row">
+  <div class="col-lg-12 mt-2">
+    <div class="card">
+      <div class="card-header bg-orange">
+        <p class="card-title text-white text-sm"><i class="text-white fas fa-history mr-2"></i>Route History</p>
+      </div>
+      <!-- /.card-header -->
+      <div class="card-body">
+        <div class="row mt-2">
+          <div class="form-group d-flex align-items-center justify-content-between">
+            <i class="fas fa-search text-orange mr-2"></i>
+            <input class="form-control custom-search" type="text" [(ngModel)]="searchTerm" placeholder="Search routes...">
+          </div>
+          <div class="form-group">
+            <button [disabled]="!writeEnabled" class="btn text-white bg-orange pt-2 pb-2 mx-2" (click)="resetForm()" type="button" data-toggle="modal"
+              data-target="#modal-default">
+              <i class="text-white fas fa-plus mr-2"></i><span class="text-white">Add Route</span>
+            </button>
+          </div>
+        </div>
+        <div class="h-scrollable-table">
+          <table *ngIf="isDataLoding" id="example1" class="table table-bordered table-striped">
+          <thead>
+            <tr>
+              <th class="text-sm" width="80">Sr. No.</th>
+              <th class="text-sm" width="150">Route No.</th>
+              <th class="text-sm">Route Name</th>
+              <th class="text-sm">From</th>
+              <th class="text-sm">To</th>
+              <th class="text-sm">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Use *ngFor to loop through filtered data with pagination -->
+            <tr class="text-sm"
+              *ngFor="let route of filteredRoutes | paginate: { itemsPerPage: itemsPerPage, currentPage: page }; let i = index">
+              <td>{{ (page - 1) * itemsPerPage + i + 1 }}</td>
+              <td style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{
+                route.routeNo }}</td>
+              <td style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{
+                route.routeName }}</td>
+              <td style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{
+                route.routeFrom }}</td>
+              <td style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{
+                route.routeTo }}</td>
+              <td width="30">
+                <div class="d-flex">
+                  <div class="col">
+                    <a class="btn btn-sm btn-block btn-outline-warning" type="button" data-toggle="modal"
+                      [attr.data-target]="'#modal-default-'+i" (click)="editRoute(route)">
+                      <i class="fas fa-edit nav-icon"></i>
+                    </a>
+                  </div>
+                  <div class="col">
+                    <a class="btn btn-sm btn-block btn-outline-danger" type="button" data-toggle="modal"
+                      [attr.data-target]="'#delete-modal-default-'+i">
+                      <i class="fas fa-trash nav-icon"></i>
+                    </a>
+                  </div>
+                </div>
+              </td>
+              <div class="modal fade" [attr.id]="'modal-default-'+ i" tabindex="-1" role="dialog"
+                aria-labelledby="modal-default-label" aria-hidden="false">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header bg-orange">
+                      <p class="modal-title text-white">Edit Route - {{route.routeNo}}</p>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <form [formGroup]="form" (ngSubmit)="formSubmit(modalDefault)">
+                        <div class="modal-body">
+                          <div class="row">
+                            <div class="col-lg-6">
+                              <div class="form-group m-0 pb-2">
+                                <label>Route No.</label>
+                                <input formControlName="routeNo" readonly type="text" class="form-control"
+                                  placeholder="Last Route Number">
+                              </div>
+                            </div>
+                            <div class="col-lg-12">
+                              <div class="form-group m-0 pb-2">
+                                <label>Route Name</label>
+                                <input formControlName="routeName" type="text" class="form-control"
+                                  placeholder="Enter route name">
+                              </div>
+                            </div>
+                            <div class="col-lg-6">
+                              <div class="form-group m-0 pb-2">
+                                <label>From</label>
+                                <input formControlName="routeFrom" type="text" class="form-control"
+                                  placeholder="Enter from route">
+                              </div>
+                            </div>
+                            <div class="col-lg-6">
+                              <div class="form-group m-0 pb-2">
+                                <label>To</label>
+                                <input formControlName="routeTo" type="text" class="form-control"
+                                  placeholder="Enter to route">
+                              </div>
+                            </div>
+                            <div class="col-lg-4">
+                              <div class="form-group m-0 pb-2">
+                                <div class="custom-control custom-checkbox">
+                                  <input formControlName="isRoundUp" class="custom-control-input" type="checkbox"
+                                    [attr.id]="'customCheckbox-' + i" onchange="this.value = this.checked">
+                                  <label [attr.for]="'customCheckbox-'+i" class="custom-control-label">Round Up</label>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-lg-8">
+                              <div class="form-group m-0">
+                                <mat-button-toggle-group formControlName="gstType" class="w-100" [hideSingleSelectionIndicator]="false">
+                                  <mat-button-toggle class="w-100" value="in-state">In State (CGST/SGST)</mat-button-toggle>
+                                  <mat-button-toggle class="w-100" value="out-state">Out State (IGST)</mat-button-toggle>
+                                </mat-button-toggle-group>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="modal-footer justify-content-between">
+                          <a type="button" class="btn btn-default" data-dismiss="modal">Close</a>
+                          <button [disabled]="form.invalid" type="submit" class="btn bg-orange" (click)="ngOnInit()"><i
+                              class="text-white fas fa-plus mr-2"></i><span class="text-white">UPDATE
+                              NOW</span></button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="modal fade" [attr.id]="'delete-modal-default-' + i" tabindex="-1" role="dialog"
+                aria-labelledby="modal-default-label" aria-hidden="false">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header bg-orange">
+                      <p class="modal-title text-white">Delete {{route.routeNo}}</p>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="p-1 text-center align-items-center justify-content-center">
+                        <p class="text-danger">Do you want to delete the route?</p>
+                      </div>
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                      <button type="button" (click)="deleteRoute(route.routeNo, modalDefault); ngOnInit()"
+                        class="btn bg-orange"><i class="text-white fas fa-trash mr-2"></i><span
+                          class="text-white">DELETE</span></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </tr>
+          <tr *ngIf="filteredRoutes.length === 0">
+            <td colspan="6" class="text-center text-danger text-sm text-bold">No Data Found!</td>
+          </tr>
+          </tbody>
+        </table>
+        </div>
+        <div *ngIf="!isDataLoding" class="row">
+          <div class="col d-flex justify-content-center align-items-center">
+            <mat-spinner diameter="70"></mat-spinner>
+          </div>
+        </div>
+
+        <!-- Pagination controls -->
+        <pagination-controls (pageChange)="page = $event"></pagination-controls>
+      </div>
+      <!-- /.card-body -->
+    </div>
+  </div>
+</div>
+
+<!-- Modal structure -->
+<div class="modal fade" #modalDefault id="modal-default" tabindex="-1" role="dialog"
+  aria-labelledby="modal-default-label" aria-hidden="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-orange">
+        <p class="modal-title text-white">ADD NEW ROUTE</p>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form [formGroup]="form" (ngSubmit)="formSubmit(modalDefault)">
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-lg-6">
+              <div class="form-group m-0 pb-2">
+                <label>Route No.</label>
+                <input formControlName="routeNo" type="text" class="form-control" placeholder="Last Route Number">
+              </div>
+            </div>
+            <div class="col-lg-12">
+              <div class="form-group m-0 pb-2">
+                <label>Route Name</label>
+                <input formControlName="routeName" type="text" class="form-control" placeholder="Enter route name">
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="form-group m-0 pb-2">
+                <label>From</label>
+                <input formControlName="routeFrom" type="text" class="form-control" placeholder="Enter from route">
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="form-group m-0 pb-2">
+                <label>To</label>
+                <input formControlName="routeTo" type="text" class="form-control" placeholder="Enter to route">
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="form-group m-0 pb-2">
+                <div class="custom-control custom-checkbox align-items-center justify-content-center">
+                  <input formControlName="isRoundUp" class="custom-control-input" type="checkbox" id="customCheckbox1"
+                    onchange="this.value = this.checked">
+                  <label for="customCheckbox1" class="custom-control-label">Round Up</label>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-8">
+              <div class="form-group m-0">
+                <mat-button-toggle-group formControlName="gstType" class="w-100" [hideSingleSelectionIndicator]="false">
+                  <mat-button-toggle class="w-100" value="in-state">In State (CGST/SGST)</mat-button-toggle>
+                  <mat-button-toggle class="w-100" value="out-state">Out State (IGST)</mat-button-toggle>
+                </mat-button-toggle-group>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer justify-content-between">
+          <a type="button" class="btn btn-default" data-dismiss="modal">Close</a>
+          <button [disabled]="form.invalid" type="submit" class="btn bg-orange" (click)="ngOnInit()"><i
+              class="text-white fas fa-plus mr-2"></i><span class="text-white">ADD
+              NOW</span></button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,31 @@
+* {
+  font-size: 0.8rem;
+}
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  justify-content: space-between;
+}
+
+.fixed-bottom-item {
+  position: fixed;
+  bottom: 0;
+  background: orange;
+}
+
+.sidebar-bg {
+  background: linear-gradient(rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.82)), url("../../../public/images/truck-bg.jpg");
+  background-size: cover; /* Ensures the image covers the entire div */
+  background-position: left center; /* Centers the image */
+  background-repeat: no-repeat; /* Prevents tiling */
+}
+
+.brand-image2 {
+  float: left;
+  line-height: .8;
+  margin-right: .5rem;
+  margin-top: -3px;
+  max-height: 33px;
+  width: auto;
+}

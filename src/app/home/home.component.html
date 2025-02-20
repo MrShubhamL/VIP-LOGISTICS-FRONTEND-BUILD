@@ -1,0 +1,322 @@
+<div *ngIf="!isDashboardLoading">
+  <div class="row pt-2" *ngIf="isCardViewEnabled">
+    <div class="col-lg-3 col-6">
+      <div class="small-box bg-info">
+        <div class="inner">
+          <h3>{{vehicleCount.totalVehicles}}</h3>
+          <p class="text-bold">Total Vehicles</p>
+        </div>
+        <div class="icon pb-2">
+          <i class="top-right"> <img class="img-lg" src="images/truck-logo.png" alt="loading.."> </i>
+        </div>
+        <a type="button" (click)="getAllVehicles()" data-toggle="modal" data-target="#all-vehicles-modal"
+           class="small-box-footer">More info
+          <i class="fas fa-arrow-circle-right"></i></a>
+      </div>
+    </div>
+
+    <div class="col-lg-3 col-6">
+      <div class="small-box bg-success">
+        <div class="inner">
+          <h3>{{partyCount.totalParties}}</h3>
+          <p class="text-bold">Total Parties</p>
+        </div>
+        <div class="icon pb-2">
+          <i class="top-right"> <img class="img-circle img-lg" src="dist/img/user1-128x128.jpg" alt="loading.."> </i>
+        </div>
+        <a type="button" data-toggle="modal" data-target="#all-party-modal" (click)="getAllParties()"
+           class="small-box-footer">More info
+          <i class="fas fa-arrow-circle-right"></i></a>
+      </div>
+    </div>
+
+    <div class="col-lg-3 col-6">
+      <div class="small-box bg-warning">
+        <div class="inner">
+          <h3>{{itemCount.totalItems}}</h3>
+          <p class="text-bold">Total Items</p>
+        </div>
+        <div class="icon pb-2">
+          <i class="top-right"> <img class="img-lg" src="images/boxes.png" alt="loading.."> </i>
+        </div>
+        <a type="button" data-toggle="modal" data-target="#all-items-modal" (click)="getAllItems()"
+           class="small-box-footer">More info
+          <i class="fas fa-arrow-circle-right"></i></a>
+      </div>
+    </div>
+
+    <div class="col-lg-3 col-6">
+      <div class="small-box bg-danger">
+        <div class="inner">
+          <h3>{{userCount.totalEmployees}}</h3>
+          <p class="text-bold">Total Employees</p>
+        </div>
+        <div class="icon pb-2">
+          <i class="top-right"> <img class="img-circle img-lg" src="images/emp.png" alt="loading.."> </i>
+        </div>
+        <a *ngIf="isEmployeeViewEnabled" routerLink="./employee-contacts" class="small-box-footer">More info <i
+          class="fas fa-arrow-circle-right"></i></a>
+        <a *ngIf="!isEmployeeViewEnabled" class="small-box-footer">Access Denied</a>
+      </div>
+    </div>
+
+  </div>
+  <div class="row">
+    <div class="col-lg-8" *ngIf="isEmployeeViewEnabled">
+      <div class="card">
+        <div class="card-header bg-orange text-sm">
+          <h5 class="card-title text-sm text-white"><i class="fas fa-users mr-2"></i>Company Employees</h5>
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+              <i class="fas fa-minus text-white"></i>
+            </button>
+            <button type="button" class="btn btn-tool" data-card-widget="remove">
+              <i class="fas fa-times text-white"></i>
+            </button>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div class="scrollable-card">
+            <ul class="users-list clearfix">
+              <li *ngFor="let user of users">
+                <img [src]="user.imageUrl" class="img-custom-circle" alt="User Image">
+                <a class="users-list-name" href="#">{{user.name}}</a>
+                <span class="users-list-date"><i class="fas fa-envelope fa-xs mr-1"></i>{{user.username}}</span>
+                <span class="users-list-date"><i class="fas fa-phone-alt fa-xs mr-1"></i>+91 {{user.contact}}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <!-- /.card-body -->
+        <div class="card-footer text-center">
+          <a class="text-sm text-center" routerLink="./employee-contacts">View All Employees</a>
+        </div>
+        <!-- /.card-footer -->
+      </div>
+    </div>
+    <div class="col-md-4" *ngIf="isSummaryViewEnabled">
+
+      <!-- /.info-box -->
+      <div class="info-box mb-3 bg-success">
+        <span class="info-box-icon"><i class="far fa-heart"></i></span>
+
+        <div class="info-box-content">
+          <span class="info-box-text">Branches</span> <span class="info-box-number">{{branchCount.totalBranches}}</span>
+        </div>
+        <!-- /.info-box-content -->
+      </div>
+      <!-- /.info-box -->
+      <div class="info-box mb-3 bg-danger">
+        <span class="info-box-icon"><i class="fas fa-cloud-download-alt"></i></span>
+
+        <div class="info-box-content">
+          <span class="info-box-text">Routes</span> <span class="info-box-number">{{routeCount.routesCount}}</span>
+        </div>
+        <!-- /.info-box-content -->
+      </div>
+      <!-- /.info-box -->
+      <div class="info-box mb-3 bg-info">
+        <span class="info-box-icon"><i class="far fa-comment"></i></span>
+
+        <div class="info-box-content">
+          <span class="info-box-text">Accounts</span> <span
+          class="info-box-number">{{accountCount.accountsCount}}</span>
+        </div>
+        <!-- /.info-box-content -->
+      </div>
+      <div class="info-box mb-3 bg-warning">
+        <span class="info-box-icon"><i class="fas fa-receipt"></i></span>
+
+        <div class="info-box-content">
+          <span class="info-box-text">Total Lorry Receipts</span> <span
+          class="info-box-number">{{lrCount.totalLrs}}</span>
+        </div>
+        <!-- /.info-box-content -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="isDashboardLoading">
+  <div class="row">
+    <div class="col mt-5 d-flex justify-content-center align-items-center">
+      <mat-spinner diameter="70">
+        <p class="text-blue text-md">Please wait..</p>
+      </mat-spinner>
+
+    </div>
+  </div>
+</div>
+<!--ALL VEHICLES MODAL-->
+<div class="modal fade" id="all-vehicles-modal" tabindex="-1" aria-disabled="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header bg-orange">
+        <p class="modal-title text-white text-sm">VEHICLE RECORDS</p>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-lg-12">
+            <table id="example2" class="table table-bordered table-striped">
+              <thead>
+              <tr class="text-center text-sm align-items-center justify-content-center">
+                <th>Sr. No.</th>
+                <th>Vehicle No.</th>
+                <th>Owner</th>
+                <th>Driver</th>
+                <th>Permit</th>
+                <th>Licence</th>
+              </tr>
+              </thead>
+              <tbody>
+              <!-- Use *ngFor to loop through filtered data with pagination -->
+              <tr class="text-center text-sm align-items-center justify-content-center"
+                  *ngFor="let v of vehicles | paginate: { itemsPerPage: itemsPerPage, currentPage: page }; let i = index">
+                <td width="100">{{ (page - 1) * itemsPerPage + i + 1 }}</td>
+                <td>{{ v.vehicleNumber }}</td>
+                <td>{{ v.ownerName }}</td>
+                <td>{{ v.driverName }}</td>
+                <td>{{ v.permitNo }}</td>
+                <td>{{ v.licenceNo }}</td>
+              </tr>
+              </tbody>
+            </table>
+            <!-- Pagination controls -->
+            <pagination-controls (pageChange)="page = $event"></pagination-controls>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+
+<!--ALL PARTIES MODAL-->
+<div class="modal fade" id="all-party-modal" tabindex="-1" aria-disabled="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header bg-orange">
+        <p class="modal-title text-white text-sm">PARTY RECORDS</p>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-lg-12">
+            <table id="example44" class="table table-bordered table-striped">
+              <thead>
+              <tr class="text-center text-xs align-items-center justify-content-center">
+                <th>Sr. No.</th>
+                <th>Party Code</th>
+                <th>Party Name</th>
+                <th>Party Address</th>
+                <th>GST No.</th>
+              </tr>
+              </thead>
+              <tbody>
+              <!-- Use *ngFor to loop through filtered data with pagination -->
+              <tr class="text-center text-xs align-items-center justify-content-center"
+                  *ngFor="let party of parties | paginate: { itemsPerPage: itemsPerPage, currentPage: page }; let i = index">
+                <td width="100">{{ (page - 1) * itemsPerPage + i + 1 }}</td>
+                <td>{{ party.partyNo }}</td>
+                <td>{{ party.partyName }}</td>
+                <td>{{ party.address }}</td>
+                <td>{{ party.gstNumber }}</td>
+              </tr>
+              </tbody>
+            </table>
+            <!-- Pagination controls -->
+            <pagination-controls (pageChange)="page = $event"></pagination-controls>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+
+<!--ALL ITEMS MODAL-->
+<div class="modal fade" id="all-items-modal" tabindex="-1" aria-disabled="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header bg-orange">
+        <p class="modal-title text-white text-xs">Item Information</p>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="false">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <table id="example91" class="table table-bordered table-striped">
+          <thead class="text-xs">
+          <tr class="text-center align-items-center justify-content-center">
+            <th>Sr.No.</th>
+            <th>Item Code</th>
+            <th>Item Name</th>
+            <th>Part No.</th>
+            <th>Route No.</th>
+            <th>Party Code.</th>
+            <th>Qty in Box</th>
+            <th>Rate on Box</th>
+            <th>Rate on Weight</th>
+            <th>Weight per Box</th>
+            <th>Vendor Code</th>
+            <th>Item Date</th>
+          </tr>
+          </thead>
+          <tbody class="text-xs">
+          <tr class="hover-row"
+              *ngFor="let item of items | paginate: { itemsPerPage: itemsPerPage, currentPage: page }; let i = index">
+            <td width="10">{{ (page - 1) * itemsPerPage + i + 1 }}</td>
+            <td>{{ item.itemNo }}</td>
+            <td width="200">{{ item.itemName }}</td>
+            <td>{{ item.partNo }}</td>
+            <td>{{ item.route.routeNo }}</td>
+            <td>{{ item.party.partyNo }}</td>
+            <td>{{ item.qtyInBox }}</td>
+            <td>{{ item.rateOnBox }}</td>
+            <td>{{ item.rateOnWeight }}</td>
+            <td>{{ item.weightPerBox }}</td>
+            <td>{{ item.vendorCode }}</td>
+            <td width="120">{{ item.itemDate }}</td>
+          </tr>
+          <tr *ngIf="items.length === 0">
+            <td colspan="3" class="text-center">No results found.</td>
+          </tr>
+          </tbody>
+        </table>
+        <pagination-controls (pageChange)="page = $event"></pagination-controls>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--<div class="col-md-4">-->
+<!--  <div class="card card-md">-->
+<!--    <div class="card-header bg-orange text-sm">-->
+<!--      <h5 class="card-title text-sm text-white">Daily Recap Report</h5>-->
+<!--      <div class="card-tools">-->
+<!--        <button type="button" class="btn btn-tool" data-card-widget="collapse">-->
+<!--          <i class="fas fa-minus text-white"></i>-->
+<!--        </button>-->
+<!--        <button type="button" class="btn btn-tool" data-card-widget="remove">-->
+<!--          <i class="fas fa-times text-white"></i>-->
+<!--        </button>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--    <div class="card-body">-->
+<!--      <div class="row">-->
+<!--        <div class="col-md-12">-->
+<!--          <div class="chart custom-chart">-->
+<!--            <canvas id="canvas">{{pieChart}}</canvas>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</div>-->

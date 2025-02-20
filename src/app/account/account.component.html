@@ -1,0 +1,207 @@
+<div class="row">
+  <div class="col-lg-12 mt-2">
+    <div class="card">
+      <div class="card-header bg-orange">
+        <p class="card-title text-sm text-white"><i class="fas fa-university mr-2"></i> Create New Account</p>
+      </div>
+      <div class="card-body">
+        <form [formGroup]="form" (ngSubmit)="createAccount()">
+          <div class="row">
+            <div class="form-group col-lg-12">
+              <div class="align-items-center justify-content-center d-flex">
+                <i class="text-orange fas fa-search mr-2"></i>
+                <input (input)="onAccountSearch()" formControlName="searchQuery" type="text"
+                       class="form-control text-orange text-xs custom-search" placeholder="Search account....">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+          <div class="col-lg-2">
+            <div class="card w-100">
+              <div class="card-header bg-orange pt-2 pb-2">
+                <p class="card-title text-white text-xs">
+                  <i class="fas fa-check-double mr-2"></i> Account Type
+                </p>
+              </div>
+              <div class="card-body px-4 pt-0 pb-0">
+                <ng-container *ngFor="let type of account_types; let i = index;">
+                  <div class="custom-control custom-radio my-2 ">
+                    <input formControlName="accountType" class="custom-control-input" type="radio" id="accountType{{i}}" [value]="type" name="accountType">
+                    <label for="accountType{{i}}" class="custom-control-label text-muted text-xs">{{ type }}</label>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header bg-orange pt-2 pb-2">
+                <p class="card-title text-white text-xs">
+                  <i class="fas fa-highlighter mr-2"></i> Balance Mark
+                </p>
+              </div>
+              <div class="card-body px-4 pt-0 pb-0">
+                <ng-container *ngFor="let b of balanceMarks; let i = index;">
+                  <div class="custom-control custom-radio my-2 ">
+                    <input formControlName="balanceMark" class="custom-control-input" type="radio" id="balanceMark{{i}}" [value]="b" name="balanceMark">
+                    <label for="balanceMark{{i}}" class="custom-control-label text-muted text-xs">{{ b }}</label>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-10">
+            <div class="card">
+              <div class="card-header bg-orange pt-2 pb-2">
+                <p class="card-title text-white text-xs">
+                  <i class="fas fa-info-circle nav-icon pr-2 "></i>Account Information
+                </p>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-lg-8">
+                    <input type="hidden" class="form-control" formControlName="accountId">
+                    <div class="form-group d-flex">
+                      <label class="text-xs text-muted w-45 pt-2">Account No :</label>
+                      <input formControlName="accountNo" type="number" class="form-control w-100" placeholder="Enter account number">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-lg-8">
+                    <div class="form-group d-flex">
+                      <label class="text-xs text-muted w-45 pt-2">Account Holder Name :</label>
+                      <input formControlName="accountName" type="text" class="form-control w-100" placeholder="Enter account holder name">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-lg-8">
+                    <div class="form-group d-flex">
+                      <label class="text-xs text-muted w-45 pt-2">Opening Balance :</label>
+                      <input formControlName="openingBalance" type="number" class="form-control w-100" placeholder="Enter opening balance amount">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-lg-8">
+                    <div class="d-flex">
+                      <label class="text-xs text-muted w-45 pt-2">Under Group :</label>
+                      <input formControlName="underGroup" type="text" class="form-control w-75" placeholder="Code">
+                      <input type="text" readonly class="form-control w-15" placeholder="Group Name">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+<!--            <div class="row">-->
+<!--              <div class="col">-->
+<!--                <div class="p-2 d-flex justify-content-center align-items-center">-->
+<!--                  <button type="submit" class="btn btn-sm btn-block m-1 text-white bg-gradient-orange">-->
+<!--                    <i class="fas fa-save nav-icon px-2"></i>Create Account-->
+<!--                  </button>-->
+<!--                  <button type="button" (click)="updateAccount()" class="btn btn-sm btn-block m-1 text-white bg-gradient-orange ">-->
+<!--                    <i class="fas fa-edit nav-icon px-2"></i>Update Account-->
+<!--                  </button>-->
+<!--                  <button type="button" (click)="deleteAccount()" class="btn btn-sm btn-block m-1 text-white bg-gradient-orange">-->
+<!--                    <i class="fas fa-trash-alt nav-icon px-2"></i>Delete Account-->
+<!--                  </button>-->
+<!--                  <button type="button" (click)="clearForm()" class="btn btn-sm btn-block m-1 text-white bg-gradient-orange">-->
+<!--                    <i class="fas fa-times nav-icon px-2"></i>Clear Form-->
+<!--                  </button>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
+
+            <div class="fab-container">
+              <button [disabled]="form.invalid" type="submit" mat-fab class="fab-button">
+                <span class="text-xs"><i class="fas fa-plus mr-2"></i>Create Account</span>
+              </button>
+
+              <button [disabled]="form.invalid" type="button" (click)="updateAccount()" mat-fab class="fab-button">
+                <span class="text-xs"><i class="fas fa-edit mr-2"></i>Update Account</span>
+              </button>
+
+              <button [disabled]="form.invalid" type="button" (click)="deleteAccount()" mat-fab class="fab-button">
+                <span class="text-xs"><i class="fas fa-trash mr-2"></i>Delete Account</span>
+              </button>
+
+              <button (click)="clearForm()" type="button" mat-fab class="fab-button">
+                <span class="text-xs"><i class="fas fa-times mr-2"></i>Clear Form</span>
+              </button>
+            </div>
+
+            <div class="bottom-nav">
+              <button [disabled]="form.invalid || !writeEnabled" type="submit" mat-button>
+                <span><i class="fas fa-plus mr-1"></i>Add</span>
+              </button>
+
+              <button type="button" (click)="updateAccount()" [disabled]="form.invalid || !updateEnabled" mat-button>
+                <span><i class="fas fa-edit mr-1"></i>Edit</span>
+              </button>
+
+              <button [disabled]="form.invalid || !deleteEnabled" type="button" (click)="deleteAccount()" mat-button>
+                <span><i class="fas fa-trash mr-1"></i>Delete</span>
+              </button>
+
+              <button (click)="clearForm()" type="button" mat-button>
+                <span><i class="fas fa-times mr-1"></i>Clear</span>
+              </button>
+            </div>
+
+
+          </div>
+        </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" [ngClass]="{ 'show': isAccountModalOpen }" [style.display]="isAccountModalOpen ? 'block' : 'none'">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-orange">
+        <p class="modal-title text-white">Account Information</p>
+        <button (click)="closeModal()" type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="false">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="h-scrollable-table">
+          <table class="table table-bordered table-hover">
+          <thead>
+          <tr>
+            <th hidden>Select</th>
+            <th>Account Number</th>
+            <th>Account Name</th>
+            <th>Account Type</th>
+            <th>Opening Balance</th>
+            <th>Balance Mark</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let a of filteredAccountData" (click)="selectAccountRow(a)"
+              [class.selected]="a === selectedAccountItem">
+            <td hidden>
+              <input type="radio" name="selectedItem" [checked]="a === selectedAccountItem"/>
+            </td>
+            <td>{{ a.accountNo }}</td>
+            <td>{{ a.accountName }}</td>
+            <td>{{ a.accountType }}</td>
+            <td>{{ a.openingBalance }}</td>
+            <td>{{ a.balanceMark }}</td>
+          </tr>
+          <tr *ngIf="filteredAccountData.length === 0">
+            <td colspan="3" class="text-center">No results found.</td>
+          </tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,526 @@
+<form [formGroup]="form" (ngSubmit)="formSubmit()">
+  <div class="row">
+    <div class="form-group col-lg-12 mt-2">
+      <div class="align-items-center justify-content-center d-flex">
+        <i class="text-orange fas fa-search mr-2"></i>
+        <input [readOnly]="!readEnabled" (input)="onVehicleSearch()" formControlName="searchQuery" type="text"
+               class="form-control text-orange custom-search" placeholder="Search vehicle....">
+      </div>
+    </div>
+
+    <div class="col-lg-12 mt-2">
+      <div class="card">
+        <div class="card-header bg-orange">
+          <p class="text-white card-title text-sm">
+            <i class="fas fa-tractor mr-2"></i> Vehicle's Particulars</p>
+        </div>
+        <div class="card-body">
+          <div class="row">
+<!--            <input formControlName="vehicleId" type="hidden" class="form-control" placeholder="Enter vehicle id">-->
+            <div class="col-lg-6">
+              <div class="float-left">
+                <p class="text-muted">Vehicle Code: <span #vehicleViewId id="vehicleViewId" class="text-bold px-2">Loading..</span>
+                  <input formControlName="vehicleId" type="hidden" readonly class="form-control" placeholder="Item No">
+                </p>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="form-group d-flex align-items-center justify-content-center">
+                <label class="w-25 pt-2">Vehicle No.</label>
+                <input formControlName="vehicleNumber" type="text" class="form-control"
+                       placeholder="Enter vehicle number">
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="form-group d-flex align-items-center justify-content-center">
+                <label class="w-25 pt-2">Owner Name</label>
+                <input formControlName="ownerName" type="text" class="form-control" placeholder="Enter owner name">
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="form-group d-flex align-items-center justify-content-center">
+                <label class="w-25 pt-2">Driver Name</label>
+                <input formControlName="driverName" type="text" class="form-control" placeholder="Enter driver name">
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="form-group d-flex align-items-center justify-content-center">
+                <label class="w-25 pt-2">Permit No.</label>
+                <input formControlName="permitNo" type="text" class="form-control" placeholder="Enter permit number">
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="form-group d-flex align-items-center justify-content-center">
+                <label class="w-25 pt-2">Licence No.</label>
+                <input formControlName="licenceNo" type="text" class="form-control" placeholder="Enter licence number">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-12">
+      <div class="row">
+        <div class="col-lg-6">
+          <div class="card">
+            <div class="card-header bg-orange">
+              <p class="text-white card-title">
+                <i class="fas fa-snowplow mr-2"></i> Vehicle Type & Vehicle Exp A/c No.</p>
+            </div>
+            <div class="card-body">
+              <div class="form-group m-0">
+                <div class="row d-flex">
+                  <ng-container *ngFor="let type of vehicles_types; let i = index;">
+                    <div class="col-lg-2 col-md-2 col-sm-2">
+                      <div class="custom-control custom-radio my-2">
+                        <input formControlName="vehicleType" class="custom-control-input" type="radio"
+                               id="vehicleType{{i}}" [value]="type"
+                               name="vehicleType">
+                        <label for="vehicleType{{i}}" class="custom-control-label text-muted">{{ type }}</label>
+                      </div>
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+              <div class="form-group m-0">
+                <input formControlName="vehicleExpAcNo" type="text" class="form-control"
+                       placeholder="Enter vehicle exp a/c number">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="row d-flex align-items-center justify-content-center">
+            <button class="btn  m-1 text-white bg-gradient-orange" type="button" [disabled]="!isVehicleFound || !writeEnabled" (click)="openModal()">
+              <i class="fas fa-plus-circle nav-icon px-2"></i>ADD VEHICLE OWNER'S INFO
+            </button>
+            <button class="btn  m-1 text-white bg-gradient-orange" type="button" [disabled]="!readEnabled" data-toggle="modal" data-target="#all-vehicles-modal">
+              <i class="fas fa-plus-circle nav-icon px-2"></i>ALL VEHICLE HISTORY
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fab-container">
+      <button [disabled]="form.invalid || !writeEnabled" type="submit" mat-fab class="fab-button">
+        <span class="text-xs"><i class="fas fa-plus mr-2"></i>Add Vehicle</span>
+      </button>
+
+      <button [disabled]="form.invalid || !updateEnabled" type="button" (click)="updateVehicle()" mat-fab class="fab-button">
+        <span class="text-xs"><i class="fas fa-edit mr-2"></i>Update Vehicle</span>
+      </button>
+
+      <button [disabled]="form.invalid || !deleteEnabled" data-toggle="modal" data-target="#delete-vehicle-modal" type="button" mat-fab class="fab-button">
+        <span class="text-xs"><i class="fas fa-trash mr-2"></i>Delete Vehicle</span>
+      </button>
+
+      <button (click)="clearFields()" type="button" mat-fab class="fab-button">
+        <span class="text-xs"><i class="fas fa-times mr-2"></i>Clear Form</span>
+      </button>
+    </div>
+
+    <div class="bottom-nav">
+      <button [disabled]="form.invalid || !writeEnabled" type="submit" (click)="ngOnInit()" mat-button>
+        <span><i class="fas fa-plus mr-1"></i>Add</span>
+      </button>
+
+      <button type="button" (click)="updateVehicle()" [disabled]="form.invalid || !updateEnabled" mat-button>
+        <span><i class="fas fa-edit mr-1"></i>Update</span>
+      </button>
+
+      <button [disabled]="form.invalid || !deleteEnabled" type="button" data-toggle="modal" data-target="#delete-vehicle-modal" mat-button>
+        <span><i class="fas fa-trash mr-1"></i>Delete</span>
+      </button>
+
+      <button (click)="clearFields()" type="button" mat-button>
+        <span><i class="fas fa-times mr-1"></i>Clear</span>
+      </button>
+    </div>
+
+
+  </div>
+</form>
+
+
+<div class="modal fade" tabindex="-1" aria-disabled="true" [ngClass]="{ 'show': isModalOpen2 }" [style.display]="isModalOpen2 ? 'block' : 'none'">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header bg-orange">
+        <p class="modal-title text-white d-flex">
+          <i class="fas fa-bus-alt mr-2"></i> OWNER VEHICLE INFORMATION (Vehicle No: <span
+          class="ml-2">{{vehicleNo}}</span>)</p>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="ownerForm" (ngSubmit)="registerOwner()">
+          <input formControlName="ownerId" type="hidden" readonly class="form-control" placeholder="Owner ID">
+          <div formGroupName="vehicle">
+            <input formControlName="vehicleId" type="hidden" readonly class="form-control" placeholder="Vehicle ID">
+          </div>
+          <div class="row">
+            <div class="col-lg-6">
+              <div class="form-group d-flex align-items-center justify-content-center">
+                <label class="w-25 pt-2">Start Reading</label>
+                <input formControlName="startReading" type="text" class="form-control"
+                       placeholder="Enter vehicle start reading">
+              </div>
+            </div>
+          </div>
+          <hr class="m-0 mb-2 p-0">
+          <div class="row">
+            <div class="col-lg-4">
+              <p class="text-bold pt-0 pb-0 m-0 mb-1">Oil Service</p>
+              <div class="row">
+                <div class="col-lg-12">
+                  <div class="form-group d-flex align-items-center justify-content-center">
+                    <label class="w-50 text-muted pt-2">Date</label>
+                    <input formControlName="oilServiceDate" type="date" class="form-control">
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <div class="form-group d-flex align-items-center justify-content-center">
+                    <label class="w-50 text-muted pt-2">Service KM</label>
+                    <input formControlName="oilServiceKm" type="number" class="form-control"
+                           placeholder="Enter service KM">
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <div class="form-group d-flex align-items-center justify-content-center">
+                    <label class="w-50 text-muted pt-2">Target KM</label>
+                    <input formControlName="oilServiceTargetKm" type="number" class="form-control"
+                           placeholder="Enter target KM">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <p class="text-bold pt-0 pb-0 m-0 mb-1">Insurance</p>
+              <div class="row">
+                <div class="col-lg-12">
+                  <div class="form-group d-flex align-items-center justify-content-center">
+                    <label class="w-50 text-muted pt-2">Date</label>
+                    <input formControlName="insuranceDate" type="date" class="form-control">
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <div class="form-group d-flex align-items-center justify-content-center">
+                    <label class="w-50 text-muted pt-2">From</label>
+                    <input formControlName="insuranceFrom" type="text" class="form-control"
+                           placeholder="Enter from date">
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <div class="form-group d-flex align-items-center justify-content-center">
+                    <label class="w-50 text-muted pt-2">To</label>
+                    <input formControlName="insuranceTo" type="text" class="form-control" placeholder="Enter to date">
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <div class="form-group d-flex align-items-center justify-content-center">
+                    <label class="w-50 text-muted pt-2">Next Date</label>
+                    <input formControlName="insuranceNextDate" type="date" class="form-control"
+                           placeholder="Enter next date">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <p class="text-bold pt-0 pb-0 m-0 mb-1">Fitness</p>
+              <div class="row">
+                <div class="col-lg-12">
+                  <div class="form-group d-flex align-items-center justify-content-center">
+                    <label class="w-50 text-muted m-0 pt-2">Date</label>
+                    <input formControlName="fitnessDate" type="date" class="form-control">
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <div class="form-group d-flex align-items-center justify-content-center">
+                    <label class="w-50 text-muted m-0 pt-2">From</label>
+                    <input formControlName="fitnessFrom" type="text" class="form-control" placeholder="Enter from date">
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <div class="form-group d-flex align-items-center justify-content-center">
+                    <label class="w-50 text-muted m-0 pt-2">To</label>
+                    <input formControlName="fitnessTo" type="text" class="form-control" placeholder="Enter to date">
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <div class="form-group d-flex align-items-center justify-content-center">
+                    <label class="w-50 text-muted m-0 pt-2">Next Date</label>
+                    <input formControlName="fitnessNextDate" type="date" class="form-control"
+                           placeholder="Enter to date">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <hr class="m-0 mb-2 p-0">
+          <div class="row">
+            <div class="col-lg-4">
+              <p class="text-bold pt-0 pb-0 m-0 mb-1">Grease Packing</p>
+              <div class="row">
+                <div class="col-lg-12">
+                  <div class="form-group d-flex align-items-center justify-content-center">
+                    <label class="w-50 text-muted pt-2">Date</label>
+                    <input formControlName="greasePackingDate" type="date" class="form-control">
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <div class="form-group d-flex align-items-center justify-content-center">
+                    <label class="w-50 text-muted pt-2">Service KM</label>
+                    <input formControlName="greasePackingKm" type="number" class="form-control"
+                           placeholder="Enter service KM">
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <div class="form-group d-flex align-items-center justify-content-center">
+                    <label class="w-50 text-muted pt-2">Target KM</label>
+                    <input formControlName="greasePackingTargetKm" type="number" class="form-control"
+                           placeholder="Enter target KM">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <p class="text-bold pt-0 pb-0 m-0 mb-1">RTO Tax</p>
+              <div class="row">
+                <div class="col-lg-12">
+                  <div class="form-group d-flex align-items-center justify-content-center">
+                    <label class="w-50 text-muted pt-2">Date</label>
+                    <input formControlName="rtoTaxDate" type="date" class="form-control">
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <div class="form-group d-flex align-items-center justify-content-center">
+                    <label class="w-50 text-muted pt-2">From</label>
+                    <input formControlName="rtoTaxFrom" type="text" class="form-control" placeholder="Enter from date">
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <div class="form-group d-flex align-items-center justify-content-center">
+                    <label class="w-50 text-muted pt-2">To</label>
+                    <input formControlName="rtoTaxTo" type="text" class="form-control" placeholder="Enter to date">
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <div class="form-group d-flex align-items-center justify-content-center">
+                    <label class="w-50 text-muted pt-2">Next Date</label>
+                    <input formControlName="rtoTaxNextDate" type="date" class="form-control"
+                           placeholder="Enter next date">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <p class="text-bold pt-0 pb-0 m-0 mb-1">Permit</p>
+              <div class="row">
+                <div class="col-lg-12">
+                  <div class="form-group d-flex align-items-center justify-content-center">
+                    <label class="w-50 text-muted m-0 pt-2">Date</label>
+                    <input formControlName="permitDate" type="date" class="form-control">
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <div class="form-group d-flex align-items-center justify-content-center">
+                    <label class="w-50 text-muted m-0 pt-2">From</label>
+                    <input formControlName="permitFrom" type="text" class="form-control" placeholder="Enter from date">
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <div class="form-group d-flex align-items-center justify-content-center">
+                    <label class="w-50 text-muted m-0 pt-2">To</label>
+                    <input formControlName="permitTo" type="text" class="form-control" placeholder="Enter to date">
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <div class="form-group d-flex align-items-center justify-content-center">
+                    <label class="w-50 text-muted m-0 pt-2">Next Date</label>
+                    <input formControlName="permitNextDate" type="date" class="form-control"
+                           placeholder="Enter to date">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-12 mt-0 mb-0">
+              <div class="row">
+                <div class="col">
+                  <div class="card">
+                    <div class="p-2 d-flex justify-content-center align-items-center">
+                      <button [disabled]="ownerForm.invalid || !isNewOwnerDetails" type="submit"
+                              class="btn btn-block m-1 text-white bg-gradient-orange">
+                        <i class="fas fa-save nav-icon px-2"></i>Add Vehicle Details
+                      </button>
+                      <button [disabled]="ownerForm.invalid || isNewOwnerDetails" type="button" (click)="updateOwnerDetails()"
+                              class="btn btn-block m-1 text-white bg-gradient-orange ">
+                        <i class="fas fa-edit nav-icon px-2"></i>Update Vehicle Details
+                      </button>
+                      <button (click)="closeOwnerModal()" type="button" data-dismiss="modal" aria-label="Close"
+                              class="btn btn-block m-1 text-white bg-gradient-orange">
+                        <i class="fas fa-trash-alt nav-icon px-2"></i>Close Window
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="delete-vehicle-modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-orange">
+        <p class="modal-title text-white">DELETE VEHICLE RECORD</p>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body m-0 p-0">
+        <p class="text-danger text-center text-md pt-3">Do you want to delete the vehicle record?</p>
+      </div>
+      <div class="modal-footer px-0 mt-0 pt-0">
+        <div class="row ml-auto">
+          <button type="button" class="btn btn-secondary mr-3" data-dismiss="modal">Cancel</button>
+          <button type="button" (click)="deleteVehicle()" class="btn bg-orange" data-dismiss="modal"><span
+            class="text-white"><i class="fas fa-trash-alt mr-2"></i> Delete</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="delete-owner-modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-orange">
+        <p class="modal-title text-white">DELETE VEHICLE OWNER RECORD</p>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body m-0 p-0">
+        <p class="text-danger text-center text-md pt-3">Do you want to delete the vehicle owner record?</p>
+      </div>
+      <div class="modal-footer px-0 mt-0 pt-0">
+        <div class="row ml-auto">
+          <button type="button" class="btn btn-secondary mr-3" data-dismiss="modal">Cancel</button>
+          <button type="button" (click)="deleteOwnerDetails()" class="btn bg-orange" data-dismiss="modal"><span
+            class="text-white"><i class="fas fa-trash-alt mr-2"></i> Delete</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" #modalDefault [ngClass]="{ 'show': isModalOpen }"
+     [style.display]="isModalOpen ? 'block' : 'none'">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header bg-orange">
+        <p class="modal-title text-white">VEHICLE INFORMATION</p>
+        <button (click)="closeModal()" type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="h-scrollable-table">
+          <table id="example1" class="table table-bordered table-striped">
+          <thead>
+          <tr class="text-center align-items-center justify-content-center">
+            <th hidden>Select</th>
+            <th>No.</th>
+            <th>Vehicle Code</th>
+            <th>Vehicle No.</th>
+            <th>Owner Name</th>
+            <th>Driver Name</th>
+            <th>Permit No.</th>
+            <th>Licence No.</th>
+            <th>Vehicle Type</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr class="hover-row " *ngFor="let vehicle of filteredData; let i = index;" (click)="selectRow(vehicle)"
+              [class.selected]="vehicle === selectedItem">
+            <td hidden>
+              <input type="radio" name="selectedItem" [checked]="vehicle === selectedItem"/>
+            </td>
+            <td width="10">{{ i + 1 }}</td>
+            <td>{{ vehicle.vehicleId }}</td>
+            <td>{{ vehicle.vehicleNumber }}</td>
+            <td>{{ vehicle.ownerName }}</td>
+            <td>{{ vehicle.driverName }}</td>
+            <td>{{ vehicle.permitNo }}</td>
+            <td>{{ vehicle.licenceNo }}</td>
+            <td>{{ vehicle.vehicleType }}</td>
+          </tr>
+          <tr *ngIf="filteredData.length === 0">
+            <td colspan="3" class="text-center">No results found.</td>
+          </tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="all-vehicles-modal" tabindex="-1" aria-disabled="true">
+  <div class="modal-dialog modal-vehicle-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header bg-orange">
+        <p class="modal-title text-white">VEHICLE RECORDS</p>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="h-scrollable-table">
+              <table id="example2" class="table table-bordered table-striped">
+              <thead>
+              <tr class="text-center align-items-center justify-content-center">
+                <th>Sr. No.</th>
+                <th>Vehicle No.</th>
+                <th>Owner</th>
+                <th>Driver</th>
+                <th>Permit</th>
+                <th>Licence</th>
+              </tr>
+              </thead>
+              <tbody>
+              <!-- Use *ngFor to loop through filtered data with pagination -->
+              <tr class="text-center align-items-center justify-content-center"
+                  *ngFor="let v of vehicles | paginate: { itemsPerPage: itemsPerPage, currentPage: page }; let i = index">
+                <td width="100">{{ (page - 1) * itemsPerPage + i + 1 }}</td>
+                <td>{{ v.vehicleNumber }}</td>
+                <td>{{ v.ownerName }}</td>
+                <td>{{ v.driverName }}</td>
+                <td>{{ v.permitNo }}</td>
+                <td>{{ v.licenceNo }}</td>
+              </tr>
+              </tbody>
+            </table>
+            </div>
+
+            <pagination-controls (pageChange)="page = $event"></pagination-controls>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>

@@ -1,0 +1,157 @@
+<div class="row" *ngIf="!isRecordFound">
+  <div class="col-lg-12 text-center mt-5">
+    <button (click)="openModal()" class="btn bg-orange text-center" type="button"><span class="text-white">Search</span></button>
+  </div>
+</div>
+
+
+<div class="row" *ngIf="isRecordFound">
+
+  <div class="col-lg-12">
+   <div class="row mt-2">
+     <div class="col-lg-9">
+     </div>
+     <div class="col-lg-3 text-center">
+       <button type="button" (click)="exportToPDF()" class="btn mr-2 bg-orange">
+         <span class="text-white text-sm"><i class="fas fa-save pr-2"></i>Save PDF</span>
+       </button>
+       <button type="button" (click)="exportToExcel()" class="btn bg-orange">
+         <span class="text-white text-sm"><i class="fas fa-file-excel pr-2"></i>Save Excel</span>
+       </button>
+     </div>
+   </div>
+  </div>
+
+  <div class="col-lg-12 mt-2 h-scrollable-table">
+    <table class="table table-striped table-bordered">
+      <thead>
+        <tr>
+          <th>Sr.No.</th>
+          <th>Memo Date</th>
+          <th>Vehicle Type</th>
+          <th>Memo No</th>
+          <th>Truck No</th>
+          <th>LR No</th>
+          <th>Consignor</th>
+          <th>Consignee</th>
+          <th>Quantity</th>
+          <th>Weight</th>
+          <th>Chalan No</th>
+          <th>Paid</th>
+          <th>To Pay</th>
+          <th>Billed</th>
+          <th>Bill No</th>
+        </tr>
+      </thead>
+      <tbody>
+      <ng-container *ngFor="let r of searchRecordData; let i = index;">
+          <tr>
+            <td>{{ i + 1}}</td>
+            <td>{{r.memoDate}}</td>
+            <td>
+              <span *ngIf="!r.lcvFtl">Regular</span>
+              <span *ngIf="r.lcvFtl">Regular</span>
+            </td>
+            <td>{{r.memoNo}}</td>
+            <td>{{r.refTruckNo}}</td>
+            <td>{{r.lrNo}}</td>
+            <td>{{r.consignor}}</td>
+            <td>{{r.consignee}}</td>
+            <td>{{r.quantity}}</td>
+            <td>{{r.weight.toFixed(2)}}</td>
+            <td>{{r.chalanNo}}</td>
+            <td>{{r.paid}}</td>
+            <td>{{r.toPay}}</td>
+            <td>{{r.billed}}</td>
+            <td>{{r.billNo}}</td>
+          </tr>
+          <tr *ngIf="i === searchRecordData.length - 1 || r.memoNo !== searchRecordData[i + 1].memoNo">
+            <td colspan="12"><strong class="text-xs">Total:</strong></td>
+            <td><strong>₹{{ getTotalToPay(i) }}</strong></td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="custom-modal" #defaultModal [ngClass]="{ 'show': isModalOpen }" [style.display]="isModalOpen ? 'block' : 'none'">
+  <div class="modal-dialog modal-custom-booking-dialog">
+    <form [formGroup]="searchForm" (ngSubmit)="formSubmit(defaultModal)">
+      <div class="modal-content">
+        <div class="modal-header bg-orange pt-2 pb-2">
+          <p class="modal-title text-white text-sm"><i class="fas fa-book mr-2"></i>Booking Register</p>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="form-group">
+                <label class="text-sm">Branch Code</label>
+                <div class="d-flex" formGroupName="branch">
+                  <input (input)="onBranchSearch()" formControlName="branchNo" type="text" class="form-control custom-width" placeholder="Code">
+                  <input formControlName="branchName" type="text" readonly class="form-control" placeholder="Branch name">
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-6 col-sm-12">
+              <div class="form-group">
+                <label class="text-sm">Start Date</label> <input formControlName="startDate" type="date" class="form-control">
+              </div>
+            </div>
+            <div class="col-lg-6 col-sm-12">
+              <div class="form-group">
+                <label class="text-sm">End Date</label> <input formControlName="endDate" type="date" class="form-control">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <div class="row ml-auto">
+            <button class="btn bg-orange mr-2" type="submit" [disabled]="searchForm.invalid">
+              <span class="text-sm text-white"><i class="fas fa-search mr-2"></i>Search</span>
+            </button>
+            <button class="btn bg-orange" type="button" (click)="modalClose(defaultModal)">
+              <span class="text-sm text-white"><i class="fas fa-times mr-2"></i>Close</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal custom-modal fade" #defaultModalBranch [ngClass]="{ 'show': isBranchModalOpen }" [style.display]="isBranchModalOpen ? 'block' : 'none'">
+  <div class="modal-dialog modal-custom-branch-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header bg-orange">
+        <p class="modal-title text-white custom-label text-muted">Branch Information</p>
+        <button (click)="closeBranchModal(defaultModalBranch)" type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="false">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <table id="example2" class="table table-bordered table-striped">
+          <thead>
+          <tr class="text-center align-items-start custom-label text-muted justify-content-center">
+            <th hidden>Select</th>
+            <th>B. Code</th>
+            <th>Branch Name</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr class="hover-row text-center align-items-start custom-label text-muted justify-content-center" *ngFor="let branch of filteredBranchData; let i = index;" (click)="selectBranchRow(branch, defaultModalBranch)" [class.selected]="branch === selectedBranchItem">
+            <td hidden>
+              <input type="radio" name="selectedItem" [checked]="branch === selectedBranchItem"/>
+            </td>
+            <td width="50">{{ branch.branchNo }}</td>
+            <td width="120">{{ branch.branchName }}</td>
+          </tr>
+          <tr *ngIf="filteredBranchData.length === 0">
+            <td colspan="3" class="text-center  custom-label text-muted">No results found.</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,88 @@
+<aside class="main-sidebar sidebar-bg main-sidebar-custom sidebar-light-orange elevation-2">
+  <!-- Brand Logo -->
+  <a routerLink="/dashboard" class="brand-link">
+    <img src="vpi-logo.png" alt="AdminLTE Logo" class="brand-image2">
+    <span class="brand-text font-weight-light text-lg">LOGISTICS</span> </a>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+
+    <!-- Sidebar Menu -->
+    <nav class="mt-2">
+      <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+        <!-- Add icons to the links using the .nav-icon class
+             with font-awesome or any other icon font library -->
+
+        <li class="nav-item">
+          <a routerLink="/dashboard" class="nav-link active"> <i class="nav-icon text-white fas fa-tachometer-alt"></i>
+            <p class="text-white">Dashboard</p>
+          </a>
+        </li>
+
+        <li class="nav-item menu-open">
+          <a class="nav-link"> <i class="fas fa-pencil-ruler nav-icon"></i>
+            <p>
+              Master <i class="fas fa-angle-left right"></i>
+            </p>
+          </a>
+          <ul class="nav nav-treeview ">
+            <ng-container *ngFor="let s of filteredMasterMenus">
+              <li class="nav-item">
+                <a [routerLink]="s.path" class="nav-link text-dark" [ngClass]="{'bg-orange': isActive('/dashboard/' + s.path)}">
+                  <i [class]="s.icon" [ngClass]="{'text-white': isActive('/dashboard/' + s.path)}"></i>
+                  <p class="text-dark" [ngClass]="{'text-white': isActive('/dashboard/' + s.path)}">{{s.title}}</p>
+                </a>
+              </li>
+            </ng-container>
+          </ul>
+        </li>
+
+        <li class="nav-item menu-open">
+          <a class="nav-link"> <i class="fas fa-tenge nav-icon"></i>
+            <p>
+              Transaction <i class="fas fa-angle-left right"></i>
+            </p>
+          </a>
+          <ul class="nav nav-treeview ">
+            <ng-container *ngFor="let s of filteredTransactionMenus">
+              <li class="nav-item">
+                <a [routerLink]="s.path" class="nav-link text-dark" [ngClass]="{'bg-orange': isActive('/dashboard/' + s.path)}">
+                  <i [class]="s.icon" [ngClass]="{'text-white': isActive('/dashboard/' + s.path)}"></i>
+                  <p class="text-dark" [ngClass]="{'text-white': isActive('/dashboard/' + s.path)}">{{s.title}}</p>
+                </a>
+              </li>
+            </ng-container>
+          </ul>
+        </li>
+
+        <li class="nav-item menu-open">
+          <a class="nav-link"> <i class="fas fa-tenge nav-icon"></i>
+            <p>
+              Reports <i class="fas fa-angle-left right"></i>
+            </p>
+          </a>
+          <ul class="nav nav-treeview ">
+            <ng-container *ngFor="let r of filteredReportMenus">
+              <li class="nav-item">
+                <a [routerLink]="r.path" class="nav-link text-dark" [ngClass]="{'bg-orange': isActive('/dashboard/' + r.path)}">
+                  <i [class]="r.icon" [ngClass]="{'text-white': isActive('/dashboard/' + r.path)}"></i>
+                  <p class="text-dark" [ngClass]="{'text-white': isActive('/dashboard/' + r.path)}">{{r.title}}</p>
+                </a>
+              </li>
+            </ng-container>
+          </ul>
+        </li>
+
+      </ul>
+    </nav>
+  </div>
+  <!-- /.sidebar -->
+
+  <div class="sidebar-custom p-2 mb-0 pb-0">
+    <a href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn btn-link"><i class="fas fa-cogs text-orange"></i></a>
+    <ul aria-labelledby="dropdownSubMenu1" class="dropdown-menu border-0 shadow">
+      <li><a routerLink="./user-profile" class="dropdown-item">Profile</a></li>
+      <li><a routerLink="./security-backup" class="dropdown-item">Security & Back-up</a></li>
+    </ul>
+  </div>
+</aside>

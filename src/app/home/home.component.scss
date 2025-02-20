@@ -1,0 +1,34 @@
+.bg-custom {
+  background: rgba(255, 181, 140, 0.81);
+  color: #6a4007;
+}
+
+.card-md{
+
+}
+
+.custom-chart{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-height: 290px;
+}
+
+.img-custom-circle {
+  width: 90px; /* Set a fixed width */
+  height: 90px; /* Set a fixed height */
+  border-radius: 50%; /* Make it circular */
+  object-fit: cover; /* Ensure the image covers the box without distortion */
+}
+
+.scrollable-card {
+  width: 100%;
+  height: 280px;
+  overflow-x: auto; /* Enables horizontal scrolling */
+  overflow-y: auto; /* Enables horizontal scrolling */
+  white-space: nowrap;
+}
+
+.scrollable-card card {
+  min-width: 300px; /* Ensures table is wider than the container */
+}

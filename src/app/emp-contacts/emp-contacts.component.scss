@@ -1,0 +1,11 @@
+* {
+  font-size: 0.8rem;
+}
+
+.img-custom-circle {
+  width: 120px; /* Set a fixed width */
+  height: 140px; /* Set a fixed height */
+  border-radius: 5%; /* Make it circular */
+  border: 1px solid grey;
+  object-fit: fill; /* Ensure the image covers the box without distortion */
+}

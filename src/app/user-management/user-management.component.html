@@ -1,0 +1,276 @@
+<form [formGroup]="form" (ngSubmit)="formSubmit()">
+  <div class="row">
+    <div class="col-lg-12 mt-2">
+      <div class="card">
+        <div class="card-header bg-orange pt-2 pb-2">
+          <p class="card-title text-white text-sm"><i class="fas fa-user mr-2"></i> Create New User Profile</p>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-lg-2">
+              <div class="card custom-card-width">
+                <div class="card-body">
+                  <div class="d-flex align-items-center justify-content-center">
+                    <img *ngIf="imagePreview" [src]="imagePreview" class="img-circle" height="120">
+                    <img *ngIf="!imagePreview" src="../../../dist/img/avatar.png" height="120">
+                  </div>
+                </div>
+                <div class="card-footer">
+                  <div class="form-group">
+                    <label class="form-check-label">Upload Profile</label>
+                    <div class="input-group">
+                      <div class="custom-file">
+                        <input (change)="onFileSelected($event)" type="file" class="form-control-file row label-important">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-header bg-orange pt-2 pb-2">
+                  <a type="button" (click)="openUserModal()" class="card-title text-md text-white">
+                    <span class="text-white"><i class="fas fa-users mr-2"></i>Show All Users</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-10">
+
+              <div class="row">
+                <div class="col-lg-12">
+                  <div class="align-items-center justify-content-center d-flex mb-2">
+                    <i class="text-orange fas fa-search mr-2"></i>
+                    <input [readOnly]="!readEnabled" (input)="onUserSearch()" formControlName="userSearchQuery" type="text"
+                           class="form-control text-orange custom-search" placeholder="Search user....">
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-lg-6">
+                  <input hidden type="number" readonly formControlName="id" class="form-control">
+                  <div class="form-group">
+                    <label class="text-muted text-xs required">Full Name</label>
+                    <input formControlName="name" type="text" class="form-control" placeholder="Enter user full name">
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="text-muted text-xs required">Email ID</label>
+                    <input formControlName="username" type="text" class="form-control" placeholder="Create user email id">
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="text-muted text-xs required">Contact No.</label>
+                    <input formControlName="contact" type="text" class="form-control" placeholder="Contact Number">
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="text-muted text-xs required">Birth Date</label>
+                    <input formControlName="birthDate" type="date" class="form-control" placeholder="Date of Birth">
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="text-muted text-xs">PAN Number</label>
+                    <input formControlName="pan" type="text" class="form-control" placeholder="Enter PAN card number">
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="text-muted text-xs">Aadhar Number</label>
+                    <input formControlName="aadhar" type="text" name="addhar_no" class="form-control" placeholder="Enter aadhar card number">
+                  </div>
+                </div>
+                <div class="col-lg-4">
+                  <div class="form-group">
+                    <label class="text-muted text-xs required">Select User Role</label>
+                    <select (ngModelChange)="lockSelection($event)" formControlName="role" class="form-control">
+                      <option disabled selected value="Select User Role">Select User Role</option>
+                      <option [disabled]="r.roleName == 'SUPER_ADMIN'" [hidden]="r.roleName == 'SUPER_ADMIN'" *ngFor="let r of userRoles" [value]="r.roleId">{{ r.roleName }}</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-lg-4">
+                  <div class="form-group">
+                    <label class="text-muted text-xs required">Create Password</label>
+                    <input formControlName="password" type="password" class="form-control" placeholder="Create new user password">
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <div class="form-group">
+                    <label class="text-muted text-xs">Address</label>
+                    <textarea formControlName="address" class="form-control" placeholder="e.g. Street 234, Sector 2"></textarea>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+<!--          <div class="row">-->
+<!--            <div class="col-lg-12">-->
+<!--              <div class="d-flex align-items-center justify-content-center">-->
+<!--                <button [disabled]="form.invalid || !writeEnabled" type="submit" class="btn bg-orange mr-2 p-2"><span class="text-white">Create User</span></button>-->
+<!--                <button [disabled]="form.invalid || !updateEnabled" type="button" (click)="updateUser()" class="btn bg-orange mr-2 p-2"><span class="text-white">Update User</span></button>-->
+<!--                <button [disabled]="form.invalid || !deleteEnabled" type="button" (click)="deleteUser()" class="btn bg-orange mr-2 p-2"><span class="text-white">Delete User</span></button>-->
+<!--                <button type="button" (click)="clearFormData()" class="btn bg-orange mr-2 p-2"><span class="text-white">Clear Form</span></button>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
+
+          <div class="fab-container" *ngIf="!isDataUploading">
+            <button [disabled]="form.invalid" type="submit" mat-fab class="fab-button">
+              <span class="text-xs"><i class="fas fa-plus mr-2"></i>Create User</span>
+            </button>
+
+            <button [disabled]="form.invalid" type="button" (click)="updateUser()" mat-fab class="fab-button">
+              <span class="text-xs"><i class="fas fa-edit mr-2"></i>Update User</span>
+            </button>
+
+            <button [disabled]="form.invalid" type="button" data-toggle="modal" data-target="#delete-user-modal" mat-fab class="fab-button">
+              <span class="text-xs"><i class="fas fa-trash mr-2"></i>Delete User</span>
+            </button>
+
+            <button (click)="clearFormData()" type="button" mat-fab class="fab-button">
+                <span class="text-xs"><i class="fas fa-times mr-2"></i>Clear</span>
+            </button>
+          </div>
+
+          <div class="bottom-nav">
+            <button [disabled]="form.invalid || !writeEnabled" type="submit" mat-button>
+              <span><i class="fas fa-plus mr-1"></i>Add</span>
+            </button>
+
+            <button type="button" (click)="updateUser()" [disabled]="form.invalid || !updateEnabled" mat-button>
+              <span><i class="fas fa-edit mr-1"></i>Edit</span>
+            </button>
+
+            <button [disabled]="form.invalid || !deleteEnabled" type="button" data-toggle="modal" data-target="#delete-user-modal" mat-button>
+              <span><i class="fas fa-trash mr-1"></i>Delete</span>
+            </button>
+
+            <button (click)="clearFormData()" type="button" mat-button>
+              <span><i class="fas fa-times mr-1"></i>Clear</span>
+            </button>
+          </div>
+
+          <div class="row" *ngIf="isDataUploading">
+            <div class="col-lg-12 text-center">
+              <p class="text-danger text-sm text-center">Please wait...</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<div class="modal fade" tabindex="-1" aria-disabled="false" [ngClass]="{ 'show': isModalOpen }" [style.display]="isModalOpen ? 'block' : 'none'">
+  <div class="modal-dialog modal-userinfo-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header bg-orange">
+        <p class="modal-title text-white">Users Information</p>
+        <button (click)="closeUserModal()" type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span class="text-lg text-white" aria-hidden="false">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="h-scrollable-table">
+          <table class="table table-bordered table-hover">
+          <thead>
+          <tr>
+            <th>User Full Name</th>
+            <th>User Email</th>
+            <th>User Contact</th>
+            <th>Birth Date</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let user of allUsers">
+            <td>{{ user.name }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.contact }}</td>
+            <td>{{ user.birthDate }}</td>
+          </tr>
+          <tr *ngIf="allUsers.length === 0">
+            <td colspan="3" class="text-center">No results found.</td>
+          </tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" [ngClass]="{ 'show': isUserModalOpen }" [style.display]="isUserModalOpen ? 'block' : 'none'">
+  <div class="modal-dialog modal-search-userinfo-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-orange">
+        <p class="modal-title text-white">User Information</p>
+        <button (click)="closeUserWindowModal()" type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span class="text-lg text-white" aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="h-scrollable-table">
+         <table class="table table-bordered table-hover">
+          <thead>
+          <tr>
+            <th hidden>Select</th>
+            <th>User Full Name</th>
+            <th>User Email</th>
+            <th>User Contact</th>
+            <th>Birth Date</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let user of filteredUserData" (click)="selectUserRow(user)" [class.selected]="user === selectedUser">
+            <td hidden>
+              <input type="radio" name="selectedItem" [checked]="user === selectedUser"/>
+            </td>
+            <td>{{ user.name }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.contact }}</td>
+            <td>{{ user.birthDate }}</td>
+          </tr>
+          <tr *ngIf="filteredUserData.length === 0">
+            <td colspan="3" class="text-center">No results found.</td>
+          </tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="delete-user-modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-orange">
+        <p class="modal-title text-white">Delete Existing User Account</p>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span class="text-lg text-white" aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="text-danger text-center text-md">Do you want to delete the user?</p>
+      </div>
+      <div class="modal-footer px-0">
+        <div class="row ml-auto">
+          <button type="button" class="btn btn-secondary mr-3" data-dismiss="modal">Cancel</button>
+          <button type="button" (click)="deleteUser()" class="btn bg-orange" data-dismiss="modal"><span
+            class="text-white"><i class="fas fa-trash-alt mr-2"></i>Delete</span></button>
+        </div>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>

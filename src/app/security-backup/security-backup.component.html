@@ -1,0 +1,44 @@
+<div class="row" *ngIf="readEnabled && writeEnabled && updateEnabled && deleteEnabled">
+  <div class="col-lg-12 mt-2">
+    <h4 class="text-danger">System Factory Reset</h4>
+    <p class="text-muted text-justify">
+      <strong>Note: </strong>A factory reset will erase all data on your system and restore it to its original state. This process cannot be undone, so it's crucial to back up any important files, documents, settings, and software before proceeding. All installed applications, personal data, system configurations, and user accounts will be permanently deleted. If your system is connected to cloud services, ensure that your data is backed up there as well. Additionally, make sure you have the necessary software installation files and product keys for any applications you need to reinstall. If your system is part of a network or organization, check with your administrator before performing the reset, as it may affect security settings or access permissions. Once the reset starts, you will not be able to stop or recover any lost data, so proceed with caution.
+    </p>
+    <div class="d-flex">
+      <button class="btn btn-danger mr-2" type="button" data-toggle="modal" data-target="#restore-data-modal">Reset Factory</button>
+      <button type="button"  class="btn btn-info mr-2">Data Backup</button>
+    </div>
+  </div>
+</div>
+
+<div class="row" *ngIf="readEnabled">
+  <div class="col-lg-12 mt-5 text-center bg-danger">
+    <h4 class="text-white p-4">ACCESS DENIED!!</h4>
+  </div>
+</div>
+
+
+<div class="modal fade" id="restore-data-modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-orange">
+        <p class="modal-title text-white">RESET FACTORY DATA</p>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="text-danger text-center text-md">Make sure you have a data backupDo before process. Do you want to reset factory data?</p>
+      </div>
+      <div class="modal-footer px-0">
+        <div class="row ml-auto">
+          <button type="button" class="btn btn-secondary mr-3" data-dismiss="modal">Cancel</button>
+          <button type="button" (click)="resetData()" class="btn bg-orange" data-dismiss="modal"><span class="text-white"><i class="fas fa-trash-alt mr-2"></i> Reset</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>

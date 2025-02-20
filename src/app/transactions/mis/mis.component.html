@@ -1,0 +1,218 @@
+<div class="row">
+  <div class="col-lg-12 mt-2">
+    <div class="card">
+      <div class="card-header bg-orange pt-2 pb-2">
+        <p class="card-title text-white text-sm">
+          <i class="fas fa-info-circle nav-icon mr-2"></i>MIS Report
+        </p>
+      </div>
+      <div class="card-body">
+        <form [formGroup]="filterForm">
+          <div class="row">
+            <div class="col-lg-4">
+              <div class="form-group">
+                <label class="text-sm pt-2 text-muted w-50"> <i class="fas fa-filter mr-2"></i>Filter Data</label>
+                <select formControlName="filterOption" class="form-control select2">
+                  <option disabled selected value="selected">Select Filter Option</option>
+                  <option>Date - Vehicle No.</option>
+                  <option>Party Name</option>
+                  <option>Part No.</option>
+                  <option>Part Name</option>
+                  <option>Date</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-lg-2">
+              <div class="form-group">
+                <label class="text-sm pt-2 text-muted w-50"> <i class="fas fa-calendar mr-2"></i>Start Date</label>
+                <input formControlName="startDate" type="date" class="form-control">
+              </div>
+            </div>
+            <div class="col-lg-2">
+              <div class="form-group">
+                <label class="text-sm pt-2 text-muted w-50"> <i class="fas fa-calendar mr-2"></i>End Date</label>
+                <input formControlName="endDate" type="date" class="form-control">
+              </div>
+            </div>
+            <div class="col-lg-1">
+              <label class="pt-4"></label>
+              <button [disabled]="filterForm.invalid" type="button" (click)="filterData()" class="btn btn-block bg-orange">
+                <span class="text-sm text-white">Filter</span>
+              </button>
+            </div>
+            <div class="col-lg-1">
+              <label class="pt-4"></label>
+              <button (click)="clearFilter()" class="btn btn-block bg-orange">
+                <span class="text-sm text-white">Clear</span>
+              </button>
+            </div>
+            <div class="col-lg-2">
+              <label class="pt-4"></label>
+              <button [disabled]="!fileName" type="button" (click)="exportToExcel()" class="btn btn-block bg-orange"><span class="text-sm text-white">Export to CSV</span>
+              </button>
+            </div>
+          </div>
+        </form>
+        <div class="row">
+          <div class="col-lg-6">
+            <div class="form-group d-flex">
+              <label class="text-sm w-25 pt-2 text-muted mr-2">Enter Filename: </label>
+              <input type="text" class="form-control w-100" [(ngModel)]="fileName" placeholder="Enter filename to export">
+            </div>
+          </div>
+        </div>
+        <hr>
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="h-scrollable-table">
+              <table class="table table-bordered table-striped">
+                <thead class="text-xs">
+                <tr class="bg-orange-light">
+                  <th class="text-xs">Sr.No</th>
+                  <th class="text-xs">Vendor Code</th>
+                  <th class="text-xs">Vendor Name</th>
+                  <th class="text-xs">Part No.</th>
+                  <th class="text-xs">Part Name</th>
+                  <th class="text-xs">Chalan No.</th>
+                  <th class="text-xs">Chalan Date</th>
+                  <th class="text-xs">Quantity</th>
+                  <th class="text-xs">FTL/LCV</th>
+                  <th class="text-xs">Pack Type</th>
+                  <th class="text-xs">LR No.</th>
+                  <th class="text-xs">LR Date</th>
+                  <th class="text-xs">Vehicle No</th>
+                  <th class="text-xs">Chalan Value</th>
+                  <th class="text-xs" *ngIf="isGranted" >Bill No</th>
+                  <th class="text-xs" *ngIf="isGranted" >Bill Date</th>
+                  <th class="text-xs" *ngIf="isGranted" >Unload Date</th>
+                  <th class="text-xs">Total Weight</th>
+                  <th class="text-xs">Total Freight</th>
+                  <th class="text-xs">Memo No</th>
+                  <th class="text-xs">PU</th>
+                  <th class="text-xs">ASN No</th>
+                </tr>
+                </thead>
+                <tbody class="text-xs">
+                <tr
+                  *ngFor="let lr of filteredLorryListData | paginate: { itemsPerPage: itemsPerPage, currentPage: page }; let i = index"
+                  class="custom-table-body"
+                  data-toggle="modal" data-target="#lr-update-modal" (click)="editData(lr)">
+                  <td class="text-xs">{{ (page - 1) * itemsPerPage + i + 1 }}</td>
+                  <td class="text-xs">{{lr.vendorCode}}</td>
+                  <td class="text-xs">{{lr.vendorName}}</td>
+                  <td class="text-xs">{{lr.partNo}}</td>
+                  <td class="text-xs">{{lr.partName}}</td>
+                  <td class="text-xs">{{lr.chalanNo}}</td>
+                  <td class="text-xs">{{formatDate((lr.chalanDate).toString())}}</td>
+                  <td class="text-xs">{{lr.quantity}}</td>
+                  <td class="text-xs">{{lr.lcvFtl}}</td>
+                  <td class="text-xs">{{lr.packType}}</td>
+                  <td class="text-xs">{{lr.lrNo}}</td>
+                  <td class="text-xs">{{formatDate((lr.lrDate).toString())}}</td>
+                  <td class="text-xs">{{lr.vehicleNo}}</td>
+                  <td class="text-xs">{{lr.valueOnChalan}}</td>
+                  <td class="text-xs" *ngIf="isGranted">{{lr.billNo}}</td>
+                  <td class="text-xs" *ngIf="isGranted">{{formatDate((lr.billDate).toString())}}</td>
+                  <td class="text-xs" *ngIf="isGranted">{{formatDate((lr.unloadDate).toString())}}</td>
+                  <td class="text-xs">{{lr.totalWight.toFixed(2)}}</td>
+                  <td class="text-xs">{{lr.totalFreight.toFixed(2)}}</td>
+                  <td class="text-xs">{{lr.memoNo}}</td>
+                  <td class="text-xs">{{lr.pu}}</td>
+                  <td class="text-xs">{{lr.asnNo}}</td>
+                </tr>
+                <tr *ngIf="filteredLorryListData.length === 0">
+                  <td colspan="16">
+                    <div class="row">
+                      <div class="col-lg-12 text-center">
+                        <p class="text-md text-danger">No Record Found!</p>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <div class="modal fade" #modalUpdateLr id="lr-update-modal" tabindex="-1" role="dialog"
+                     aria-labelledby="modal-default-label" aria-hidden="false">
+                  <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content">
+                      <div class="modal-header bg-orange pt-2 pb-2">
+                        <p class="modal-title text-md text-white">LR Update Information</p>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="false">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body mt-0 pt-0">
+                        <form [formGroup]="form" (ngSubmit)="formSubmit(modalUpdateLr)" class="m-0 p-0">
+                          <div class="row p-0 m-0">
+                            <div class="col-lg-4 m-0">
+                              <div class="form-group p-0 m-0">
+                                <label>LR No</label>
+                                <input formControlName="lrNo" type="number" readonly class="form-control">
+                              </div>
+                            </div>
+                            <div class="col-lg-4 m-0">
+                              <div class="form-group p-0 m-0">
+                                <label>LR Date</label>
+                                <input formControlName="lrDate" type="date" readonly class="form-control">
+                              </div>
+                            </div>
+                            <div class="col-lg-4 m-0">
+                              <div class="form-group p-0 m-0">
+                                <label>Bill No</label>
+                                <input formControlName="billNo" type="number" class="form-control"
+                                       placeholder="Enter bill no">
+                              </div>
+                            </div>
+                          </div>
+                          <div class="row p-0 m-0">
+                            <div class="col-lg-4 m-0">
+                              <div class="form-group p-0 m-0">
+                                <label>Bill Date</label>
+                                <input formControlName="billDate" type="date" class="form-control">
+                              </div>
+                            </div>
+                            <div class="col-lg-4 m-0">
+                              <div class="form-group p-0 m-0">
+                                <label>Unload Date</label>
+                                <input formControlName="unloadDate" type="date" class="form-control">
+                              </div>
+                            </div>
+<!--                            <div class="col-lg-4 m-0">-->
+<!--                              <div class="form-group p-0 m-0">-->
+<!--                                <label>Bill RNo</label>-->
+<!--                                <input formControlName="billRNo" type="number" class="form-control"-->
+<!--                                       placeholder="Enter bill RNo">-->
+<!--                              </div>-->
+<!--                            </div>-->
+                          </div>
+                          <div class="row mt-2">
+                            <div class="col-lg-6">
+                              <button type="submit" (click)="ngOnInit()" class="btn btn-block bg-orange"><span class="text-white">Save</span>
+                              </button>
+                            </div>
+                            <div class="col-lg-6">
+                              <button type="button" class="btn btn-block bg-orange" data-dismiss="modal"
+                                      aria-label="Close"><span class="text-white">Cancel</span></button>
+                            </div>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                </tbody>
+                <tfoot class="bg-orange-light">
+                <tr>
+                  <td class="text-bold" colspan="7">Total:</td>
+                  <td class="text-bold">{{ totalQuantity }}</td>
+                  <td colspan="9"></td>
+                  <td class="text-bold">{{ totalWeight.toFixed(2) }}</td>
+                </tr>
+                </tfoot>
+              </table>
+              <pagination-controls (pageChange)="page = $event"></pagination-controls>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,1056 @@
+<form [formGroup]="form">
+  <div class="row">
+    <div class="col-lg-12 pt-2">
+      <div class="card" #topViewSection>
+        <div class="card-header bg-orange pb-2 pt-2">
+          <p class="card-title text-sm text-muted text-white mb-0">
+            <i class="fas fa-info-circle mr-2"></i> Lorry Receipt </p>
+        </div>
+
+        <div class="card-body">
+          <div class="form-group col-lg-12">
+            <div class="align-items-center justify-content-center d-flex">
+              <i class="text-orange fas fa-search mr-2"></i>
+              <input (input)="onLrSearch()" formControlName="lrSearchQuery" type="text"
+                     class="form-control text-orange custom-search" placeholder="Search lorry receipt....">
+            </div>
+          </div>
+          <input type="hidden" class="form-control w-50 mx-3 mb-2" formControlName="lrId"
+                 placeholder="Lorry Receipt Id">
+
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="card">
+                <div class="card-header bg-orange pt-2 pb-2">
+                  <p class="card-title">
+                    <span class="text-white"><i class="fas fa-info-circle mr-2"></i>LR Information</span></p>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                      <i class="fas fa-minus text-white"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-lg-7">
+                      <div class="row">
+                        <div class="col-lg-3">
+                          <div class="form-group d-flex align-items-center">
+                            <label class="w-25 pt-2 custom-label text-muted">LR : </label>
+                            <input (input)="isLrExist()" #lrNo type="text" formControlName="lrNo"
+                                   [ngClass]="{'bg-warning' : isLrFound}"
+                                   class="form-control custom-label text-muted w-75"
+                                   [placeholder]="'Next LR: ' + placeholders.latestLorryNo">
+                          </div>
+
+                        </div>
+                        <div class="col-lg-9">
+                          <div class="form-group d-flex align-items-center" formGroupName="branch">
+                            <label class="w-15 pt-2 custom-label text-muted">Branch:</label>
+                            <input (input)="onBranchSearch()" formControlName="branchNo" type="text"
+                                   class="form-control custom-label text-muted w-25" placeholder="Code">
+                            <input type="text" formControlName="branchName" readonly
+                                   class="form-control custom-label text-muted" placeholder="Branch name">
+                          </div>
+                        </div>
+
+                        <div class="col-lg-12">
+                          <div class="form-group d-flex align-items-center" formGroupName="route">
+                            <label class="w-25 pt-2  custom-label text-muted">From - To : </label>
+                            <input (input)="onRouteSearch()" formControlName="routeNo" type="text"
+                                   class="form-control custom-label text-muted w-15" placeholder="Code">
+                            <input type="text" formControlName="routeName" readonly
+                                   class="form-control custom-label text-muted" placeholder="Route name">
+                          </div>
+                        </div>
+
+                        <div class="col-lg-12">
+                          <div class="form-group d-flex align-items-center" formGroupName="consignor">
+                            <label class="w-25 pt-2  custom-label text-muted">Consignor : </label>
+                            <input (input)="onPartySearch2()" formControlName="partyNo" type="text"
+                                   class="form-control custom-label text-muted w-15" placeholder="Code">
+                            <input formControlName="partyName" type="text" readonly
+                                   class="form-control custom-label text-muted" placeholder="Consignor name">
+                          </div>
+                        </div>
+
+                        <div class="col-lg-12">
+                          <div class="form-group d-flex align-items-center" formGroupName="consignee">
+                            <label class="w-25 pt-2  custom-label text-muted">Consignee : </label>
+                            <input (input)="onPartySearch()" formControlName="partyNo" type="text"
+                                   class="form-control custom-label text-muted w-15" placeholder="Code">
+                            <input formControlName="partyName" type="text" readonly
+                                   class="form-control custom-label text-muted" placeholder="Consignor name">
+                          </div>
+                        </div>
+
+                        <div class="col-lg-8">
+                          <div class="card">
+                            <div class="card-header">
+                              <p class="card-title  custom-label text-muted">
+                                <i class="fas fa-check mr-2 "></i>Remark</p>
+                            </div>
+                            <div class="card-body m-0 p-2">
+                              <div class="row" #itemListSection>
+                                <div class="col-lg-12">
+                                  <mat-button-toggle-group formControlName="remark" class="w-100"
+                                                           [hideSingleSelectionIndicator]="false">
+                                    <mat-button-toggle class="w-100" value="to-pay">To Pay</mat-button-toggle>
+                                    <mat-button-toggle class="w-100" value="paid">Paid</mat-button-toggle>
+                                    <mat-button-toggle class="w-100" value="to-billed">To Billed</mat-button-toggle>
+                                  </mat-button-toggle-group>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                          <div class="card">
+                            <div class="card-header">
+                              <p class="card-title  custom-label text-muted">
+                                <i class="fas fa-check mr-2"></i>Who Item List?</p>
+                            </div>
+                            <div class="card-body m-0 p-2">
+                              <div class="row">
+                                <div class="col-lg-12">
+                                  <mat-button-toggle-group formControlName="whoItemList" class="w-100"
+                                                           [hideSingleSelectionIndicator]="false">
+                                    <mat-button-toggle class="w-100" value="Consignor">Consignor</mat-button-toggle>
+                                    <mat-button-toggle class="w-100" value="Consignee">Consignee</mat-button-toggle>
+                                  </mat-button-toggle-group>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+                    <div class="col-lg-5">
+                      <div class="row">
+                        <div class="col-lg-6">
+                          <div class="form-group d-flex align-items-center" formGroupName="memo">
+                            <label class="w-75 pt-2 custom-label text-muted">Memo No.</label>
+                            <input #memoNo (input)="isMemoExisted($event)" formControlName="memoNo" type="text"
+                                   class="form-control custom-label text-muted" [ngClass]="{'bg-warning' : isMemoFound}"
+                                   [placeholder]="'Memo: ' + placeholders.latestMemoNo">
+                          </div>
+                        </div>
+                        <div class="col-lg-6">
+                          <div class="form-group d-flex align-items-center">
+                            <label class="w-75 pt-2 custom-label text-muted">Oct Bill: </label>
+                            <input formControlName="octBill" type="text" class="form-control custom-label text-muted"
+                                   placeholder="Oct Bill">
+                          </div>
+                        </div>
+
+                        <!--                <div class="col-lg-6">-->
+                        <!--                  <div class="form-group d-flex align-items-center">-->
+                        <!--                    <label class="w-75 pt-2 custom-label text-muted">Row No.</label>-->
+                        <!--                    <input type="text" class="form-control custom-label text-muted" placeholder="row no.">-->
+                        <!--                  </div>-->
+                        <!--                </div>-->
+                        <!--                <div class="col-lg-6">-->
+                        <!--                  <div class="form-group d-flex align-items-center">-->
+                        <!--                    <label class="w-75 pt-2 custom-label text-muted">Inv No.</label>-->
+                        <!--                    <input type="text" class="form-control custom-label text-muted" placeholder="invoice no.">-->
+                        <!--                  </div>-->
+                        <!--                </div>-->
+
+                        <div class="col-lg-6">
+                          <div class="form-group d-flex align-items-center" formGroupName="bill">
+                            <label class="w-75 pt-2 custom-label text-muted">Bill No: </label>
+                            <input formControlName="billNo" readonly type="text"
+                                   class="form-control custom-label text-muted" placeholder="Bill No.">
+                          </div>
+                        </div>
+                        <div class="col-lg-6">
+                          <div class="form-group d-flex align-items-center" formGroupName="bill">
+                            <label class="w-75 pt-2 custom-label text-muted">Bill Date: </label>
+                            <input formControlName="billDate" readonly type="date"
+                                   class="form-control custom-label text-muted">
+                          </div>
+                        </div>
+                        <div class="col-lg-6">
+                          <div class="form-group d-flex align-items-center" formGroupName="bill">
+                            <label class="w-75 pt-2 custom-label text-muted">Unload: </label>
+                            <input formControlName="unloadDate" readonly type="date"
+                                   class="form-control custom-label text-muted">
+                          </div>
+                        </div>
+                        <div class="col-lg-6">
+                          <div class="form-group d-flex align-items-center" formGroupName="memo">
+                            <label class="w-75 pt-2 custom-label text-muted">Memo Date: </label>
+                            <input formControlName="memoDate" type="date" class="form-control custom-label text-muted">
+                          </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                          <div class="form-group d-flex align-items-center">
+                            <label class="w-75 pt-2 custom-label text-muted">LR Date: </label>
+                            <input formControlName="lrDate" type="date" class="form-control custom-label text-muted"
+                                   placeholder="LR Date">
+                          </div>
+                        </div>
+                        <div class="col-lg-6">
+                          <div class="form-group d-flex align-items-center">
+                            <label class="w-75 pt-2 custom-label text-muted">Ref. Truck No: </label>
+                            <input (input)="onVehicleSearch()" formControlName="refTruckNo" type="text"
+                                   class="form-control custom-label text-muted" placeholder="Ref Truck">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="card">
+                <div class="card-header bg-orange pt-2 pb-2">
+                  <p class="card-title custom-label text-muted text-white">
+                    <i class="fas fa-info-circle mr-2"></i> Add Item List </p>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                      <i class="fas fa-minus text-white"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="card-body p-2">
+                  <div class="row" formGroupName="lorryReceiptItems">
+                    <div class="col-lg-1">
+                      <input formControlName="chalanNo" type="text" class=" form-control custom-label text-muted"
+                             placeholder="Chalan No.">
+                    </div>
+                    <div class="col-lg-2">
+                      <input formControlName="chalanDate" type="date" class=" form-control custom-label text-muted">
+                    </div>
+                    <div class="col-lg-4">
+                      <ng-container formGroupName="item">
+                        <input (input)="onItemSearch()" formControlName="itemName" type="text" class="form-control"
+                               placeholder="Enter item name">
+                      </ng-container>
+                    </div>
+                    <div class="col-lg-1">
+                      <input type="number" class="form-control" formControlName="quantity" placeholder="Quantity">
+                    </div>
+                    <div class="col-lg-2">
+                      <input type="text" class="form-control" formControlName="lcvFtl" placeholder="Enter vehicle type"
+                             (input)="transformToUppercase($event)">
+                    </div>
+                    <div class="col-lg-2">
+                      <select class="form-control" formControlName="calcOn">
+                        <option selected value="WEIGHT">Weight</option>
+                        <option value="BOX">Box</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="row pt-2" formGroupName="lorryReceiptItems">
+                    <div class="col-lg-2">
+                      <input formControlName="asnNo" type="text" class="form-control" placeholder="Enter ASN No">
+                    </div>
+                    <div class="col-lg-2">
+                      <select formControlName="packType" class="form-control">
+                        <option disabled selected value="select">Select pack type</option>
+                        <option value="Box">Box</option>
+                        <option value="Loose">Loose</option>
+                      </select>
+                    </div>
+                    <div class="col-lg-2">
+                      <input formControlName="valueOnChalan" type="text" class="form-control"
+                             placeholder="Value on chalan">
+                    </div>
+                    <div class="col-lg-2">
+                      <input formControlName="valueRs" type="number" class="form-control" placeholder="Value amount">
+                    </div>
+                    <div class="col-lg-2">
+                      <button type="button" (click)="addItems()" class="btn btn-block bg-orange pt-2 pb-2">
+                        <i class="fas fa-plus text-white fa-lg mr-2"></i>
+                        <span class="text-white text-sm">Add to list</span>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="col-lg-12 pt-2">
+                    <div class="row h-scrollable-table">
+                      <table class="table table-bordered table-striped">
+                        <thead>
+                        <tr class="text-muted custom-label text-muted custom-label text-muted-center">
+                          <th class="table-head-text" width="160">Item Name</th>
+                          <th class="table-head-text" width="20">Quantity</th>
+                          <th class="table-head-text" width="50">Vehicle Type</th>
+                          <th class="table-head-text" width="50">Cal On</th>
+                          <th class="table-head-text" width="50">B. Qty</th>
+                          <th class="table-head-text" width="50">W.P.Q.</th>
+                          <th class="table-head-text" width="50">Tol.Weg.</th>
+                          <th class="table-head-text" width="20">&#64;Box</th>
+                          <th class="table-head-text" width="50">&#64;Weg</th>
+                          <th class="table-head-text" width="20">Amount</th>
+                          <th class="table-head-text" width="50">Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr (click)="searchItemByChalanNo(p)" *ngFor="let p of listItemData; let i = index"
+                            class="text-muted custom-label text-muted custom-label text-muted-center">
+                          <td width="160" class="text-truncate">{{p.item.itemName}}</td>
+                          <td width="20">{{p.quantity}}</td>
+                          <td width="50">{{p.lcvFtl}}</td>
+                          <td width="50">{{p.calcOn}}</td>
+                          <td width="50">{{p.item.qtyInBox}}</td>
+                          <td width="50">{{p.item.weightPerBox}}</td>
+                          <td width="50">{{p.totalWeight.toFixed(2)}}</td>
+                          <td width="20">0.00</td>
+                          <td width="50">{{p.item.rateOnWeight}}</td>
+                          <td width="20">
+                            ₹{{p.amount.toFixed(2)}}
+                          </td>
+                          <td width="50" class="p-0 m-0">
+                            <div class="row">
+                              <div class="col-lg-12 pt-2">
+                                <button type="button" (click)="removeListItem(i)" class="btn">
+                                  <i class="fas fa-times-circle"></i>
+                                </button>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr *ngIf="listItemData.length === 0">
+                          <td colspan="11" class="text-center text-danger">No items were added!!</td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                          <td colspan="9" class="custom-label text-muted text-bold text-muted align-items-end">Total
+                          </td>
+                          <td class="custom-label text-muted text-success text-bold text-center" width="20">
+                            ₹<input (keydown.enter)="recalculateGST($event)"
+                                    class="form-custom-control p-0 m-0 w-75 text-green text-bold"
+                                    [value]="total_amount.toFixed(2)">
+                          </td>
+                        </tr>
+                        </tfoot>
+                      </table>
+                    </div>
+                  </div>
+                  <div class="row pt-2">
+                    <div class="col-lg-3">
+                      <div class="form-group d-flex" formGroupName="lorryReceiptItems">
+                        <label class="custom-label text-muted text-muted pt-2 mr-2">Freight </label>
+                        <input formControlName="totalFreight" type="number" class="form-control" readonly
+                               placeholder="Total freight amount">
+                      </div>
+                    </div>
+                    <div class="col-lg-3" formGroupName="lorryReceiptItems">
+                      <div class="form-group d-flex">
+                        <label class="custom-label text-muted text-muted pt-2 mr-2">CGST </label>
+                        <input formControlName="cgst" type="number" class="form-control" readonly placeholder="CGST">
+                      </div>
+                    </div>
+                    <div class="col-lg-3" formGroupName="lorryReceiptItems">
+                      <div class="form-group d-flex">
+                        <label class="custom-label text-muted text-muted pt-2 mr-2">SGST </label>
+                        <input formControlName="sgst" type="number" class="form-control" readonly placeholder="SGST">
+                      </div>
+                    </div>
+                    <div class="col-lg-3" formGroupName="lorryReceiptItems">
+                      <div class="form-group d-flex">
+                        <label class="custom-label text-muted text-muted pt-2 mr-2">IGST </label>
+                        <input formControlName="igst" type="number" class="form-control" readonly placeholder="IGST">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-6">
+              <div class="card custom-card-height">
+                <div class="card-header bg-orange pb-2 pt-2">
+                  <p class="card-title custom-label text-muted text-white">
+                    <i class="fas fa-info-circle mr-2"></i> Extra Charges</p>
+                </div>
+                <div class="card-body p-2">
+                  <div class="form-group d-flex p-0" formGroupName="extraCharges">
+                    <select class="form-control" formControlName="chargesHeads">
+                      <option disabled selected value="selected">Charges Head</option>
+                      <option value="COLLECTION">COLLECTION</option>
+                      <option value="LOADING">LOADING</option>
+                      <option value="UNLOADING">UNLOADING</option>
+                      <option value="PLYWOOD">PLYWOOD</option>
+                      <option value="DETENTION">DETENTION</option>
+                    </select>
+                    <input formControlName="chargesAmount" type="number" class="form-control w-25" placeholder="Amount">
+                    <button [disabled]="form.get('extraCharges')?.invalid" type="button" (click)="addCharges()"
+                            class="btn btn-small bg-orange mr-2">
+                      <span class="custom-label text-muted text-white">
+                        <i class="fas fa-plus-circle "></i>
+                      </span>
+                    </button>
+                  </div>
+                  <div class="row px-2 pt-0 h-scrollable-table">
+                    <table class="table table-striped table-bordered">
+                      <thead class="sticky-top bg-white">
+                      <tr
+                        class="custom-label text-muted text-muted custom-label text-muted-center justify-content-center">
+                        <th class="table-head-text" width="120">Charges Head</th>
+                        <th class="table-head-text" width="50">Amount</th>
+                        <th class="table-head-text" width="20">Action</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      <tr *ngFor="let c of listChargesData; let i = index;"
+                          class="custom-label text-muted align-items-center justify-content-center">
+                        <td>{{c.chargesHeads}}</td>
+                        <td>{{c.chargesAmount}}</td>
+                        <td width="25">
+                          <div class="row">
+                            <div class="col-lg-12">
+                              <button type="button" (click)="removeListCharges(i)" class="btn m-0 p-0">
+                                <i class="fas fa-times-circle"></i>
+                              </button>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr *ngIf="listChargesData.length === 0">
+                        <td colspan="3" class="text-center text-danger">No charges were added!!</td>
+                      </tr>
+                      </tbody>
+                      <tfoot>
+                      <tr class="custom-label text-muted text-muted text-bold">
+                        <td colspan="1">Total</td>
+                        <td class="custom-label text-muted text-bold text-success align-items-center">
+                          ₹{{total_charges_amount.toFixed(2)}}</td>
+                      </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="card custom-card-height">
+                <div class="card-header bg-orange pb-2 pt-2">
+                  <p class="card-title custom-label text-muted text-white">
+                    <i class="fas fa-info-circle mr-2"></i> Delivery Information</p>
+                </div>
+                <div class="card-body p-2">
+                  <div class="row">
+                    <div class="col-lg-12">
+                      <div class="form-group p-0 m-0 d-flex">
+                        <label class="form-control border-0 custom-label text-muted text-muted w-25">Delivery
+                          At: </label>
+                        <input formControlName="deliveryAt" type="text" class="form-control"
+                               placeholder="Enter delivery at">
+                      </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                      <div class="card">
+                        <div class="card-header">
+                          <p class="card-title custom-label text-muted">Who Pay?</p>
+                        </div>
+                        <div class="card-body m-0 p-2">
+                          <div class="row">
+                            <div class="col-lg-12">
+                              <mat-button-toggle-group formControlName="whoPay" class="w-100"
+                                                       [hideSingleSelectionIndicator]="false">
+                                <mat-button-toggle class="w-100" value="Consignor">Consignor</mat-button-toggle>
+                                <mat-button-toggle class="w-100" value="Consignee">Consignee</mat-button-toggle>
+                              </mat-button-toggle-group>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-6">
+                      <div class="card">
+                        <div class="card-header">
+                          <p class="card-title custom-label text-muted">Octroi Pay?</p>
+                        </div>
+                        <div class="card-body m-0 p-2">
+                          <div class="row">
+                            <div class="col-lg-12">
+                              <mat-button-toggle-group formControlName="octroiPay" class="w-100"
+                                                       [hideSingleSelectionIndicator]="false">
+                                <mat-button-toggle class="w-100" value="Consignor">Consignor</mat-button-toggle>
+                                <mat-button-toggle class="w-100" value="Consignee">Consignee</mat-button-toggle>
+                              </mat-button-toggle-group>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-6">
+              <div class="form-group d-flex">
+                <label class="custom-label text-muted text-muted w-15 align-items-center pt-2">LR Note: </label>
+                <input formControlName="lrNote" class="form-control" placeholder="Enter your lorry receipt note....">
+              </div>
+            </div>
+            <div class="col-lg-3">
+              <div class="form-group d-flex">
+                <label class="custom-label text-muted w-50 text-muted align-items-center pt-2">ST Charges: </label>
+                <input formControlName="stCharges" (ngModelChange)="stChargeCalculation($event)" type="number"
+                       class="form-control w-50" placeholder="Enter charges amount">
+              </div>
+            </div>
+            <div class="col-lg-3">
+              <div class="form-group d-flex">
+                <label class="custom-label text-muted text-muted pt-2 mr-2 w-50">Grand Total: </label>
+                <input formControlName="grandTotal" type="number" class="form-control" readonly
+                       placeholder="Total">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="fab-container">
+
+    <ng-container *ngIf="!isMemoLocked">
+      <button [disabled]="form.invalid || !writeEnabled" type="button" data-toggle="modal" data-target="#save-lr-modal"
+              mat-fab class="fab-button">
+      <span class="custom-label text-muted text-white">
+        <i class="fas fa-save mr-2"></i> Save</span>
+      </button>
+
+      <button [disabled]="form.invalid || !updateEnabled" type="button" data-toggle="modal"
+              data-target="#update-lr-modal" mat-fab class="fab-button">
+      <span class="custom-label text-muted text-white">
+        <i class="fas fa-edit mr-2"></i>Update</span>
+      </button>
+
+      <button [disabled]="form.invalid || !deleteEnabled" type="button" data-toggle="modal"
+              data-target="#delete-lr-modal" mat-fab class="fab-button">
+        <span class="custom-label text-muted text-white"><i class="fas fa-trash mr-2"></i>Delete</span>
+      </button>
+
+    </ng-container>
+
+    <button (click)="setPrint()" [disabled]="form.invalid || !readEnabled" type="button" data-toggle="modal"
+            data-target="#print-lr-modal" mat-fab class="fab-button">
+      <span class="custom-label text-muted text-white"><i class="fas fa-print mr-2"></i>Print</span>
+    </button>
+
+    <button type="button" [disabled]="!readEnabled" routerLink="/dashboard/mis" mat-fab class="fab-button">
+      <span class="custom-label text-muted text-white"><i class="fas fa-file-excel mr-2"></i>MIS</span>
+    </button>
+
+    <button (click)="resetForm()" type="button" mat-fab class="fab-button">
+      <span class="custom-label text-muted text-white">
+        <i class="fas fa-times mr-2"></i> Clear</span>
+    </button>
+  </div>
+
+  <div class="bottom-nav">
+    <ng-container *ngIf="!isMemoLocked">
+      <button [disabled]="form.invalid || !writeEnabled" type="button" data-toggle="modal" data-target="#save-lr-modal"
+              mat-button>
+        <span><i class="fas fa-plus mr-1"></i>Add</span>
+      </button>
+
+      <button type="button" data-toggle="modal" data-target="#update-lr-modal" [disabled]="form.invalid" mat-button>
+        <span><i class="fas fa-edit mr-1"></i>Edit</span>
+      </button>
+
+      <button [disabled]="form.invalid || !deleteEnabled" type="button" data-toggle="modal"
+              data-target="#delete-lr-modal" mat-button>
+        <span><i class="fas fa-trash mr-1"></i>Delete</span>
+      </button>
+
+    </ng-container>
+
+    <button [disabled]="form.invalid || !readEnabled" type="button" data-toggle="modal" data-target="#print-lr-modal"
+            mat-button>
+      <span><i class="fas fa-print mr-1"></i>Print</span>
+    </button>
+
+    <button type="button" [disabled]="!readEnabled" routerLink="/dashboard/mis" mat-button>
+      <span><i class="fas fa-file-excel mr-1"></i>MIS</span>
+    </button>
+
+    <button (click)="resetForm()" type="button" mat-button>
+      <span><i class="fas fa-times mr-1"></i>Clear</span>
+    </button>
+  </div>
+
+</form>
+
+
+<!--ITEM MODAL-->
+<div class="modal custom-modal fade" [ngClass]="{ 'show': isModalOpen }"
+     [style.display]="isModalOpen ? 'block' : 'none'">
+  <div class="modal-dialog custom-modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-orange">
+        <p class="modal-title text-white custom-label text-muted">Item Information</p>
+        <button (click)="closeItemModal()" type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="false">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="h-scrollable-table">
+          <table id="example1" class="table table-bordered table-striped">
+            <thead>
+            <tr class="text-center custom-label text-muted align-items-center justify-content-center">
+              <th hidden>Select</th>
+              <th>Item Code</th>
+              <th>Item Name</th>
+              <th>Item Date</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="hover-row text-center align-items-start custom-label text-muted justify-content-center"
+                *ngFor="let item of filteredItemData; let i = index;" (click)="selectItemRow(item)"
+                [class.selected]="item === selectedItem">
+              <td hidden>
+                <input type="radio" name="selectedItem" [checked]="item === selectedItem"/>
+              </td>
+              <td width="20">{{ item.itemNo }}</td>
+              <td width="200">{{ item.itemName }}</td>
+              <td width="50">{{ item.itemDate }}</td>
+            </tr>
+            <tr *ngIf="filteredItemData.length === 0">
+              <td colspan="3" class="text-center">No results found.</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--BRANCH MODAL-->
+<div class="modal fade" [ngClass]="{ 'show': isBranchModalOpen }"
+     [style.display]="isBranchModalOpen ? 'block' : 'none'">
+  <div class="modal-dialog modal-custom-branch-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header bg-orange">
+        <p class="modal-title text-white custom-label text-muted">Branch Information</p>
+        <button (click)="closeBranchModal()" type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="false">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="h-scrollable-table2">
+          <table class="table table-bordered table-striped">
+            <thead>
+            <tr class="text-center align-items-start custom-label text-muted justify-content-center">
+              <th hidden>Select</th>
+              <th>B. Code</th>
+              <th>Branch Name</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="hover-row text-center align-items-start custom-label text-muted justify-content-center"
+                *ngFor="let branch of filteredBranchData; let i = index;"
+                (click)="selectBranchRow(branch, i)"
+                [class.selected]="branch === selectedBranchItem">
+              <td hidden>
+                <input type="radio" name="selectedItem" [checked]="branch === selectedBranchItem"/>
+              </td>
+              <td width="50">{{ branch.branchNo }}</td>
+              <td width="120">{{ branch.branchName }}</td>
+            </tr>
+            <tr *ngIf="filteredBranchData.length === 0">
+              <td colspan="3" class="text-center  custom-label text-muted">No results found.</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--ROUTE MODAL-->
+<div class="modal fade" [ngClass]="{ 'show': isRouteModalOpen }"
+     [style.display]="isRouteModalOpen ? 'block' : 'none'">
+  <div class="modal-dialog modal-custom-route-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-orange">
+        <p class="modal-title text-white custom-label text-muted">Route Information</p>
+        <button (click)="closeRouteModal()" type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="h-scrollable-table2">
+          <table class="table table-bordered table-hover">
+            <thead>
+            <tr class="text-center align-items-start custom-label text-muted justify-content-center">
+              <th hidden>Select</th>
+              <th>Route No.</th>
+              <th>Route Name</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="hover-row text-center align-items-start custom-label text-muted justify-content-center"
+                *ngFor="let route of filteredRouteData" (click)="selectRouteRow(route)"
+                [class.selected]="route === selectedRouteItem">
+              <td hidden>
+                <input type="radio" name="selectedItem" [checked]="route === selectedRouteItem"/>
+              </td>
+              <td>{{ route.routeNo }}</td>
+              <td>{{ route.routeName }}</td>
+            </tr>
+            <tr *ngIf="filteredRouteData.length === 0">
+              <td colspan="3" class="text-center custom-label text-muted">No results found.</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--PARTY MODAL-->
+<div class="modal fade" [ngClass]="{ 'show': isPartyModalOpen }"
+     [style.display]="isPartyModalOpen ? 'block' : 'none'">
+  <div class="modal-dialog modal-custom-party-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-orange">
+        <p class="modal-title text-white  custom-label text-muted">Party Information</p>
+        <button (click)="closePartyModal()" type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="false">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="h-scrollable-table2">
+          <table class="table table-bordered table-hover">
+            <thead>
+            <tr class="text-center align-items-start custom-label text-muted justify-content-center">
+              <th hidden>Select</th>
+              <th>Party Code.</th>
+              <th>Party Name</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="hover-row text-center align-items-start custom-label text-muted justify-content-center"
+                *ngFor="let party of filteredPartyData" (click)="selectPartyRow(party)"
+                [class.selected]="party === selectedPartyItem">
+              <td hidden>
+                <input type="radio" name="selectedItem" [checked]="party === selectedPartyItem"/>
+              </td>
+              <td>{{ party.partyNo }}</td>
+              <td>{{ party.partyName }}</td>
+            </tr>
+            <tr *ngIf="filteredPartyData.length === 0">
+              <td colspan="3" class="text-center">No results found.</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--PARTY 2 MODAL-->
+<div class="modal fade" [ngClass]="{ 'show': isPartyModalOpen2 }"
+     [style.display]="isPartyModalOpen2 ? 'block' : 'none'">
+  <div class="modal-dialog modal-custom-party2-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-orange">
+        <p class="modal-title text-white  custom-label text-muted">Party Information</p>
+        <button (click)="closePartyModal2()" type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="false">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="h-scrollable-table2">
+          <table class="table table-bordered table-hover">
+            <thead>
+            <tr class="text-center align-items-start custom-label text-muted justify-content-center">
+              <th hidden>Select</th>
+              <th>Party Code.</th>
+              <th>Party Name</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="hover-row text-center align-items-start custom-label text-muted justify-content-center"
+                *ngFor="let party of filteredPartyData2" (click)="selectPartyRow2(party)"
+                [class.selected]="party === selectedPartyItem2">
+              <td hidden>
+                <input type="radio" name="selectedItem" [checked]="party === selectedPartyItem2"/>
+              </td>
+              <td>{{ party.partyNo }}</td>
+              <td>{{ party.partyName }}</td>
+            </tr>
+            <tr *ngIf="filteredPartyData2.length === 0">
+              <td colspan="3" class="text-center">No results found.</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!--LORRY MODAL-->
+<div class="modal fade" [ngClass]="{ 'show': isLrModalOpen }"
+     [style.display]="isLrModalOpen ? 'block' : 'none'">
+  <div class="modal-dialog modal-custom-lorry-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header bg-orange">
+        <p class="modal-title text-white">Lorry Receipt Information</p>
+        <button (click)="closeLrModal()" type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="false">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="h-scrollable-table2">
+          <table id="example4" class="table table-bordered table-striped">
+            <thead>
+            <tr class="text-center align-items-center justify-content-center">
+              <th hidden>Select</th>
+              <th>LR No.</th>
+              <th>Memo No.</th>
+              <th>Consignor</th>
+              <th>Consignee</th>
+              <th>Total Freight</th>
+              <th>Memo Date</th>
+              <th>LR Date</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="hover-row" *ngFor="let lr of filteredLrData; let i = index;" (click)="selectLrRow(lr)"
+                [class.selected]="lr === selectedLrItem">
+              <td hidden>
+                <input type="radio" name="selectedItem" [checked]="lr === selectedLrItem"/>
+              </td>
+              <td>{{ lr.lrNo}}</td>
+              <td>{{ lr.memo.memoNo}}</td>
+              <td>{{ lr.consignee.partyName}}</td>
+              <td>{{ lr.consignor.partyName}}</td>
+              <td>{{ lr.grandTotal}}</td>
+              <td>{{ lr.memo.memoDate}}</td>
+              <td>{{ lr.lrDate}}</td>
+            </tr>
+            <tr *ngIf="filteredLrData.length === 0">
+              <td colspan="3" class="text-center">No results found.</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--VEHICLE MODAL-->
+<div class="modal fade" [ngClass]="{ 'show': isVehicleModalOpen }"
+     [style.display]="isVehicleModalOpen ? 'block' : 'none'">
+  <div class="modal-dialog modal-custom-vehicle-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-orange pt-2 pb-2">
+        <p class="modal-title text-white custom-label text-muted">Vehicle Help</p>
+        <button (click)="closeVehicleModal()" type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="false">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <table id="example8" class="table table-bordered table-striped">
+          <thead class="custom-label text-muted">
+          <tr class="text-center align-items-center justify-content-center">
+            <th hidden>Select</th>
+            <th>Vehicle No.</th>
+            <th>Driver Name</th>
+          </tr>
+          </thead>
+          <tbody class="custom-label text-muted">
+          <tr class="hover-row" *ngFor="let v of filteredVehicleData; let i = index;" (click)="selectVehicleRow(v)"
+              [class.selected]="v === selectedVehicleItem">
+            <td hidden>
+              <input type="radio" name="selectedItem" [checked]="v === selectedVehicleItem"/>
+            </td>
+            <td>{{v.vehicleNumber}}</td>
+            <td>{{v.driverName}}</td>
+          </tr>
+          <tr *ngIf="filteredVehicleData.length === 0">
+            <td colspan="3" class="text-center">No results found.</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!--UPDATE LR DETAILS-->
+<div class="modal fade" id="update-lr-modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-orange">
+        <p class="modal-title text-white">Update Lorry Receipt Record</p>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="text-danger text-center text-md">Do you want to update the lorry receipt record?</p>
+      </div>
+      <div class="modal-footer px-0">
+        <div class="row ml-auto">
+          <button type="button" class="btn btn-secondary mr-3" data-dismiss="modal">Cancel</button>
+          <button type="button" (click)="updateLr()" class="btn bg-orange" data-dismiss="modal">
+            <span class="text-white"><i class="fas fa-trash-alt mr-2"></i>Update</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+
+<!--DELETE LR MODAL-->
+<div class="modal fade" id="delete-lr-modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-orange">
+        <p class="modal-title text-white">Delete Lorry Receipt</p>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="text-danger text-center text-md">Do you want to delete the LR record?</p>
+      </div>
+      <div class="modal-footer px-0">
+        <div class="row ml-auto">
+          <button type="button" class="btn btn-secondary mr-3" data-dismiss="modal">Cancel</button>
+          <button type="button" (click)="deleteLr()" class="btn bg-orange" data-dismiss="modal">
+            <span class="text-white"><i class="fas fa-trash-alt mr-2"></i>Delete</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+
+<!--SAVE LR MODAL-->
+<div class="modal fade" aria-hidden="false" aria-disabled="false" id="save-lr-modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-orange">
+        <p class="modal-title text-white">Save Lorry Receipt Information</p>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="text-danger text-center text-md">Do you want to save the LR record?</p>
+      </div>
+      <div class="modal-footer px-0">
+        <div class="row ml-auto">
+          <button type="button" class="btn btn-secondary mr-3" data-dismiss="modal">Cancel</button>
+          <button type="button" (click)="saveLr()" class="btn bg-orange" data-dismiss="modal">
+            <span class="text-white"><i class="fas fa-trash-alt mr-2"></i>Save</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+
+
+<!--PRINT LR MODAL-->
+<div class="modal fade" id="print-lr-modal">
+  <div class="modal-dialog modal-custom-print-dialog">
+    <form [formGroup]="printForm">
+      <div class="modal-content">
+        <div class="modal-header bg-orange">
+          <p class="modal-title text-white">Print Lorry Receipt</p>
+          <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-lg-6">
+              <div class="form-group d-flex">
+                <label class="text-muted custom-label text-muted w-50 pt-2">LR No: </label>
+                <input formControlName="lrNo" type="number" class="form-control" placeholder="Enter start lr no">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-6">
+              <div class="form-group d-flex">
+                <label class="text-muted custom-label text-muted w-50 pt-2">Start Date: </label>
+                <input formControlName="startDate" type="date" class="form-control" placeholder="Enter start lr no">
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="form-group d-flex">
+                <label class="text-muted custom-label text-muted w-50 pt-2">End Date: </label>
+                <input formControlName="endDate" type="date" class="form-control" placeholder="Enter end lr no">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-12">
+              <label class="pt-2 text-muted custom-label text-muted">Party: </label>
+              <div class="form-group d-flex" formGroupName="party">
+                <input formControlName="partyCode" type="text" class="form-control custom-label text-muted custom-form"
+                       placeholder="Code">
+                <input formControlName="partyName" type="text" readonly class="form-control custom-label text-muted"
+                       placeholder="Consignor name">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer d-flex flex-column align-items-center p-0 m-0">
+          <div class="d-flex flex-wrap justify-content-center">
+            <ng-container *ngFor="let type of printTypes; let i = index;">
+              <div class="custom-control custom-radio my-2 mx-2">
+                <input (ngModelChange)="setParty($event)" formControlName="printType" class="custom-control-input"
+                       type="radio" id="printType{{i}}" [value]="type" name="printType">
+                <label for="printType{{i}}" class="custom-control-label pt-1 text-muted">{{ type }}</label>
+              </div>
+            </ng-container>
+            <div class="custom-control custom-radio my-2 mx-2">
+              <input (ngModelChange)="setParty($event)" formControlName="driverPrint" class="custom-control-input"
+                     type="radio" id="driverPrint" value="driver-copy" name="driverPrint">
+              <label for="driverPrint" class="custom-control-label pt-1 text-muted">Driver Copy</label>
+            </div>
+          </div>
+          <div class="d-flex justify-content-center mt-1 mb-2">
+            <button type="button" (click)="printForm.reset(); isPrintButtonDisabled = true;"
+                    class="btn btn-secondary mr-3" data-dismiss="modal">Cancel
+            </button>
+            <button type="button" [disabled]="isPrintButtonDisabled" (click)="printDocument()" class="btn bg-orange"
+                    data-dismiss="modal">
+              <span class="text-white"><i class="fas fa-print mr-2"></i>Print</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>

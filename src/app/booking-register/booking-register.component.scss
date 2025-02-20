@@ -1,0 +1,82 @@
+* {
+  font-size: 0.8rem;
+}
+
+/* Scrollbar Styles */
+::-webkit-scrollbar {
+  height: 8px; /* Set the height for horizontal scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Light grey background */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888; /* Darker grey scrollbar */
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Even darker grey on hover */
+}
+
+.h-scrollable-table {
+  width: 100%;
+  overflow-x: auto; /* Enables horizontal scrolling */
+  white-space: nowrap;
+}
+
+.h-scrollable-table table {
+  min-width: 1200px; /* Ensures table is wider than the container */
+}
+
+/* search.component.css */
+.custom-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.modal-dialog {
+  position: relative;
+  margin: auto;
+  top: 25%;
+  left: 7%;
+}
+
+.modal-content {
+  background: #fff;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.custom-width{
+  max-width: 20%;
+}
+
+.hover-row:hover {
+  background: #FD7E14;
+  color: white;
+  cursor: pointer;
+}
+
+
+@media (max-width: 768px) {
+  .modal-custom-booking-dialog {
+    position: relative;
+    margin: auto;
+    top: 20%;
+    left: 0;
+  }
+  .modal-custom-branch-dialog {
+    position: relative;
+    margin: auto;
+    top: 20%;
+    left: 0;
+  }
+}
+

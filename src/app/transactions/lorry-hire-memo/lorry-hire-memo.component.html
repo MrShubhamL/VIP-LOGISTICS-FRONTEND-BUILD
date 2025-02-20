@@ -1,0 +1,451 @@
+<div class="row">
+
+  <div class="col-lg-12 mt-2">
+    <form [formGroup]="form" (ngSubmit)="formSubmit()">
+      <input type="hidden" class="form-control" formControlName="lorryHireMemoId">
+      <div class="card mt-2">
+        <div class="card-header pt-2 pb-2 bg-orange">
+          <p class="card-title text-sm text-white"><i class="fas fa-receipt mr-2"></i>Lorry Hire Memo</p>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="form-group align-items-center justify-content-center d-flex">
+                <i class="text-orange fas fa-search mr-2"></i>
+                <input (input)="onMemoSearch()" formControlName="searchMemoQuery" type="text"
+                       class="form-control text-orange custom-search" placeholder="Search hire memo....">
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="row form-group align-items-center">
+                <div class="col-2">
+                  <label class="text-muted custom-label">Branch: </label>
+                </div>
+                <div class="col-10 d-flex" formGroupName="branch">
+                  <input formControlName="branchNo" type="text" readonly class="form-control text-sm custom-form" placeholder="Code">
+                  <input formControlName="branchName" type="text" readonly class="form-control text-sm" placeholder="Branch name">
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="row form-group d-flex align-items-center">
+                <div class="col-2">
+                  <label class="text-muted custom-label">Vehicle No: </label>
+                </div>
+                <div class="col-10" formGroupName="vehicle">
+                  <input formControlName="vehicleNumber" readonly type="text" class="form-control text-sm" placeholder="Vehicle number">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-3">
+              <div class="row form-group d-flex align-items-center">
+                <div class="col-4">
+                  <label class="text-muted pt-2 custom-label">Memo No: </label>
+                </div>
+                <div class="col-8" formGroupName="memo">
+                  <input formControlName="memoNo" (ngModelChange)="getRecordsByMemoNo($event)" type="text" class="form-control text-sm" placeholder="Enter memo no.">
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-3">
+              <div class="row form-group d-flex align-items-center">
+                <div class="col-4">
+                  <label class="text-muted custom-width pt-2 custom-label">Memo Date: </label>
+                </div>
+                <div class="col-8" formGroupName="memo">
+                  <input formControlName="memoDate" readonly type="date" class="form-control text-sm">
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-3">
+              <div class="row form-group d-flex align-items-center">
+                <div class="col-4">
+                  <label class="text-muted pt-2 custom-label">Permit No: </label>
+                </div>
+                <div class="col-8" formGroupName="vehicle">
+                  <input readonly formControlName="permitNo" type="text" class="form-control text-sm" placeholder="Permit no.">
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-3">
+              <div class="row form-group d-flex align-items-center">
+                <div class="col-4">
+                  <label class="text-muted pt-2 custom-label">Licence No: </label>
+                </div>
+                <div class="col-8" formGroupName="vehicle">
+                  <input readonly formControlName="licenceNo" type="text" class="form-control text-sm" placeholder="Licence no.">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-6">
+              <div class="row form-group d-flex align-items-center">
+                <div class="col-2">
+                  <label class="text-muted pt-2 custom-label">Owner: </label>
+                </div>
+                <div class="col-10" formGroupName="vehicle">
+                  <input readonly formControlName="ownerName" type="text" class="form-control text-sm" placeholder="Owner name">
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="row form-group d-flex align-items-center">
+                <div class="col-2">
+                  <label class="text-muted custom-width pt-2 custom-label">Driver: </label>
+                </div>
+                <div class="col-10" formGroupName="vehicle">
+                  <input readonly formControlName="driverName" type="text" class="form-control text-sm" placeholder="Driver name">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="scrollable-table">
+                <table class="table table-striped table-bordered">
+                  <thead class="sticky-top bg-orange">
+                  <tr class="text-white">
+                    <th class="pt-2 pb-2">Lr. No.</th>
+                    <th class="pt-2 pb-2">Consignor</th>
+                    <th class="pt-2 pb-2">Consignee</th>
+                    <th class="pt-2 pb-2">Quantity</th>
+                    <th class="pt-2 pb-2">Part No.</th>
+                    <th class="pt-2 pb-2">Invoice No.</th>
+                    <th class="pt-2 pb-2">ASN No.</th>
+                    <th class="pt-2 pb-2">LR Date</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <ng-container *ngIf="!isDataLoading">
+                    <tr *ngFor="let item of listInvoiceData; let i = index;" class="custom-table-body" data-toggle="modal" data-target="#lr-update-modal" (click)="editData(item)">
+                      <td>000{{item.lrNo}}</td>
+                      <td>{{item.consignor}}</td>
+                      <td>{{item.consignee}}</td>
+                      <td>{{item.quantity}}</td>
+                      <td>{{item.partNo}}</td>
+                      <td>{{item.invoice_no}}</td>
+                      <td>{{item.asn_no}}</td>
+                      <td>{{item.lrDate}}</td>
+                    </tr>
+                  </ng-container>
+                  <tr *ngIf="listInvoiceData.length === 0">
+                    <td colspan="8">
+                      <div class="row">
+                        <div class="col-lg-12">
+                          <div *ngIf="isDataLoading && !isMemoNoEmpty" class="col d-flex justify-content-center align-items-center">
+                            <mat-spinner class="text-orange" diameter="40"></mat-spinner>
+                          </div>
+                          <p class="text-danger text-center text-md">No Data Found!</p>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="row pt-4">
+            <div class="col-lg-3">
+              <div class="form-group p-0 mb-1">
+                <label class="text-muted custom-label">Total Hire</label>
+                <input formControlName="totalHire" type="number" class="form-control" placeholder="total hire">
+              </div>
+            </div>
+            <div class="col-lg-3">
+              <div class="form-group p-0 mb-1">
+                <label class="text-muted custom-label">Advance</label>
+                <input formControlName="advance" type="number" class="form-control" placeholder="total advance">
+              </div>
+            </div>
+            <div class="col-lg-3">
+              <div class="form-group p-0 mb-1">
+                <label class="text-muted custom-label">Extra Collections</label>
+                <input formControlName="extraCollection" type="number" class="form-control" placeholder="extra collection amount">
+              </div>
+            </div>
+            <div class="col-lg-3">
+              <div class="form-group p-0 mb-1">
+                <label class="text-muted custom-label">Commission</label>
+                <input formControlName="commission" type="number" class="form-control" placeholder="total commission">
+              </div>
+            </div>
+            <div class="col-lg-3">
+              <div class="form-group">
+                <label class="text-muted custom-label">Hamali</label>
+                <input formControlName="hamali" type="number" class="form-control" placeholder="total hamali">
+              </div>
+            </div>
+            <div class="col-lg-3">
+              <div class="form-group">
+                <label class="text-muted custom-label">Misc</label>
+                <input formControlName="misc" type="number" class="form-control" placeholder="total misc">
+              </div>
+            </div>
+            <div class="col-lg-3">
+              <div class="form-group">
+                <label class="text-muted custom-label">Total</label>
+                <input formControlName="total" type="number" class="form-control" placeholder="total amount">
+              </div>
+            </div>
+            <div class="col-lg-3">
+              <div class="form-group">
+                <label class="text-muted custom-label">Balance</label>
+                <input formControlName="balance" type="number" class="form-control" placeholder="total balance">
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-lg-6">
+              <div class="card">
+                <div class="card-header bg-orange pt-2 pb-2">
+                  <p class="card-title text-sm text-white"><i class="fas fa-receipt mr-2"></i>Advance Payment Information</p>
+                </div>
+                <div class="card-body pt-0 pb-0">
+                  <div class="row">
+                    <div class="col-lg-2 m-0 pt-3">
+                      <ng-container *ngFor="let p of paymentMode; let i = index;">
+                        <div class="custom-control custom-radio my-2 ">
+                          <input class="custom-control-input" type="radio" id="advPaymentMode{{i}}" [value]="p" formControlName="advancePaymentType" name="advancePaymentType">
+                          <label for="advPaymentMode{{i}}" class="custom-control-label text-muted pt-1">{{ p }}</label>
+                        </div>
+                      </ng-container>
+                    </div>
+                    <div class="col-lg-10 m-0 p-0">
+                      <div class="form-group d-flex pt-2">
+                        <label class="custom-label custom-label-width text-muted pt-2">Account No: </label>
+                        <input formControlName="advanceCashBankAcNo" type="number" class="form-control" placeholder="enter account number">
+                      </div>
+                      <div class="form-group d-flex">
+                        <label class="custom-label custom-label-width text-muted pt-2">Check No: </label>
+                        <input formControlName="advanceCheDdNo" type="text" class="form-control" placeholder="enter check number">
+                        <label class="custom-label custom-label-width text-muted pt-2">Check Date: </label>
+                        <input formControlName="advanceCheDdDate" type="date" class="form-control">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="card">
+                <div class="card-header bg-orange pt-2 pb-2">
+                  <p class="card-title text-sm text-white"><i class="fas fa-receipt mr-2"></i>Final Payment Information</p>
+                </div>
+                <div class="card-body pt-0 pb-0">
+                  <div class="row">
+                    <div class="col-lg-2 m-0 pt-3">
+                      <ng-container *ngFor="let p of paymentMode; let i = index;">
+                        <div class="custom-control custom-radio my-2 ">
+                          <input class="custom-control-input" type="radio" id="finalPaymentMode{{i}}" [value]="p" formControlName="finalPaymentType" name="finalPaymentType">
+                          <label for="finalPaymentMode{{i}}" class="custom-control-label text-muted pt-1">{{ p }}</label>
+                        </div>
+                      </ng-container>
+                    </div>
+                    <div class="col-lg-10 m-0 p-0">
+                      <div class="form-group d-flex pt-2">
+                        <label class="custom-label custom-label-width text-muted pt-2">Account No: </label>
+                        <input formControlName="finalCashBankAcNo" type="number" class="form-control" placeholder="enter account number">
+                      </div>
+                      <div class="form-group d-flex">
+                        <label class="custom-label custom-label-width text-muted pt-2">Check No: </label>
+                        <input formControlName="finalCheNo" type="text" class="form-control" placeholder="enter check number">
+                        <label class="custom-label custom-label-width text-muted pt-2">Check Date: </label>
+                        <input formControlName="finalCheDate" type="date" class="form-control">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="fab-container">
+        <button *ngIf="!isEditModeOn" [disabled]="form.invalid || !writeEnabled" type="submit" mat-fab class="fab-button">
+          <span class="text-xs"><i class="fas fa-save mr-2"></i>Save Memo</span>
+        </button>
+
+        <button type="button" (click)="updateLorryHire()" [disabled]="form.invalid  || !updateEnabled" mat-fab class="fab-button">
+          <span class="text-xs"><i class="fas fa-edit mr-2"></i>Update Memo</span>
+        </button>
+
+        <button [disabled]="form.invalid  || !deleteEnabled" type="button" data-toggle="modal" data-target="#delete-hire-modal"  mat-fab class="fab-button">
+          <span class="text-xs"><i class="fas fa-trash mr-2"></i>Delete Memo</span>
+        </button>
+
+        <button [disabled]="form.invalid  || !readEnabled"  type="button" (click)="printDocument()" mat-fab class="fab-button">
+          <span class="text-xs"><i class="fas fa-print mr-2"></i>Print Memo</span>
+        </button>
+
+        <button (click)="cancel()" type="button" mat-fab class="fab-button">
+          <span class="text-xs"><i class="fas fa-times mr-2"></i>Clear Memo</span>
+        </button>
+      </div>
+
+      <div class="bottom-nav">
+        <button *ngIf="!isEditModeOn" [disabled]="form.invalid || !writeEnabled" type="submit" mat-button>
+          <span>Save</span>
+        </button>
+
+        <button type="button" (click)="updateLorryHire()" [disabled]="form.invalid || !updateEnabled" mat-button>
+          <span>Update</span>
+        </button>
+
+        <button [disabled]="form.invalid || !deleteEnabled" type="button" data-toggle="modal" data-target="#delete-hire-modal" mat-button>
+          <span>Delete</span>
+        </button>
+
+        <button [disabled]="form.invalid || !readEnabled" type="button" (click)="printDocument()" mat-button>
+          <span>Print</span>
+        </button>
+
+        <button (click)="cancel()" type="button" mat-button>
+          <span>Clear</span>
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+
+<div class="modal fade" #modalUpdateLr id="lr-update-modal">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <form [formGroup]="lorryForm" (ngSubmit)="lorryFormSubmit(modalUpdateLr)" class="m-0 p-0">
+        <div class="modal-header bg-orange pt-2 pb-2">
+          <p class="modal-title text-sm text-white">LR Update Information</p>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="false">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body pb-2 pt-2">
+          <div class="row p-0 m-0">
+            <div class="col-lg-3 m-0">
+              <div class="form-group p-0 m-0">
+                <label>LR No</label> <input formControlName="lrNo" type="number" readonly class="form-control">
+              </div>
+            </div>
+            <div class="col-lg-3 m-0">
+              <div class="form-group p-0 m-0">
+                <label>LR Date</label> <input formControlName="lrDate" type="date" class="form-control">
+              </div>
+            </div>
+            <div class="col-lg-3 m-0">
+              <div class="form-group p-0 m-0">
+                <label>Memo No</label> <input formControlName="memoNo" type="text" readonly class="form-control">
+              </div>
+            </div>
+            <div class="col-lg-3 m-0">
+              <div class="form-group p-0 m-0">
+                <label>Memo Date</label> <input formControlName="memoDate" type="date" class="form-control">
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <div class="row">
+            <div class="col-lg-6">
+              <button type="submit" class="btn btn-block bg-orange">
+                <span class="text-white">Save</span>
+              </button>
+            </div>
+            <div class="col-lg-6">
+              <button type="button" class="btn btn-block bg-orange" data-dismiss="modal" aria-label="Close">
+                <span class="text-white">Cancel</span></button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>
+
+<div class="modal fade" [ngClass]="{ 'show': isHireModalOpen }" [style.display]="isHireModalOpen ? 'block' : 'none'">
+  <div class="modal-dialog modal-custom-item-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header bg-orange">
+        <p class="modal-title text-white text-xs">Item Information</p>
+        <button (click)="closeHireModal()" type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="false">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="h-scrollable-table">
+        <table id="example1" class="table table-bordered table-striped">
+          <thead class="text-xs">
+          <tr class="text-center align-items-center justify-content-center">
+            <th hidden>Select</th>
+            <th>Memo No</th>
+            <th>Memo Date</th>
+            <th>Branch Code</th>
+            <th>Branch Name</th>
+            <th>Vehicle No</th>
+            <th>Memo Status</th>
+          </tr>
+          </thead>
+          <tbody class="text-xs">
+          <tr class="hover-row text-center" *ngFor="let item of filteredHireData; let i = index;" (click)="selectHireRow(item)" [class.selected]="item === selectedHireItem">
+            <td hidden>
+              <input type="radio" name="selectedItem" [checked]="item === selectedHireItem"/>
+            </td>
+            <td>{{item.memo.memoNo}}</td>
+            <td>Memo Date</td>
+            <td>Branch Code</td>
+            <td>Branch Name</td>
+            <td>Vehicle No</td>
+            <td>
+              <span *ngIf="item.memo.memoStatus" class="text-danger"><i class="fas fa-lock mr-2"></i>Locked</span>
+              <span *ngIf="!item.memo.memoStatus" class="text-success"><i class="fas fa-lock-open mr-2"></i>Open</span>
+            </td>
+          </tr>
+          <tr *ngIf="filteredHireData.length === 0">
+            <td colspan="3" class="text-center">No results found.</td>
+          </tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal custom-modal fade" id="delete-hire-modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-orange">
+        <p class="modal-title text-white">Delete Lorry Hire Memo Receipt</p>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="text-danger text-center text-md">Do you want to delete Lorry Hire Memo?</p>
+      </div>
+      <div class="modal-footer px-0">
+        <div class="row ml-auto">
+          <button type="button" class="btn btn-secondary mr-3" data-dismiss="modal">Cancel</button>
+          <button type="button" (click)="deleteHireMemo()" class="btn bg-orange" data-dismiss="modal">
+            <span class="text-white"><i class="fas fa-trash-alt mr-2"></i>Delete</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
