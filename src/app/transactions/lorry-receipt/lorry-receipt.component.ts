@@ -1319,147 +1319,120 @@ export class LorryReceiptComponent {
   }
 
   printDocument() {
-    let printWindow = window.open('', '');
-
+    let printWindow = window.open('', '_blank');
 
     if (printWindow) {
       let totalQuantity = this.printData.invoice_list.reduce((sum: number, p: any) => sum + (p.quantity || 0), 0);
-
-      this.printData.invoice_list.map((p: any) => {
-        this.invoice_nos.push(p.invoice_no);
-      });
+      this.printData.invoice_list.forEach((p: any) => this.invoice_nos.push(p.invoice_no));
 
       printWindow.document.write(`
-          <!DOCTYPE html>
-          <html lang="en">
-          <head>
-              <meta charset="UTF-8">
-              <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <title>VIP Logistics (Lorry Receipt)</title>
-              <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-              <style>
-                  @page {
-                      size: A4 portrait;
-                      padding: 10px;
-                  }
-                  * { font-size: 10.8px; }
-                  .invoice-box { border: 1px solid black; padding: 5px; margin: 5px; }
-                  .header { text-align: center; font-weight: bold; }
-                  .logo { width: 120px; }
-                  .sign { width: 90px; }
-                  .table th, .table td { border: 0.5px solid black; text-align: center; padding: 2px; margin: 0;}
-                  .td-height { min-height: 80px !important; max-height: fit-content; !important; height: 80px }
-                  .custom-table th, .custom-table td { border: 1px solid black; text-align: start; padding: 3px; margin: 0;}
-                  .note { font-size: 12.8px; }
-                  p {
-                        margin: 2px 0;
-                        padding: 0;
-                        line-height: 1.5;
-                        font-size: 12.8px;
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>VIP Logistics (Lorry Receipt)</title>
+                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+                <style>
+                    @media print {
+                        th { font-size: 10px; font-weight: 700; }
+                        td { font-size: 10px; font-weight: 500; }
                     }
+                    @page { size: A4 portrait; padding: 10px; }
+                    * { font-size: 10.8px; }
+                    .invoice-box { border: 1px solid black; padding: 5px; margin: 5px; }
+                    .header { text-align: center; font-weight: bold; }
+                    .logo { width: 120px; }
+                    .sign { width: 90px; }
+                    .table th, .table td { border: 0.5px solid black; text-align: center; padding: 2px; margin: 0; font-size: 10.8px}
+                    .td-height { min-height: 80px !important; max-height: fit-content !important; height: 80px; }
+                    .custom-table th, .custom-table td { border: 1px solid black; text-align: start; padding: 3px; margin: 0; }
+                    .note { font-size: 12.8px; }
+                    p { margin: 2px 0; padding: 0; line-height: 1.5; font-size: 10.8px; }
                     .dark-color.thin-line {
-                      width: 100%;
-                      height: 0.5px;
-                      background-color: black; /* Dark color */
-                      margin: 10px 0; /* Adjust spacing above and below the line */
+                        width: 100%;
+                        height: 0.5px;
+                        background-color: black;
+                        margin: 10px 0;
                     }
-              </style>
-          </head>
-          <body>
-              <div class="invoice-box">
-                  <div class="d-flex align-items-center">
-                      <img src="../../../vpi-logo.png" alt="VIP Logistics Logo" class="logo me-3">
-                      <div class="text-center flex-grow-1">
-                          <h2 class="header">VIP LOGISTICS</h2>
-                          <p>PLOT NO 133, AMBEDKAR NAGAR, NAGAON PHATA, TAL. HATAKANGALE, DIST. KOLHAPUR - 416122.<br>
-                             E-mail - viplogistics@yahoo.com</p>
-                      </div>
-                  </div>
-
-                  <div class="row d-flex mb-0 pb-0">
-                      <div class="col-md-4">
-                          <table class="table custom-table">
-                              <thead>
-                                  <th width="60">GST No: </th>
-                                  <td>27AKJPP0760D1Z9</td>
-                              </thead>
-                              <thead>
-                                  <th width="60">PAN No: </th>
-                                  <td>AKJPP0760D</td>
-                              </thead>
-                          </table>
-                      </div>
-                      <div class="col-md-4 text-center">
-                          <table class="table custom-table">
-                              <thead>
-                                  <th width="50">FROM: </th>
-                                  <td>${this.printData.route.routeFrom}</td>
-                              </thead>
-                              <thead>
-                                  <th width="50">TO: </th>
-                                  <td>${this.printData.route.routeTo}</td>
-                              </thead>
-                          </table>
-                      </div>
-                      <div class="col-md-4 text-end">
-                          <table class="table custom-table">
-                                <thead>
-                                    <th width="80">VEHICLE No: </th>
-                                    <td>${this.printData.vehicleNo}</td>
-                                </thead>
-                                <thead>
-                                    <th width="80">L.R. No: </th>
-                                    <td>${this.printData.lrNo}</td>
-                                </thead>
-                                <thead>
-                                    <th width="80">DATE: </th>
-                                    <td>${this.formatDate((this.printData.date).toString())}</td>
-                                </thead>
+                </style>
+            </head>
+            <body>
+                <div class="invoice-box">
+                    <div class="d-flex align-items-center">
+                        <img src="../../../vpi-logo.png" alt="VIP Logistics Logo" class="logo me-3">
+                        <div class="text-center flex-grow-1">
+                            <h2 class="header">VIP LOGISTICS</h2>
+                            <p>PLOT NO 133, AMBEDKAR NAGAR, NAGAON PHATA, TAL. HATAKANGALE, DIST. KOLHAPUR - 416122.<br>
+                            E-mail - viplogistics@yahoo.com</p>
+                        </div>
+                    </div>
+                    <div class="row d-flex mb-0 pb-0">
+                        <div class="col-4">
+                            <table class="table custom-table">
+                                <tr><th width="60">GST No: </th><td>27AKJPP0760D1Z9</td></tr>
+                                <tr><th width="60">PAN No: </th><td>AKJPP0760D</td></tr>
                             </table>
-                      </div>
-                  </div>
-                  <div class="row">
-                      <div class="col-md-6">
-                          <p><strong>CONSIGNOR M/S:</strong> ${(this.printData.consignor.partyName).replace(/\-\(.*?\)/g, '')}</p>
-                          <p class="pt-1 pb-1"><strong>CONSIGNEE M/S:</strong> ${(this.printData.consignee.partyName).replace(/\-\(.*?\)/g, '')}</p>
-                          <p><small>This L/R is made on behalf of ${(this.printData.behalfOf).replace(/\-\(.*?\)/g, '')}</small></p>
-                      </div>
-                  </div>
-
-                  <table class="table table-bordered">
-                      <thead class="text-sm">
-                          <tr>
-                              <th width="80">Invoice No</th>
-                              <th width="300">Particulars of Goods (set to contain)</th>
-                              <th width="80">No of Pkg</th>
-                              <th width="250">Remark</th>
-                          </tr>
-                      </thead>
-                      <tbody>
-                          <tr>
-                            <td class="td-height" width="300">${this.invoice_nos.join(',  ')}</td>
-                            <td class="td-height" width="300"></td>
-                            <td class="td-height" width="80">${totalQuantity} Units</td>
-                            <td class="td-height" width="250"></td>
-                          </tr>
-                      </tbody>
-                  </table>
-
-                  <p class="note">1. Transit insurance necessary on the owner of the goods.</p>
-                  <p class="note">2. If there is any complaint related to the goods then intimate us within 1 day, we will not be responsible for any complaint.</p>
-                  <h5 class="text-center mt-2">${this.printFor}</h5>
-                  <p class="text-end">
-                      <img class="sign" src="../../../images/vip-sign.png" alt="Loading..." >
-                  </p>
-                  <p class="text-end">For VIP LOGISTICS</p>
-                  <p class="text-center">Daily Services: Mumbai/Nashik/Pune/Belgaum/Nagpur</p>
-              </div>
-          </body>
-          </html>
-      `);
+                        </div>
+                        <div class="col-4 text-center">
+                            <table class="table custom-table">
+                                <tr><th width="50">FROM: </th><td>${this.printData.route.routeFrom}</td></tr>
+                                <tr><th width="50">TO: </th><td>${this.printData.route.routeTo}</td></tr>
+                            </table>
+                        </div>
+                        <div class="col-4 text-end">
+                            <table class="table custom-table">
+                                <tr><th width="80">VEHICLE No: </th><td>${this.printData.vehicleNo}</td></tr>
+                                <tr><th width="80">L.R. No: </th><td>${this.printData.lrNo}</td></tr>
+                                <tr><th width="80">DATE: </th><td>${this.formatDate((this.printData.date).toString())}</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <p><strong>CONSIGNOR M/S:</strong> ${(this.printData.consignor.partyName).replace(/\-\(.*?\)/g, '')}</p>
+                            <p class="pt-1 pb-1"><strong>CONSIGNEE M/S:</strong> ${(this.printData.consignee.partyName).replace(/\-\(.*?\)/g, '')}</p>
+                            <p><small>This L/R is made on behalf of ${(this.printData.behalfOf).replace(/\-\(.*?\)/g, '')}</small></p>
+                        </div>
+                    </div>
+                    <table class="table table-bordered">
+                        <thead class="text-sm">
+                            <tr>
+                                <th width="80">Invoice No</th>
+                                <th width="300">Particulars of Goods</th>
+                                <th width="80">No of Pkg</th>
+                                <th width="250">Remark</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="td-height">${this.invoice_nos.join(',  ')}</td>
+                                <td class="td-height"></td>
+                                <td class="td-height">${totalQuantity} Units</td>
+                                <td class="td-height"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="note">1. Transit insurance necessary on the owner of the goods.</p>
+                    <p class="note">2. If there is any complaint related to the goods then intimate us within 1 day, we will not be responsible for any complaint.</p>
+                    <h5 class="text-center mt-2">${this.printFor}</h5>
+                    <p class="text-end">
+                        <img class="sign" src="../../../images/vip-sign.png" alt="Loading..." >
+                    </p>
+                    <p class="text-end">For VIP LOGISTICS</p>
+                    <p class="text-center">Daily Services: Mumbai/Nashik/Pune/Belgaum/Nagpur</p>
+                </div>
+            </body>
+            </html>
+        `);
 
       printWindow.document.close();
-      printWindow.print();
+
+      // ✅ Print after content is loaded
+      setTimeout(() => {
+        printWindow.print();
+        printWindow.close(); // Close print window after printing
+      }, 500);
     }
   }
 

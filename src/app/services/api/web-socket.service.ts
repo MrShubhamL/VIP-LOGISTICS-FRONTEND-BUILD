@@ -12,7 +12,7 @@ export class WebSocketService {
   private isConnected: boolean = false; // Track connection status
 
   constructor() {
-    // this.initializeWebSocketConnection();
+    this.initializeWebSocketConnection();
   }
 
   private initializeWebSocketConnection(): void {

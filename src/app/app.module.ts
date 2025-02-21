@@ -38,6 +38,11 @@ import { FrightBillComponent } from './transactions/fright-bill/fright-bill.comp
 import { UserProfileComponent } from './user-profile/user-profile.component';
 import { OtpVerificationComponent } from './otp-verification/otp-verification.component';
 import { FreightGroupComponent } from './transactions/freight-group/freight-group.component';
+import { FreightBillNagpurComponent } from './transactions/freight-bill-nagpur/freight-bill-nagpur.component';
+import { FreightBillNagpurPickupComponent } from './transactions/freight-bill-nagpur-pickup/freight-bill-nagpur-pickup.component';
+import { FreightBillRajkotComponent } from './transactions/freight-bill-rajkot/freight-bill-rajkot.component';
+import { FreightBillChakanComponent } from './transactions/freight-bill-chakan/freight-bill-chakan.component';
+import { FreightBillRudrapurComponent } from './transactions/freight-bill-rudrapur/freight-bill-rudrapur.component';
 
 
 @NgModule({
@@ -69,7 +74,12 @@ import { FreightGroupComponent } from './transactions/freight-group/freight-grou
     FrightBillComponent,
     UserProfileComponent,
     OtpVerificationComponent,
-    FreightGroupComponent
+    FreightGroupComponent,
+    FreightBillNagpurComponent,
+    FreightBillNagpurPickupComponent,
+    FreightBillRajkotComponent,
+    FreightBillChakanComponent,
+    FreightBillRudrapurComponent
   ],
   imports: [
     CommonModule,

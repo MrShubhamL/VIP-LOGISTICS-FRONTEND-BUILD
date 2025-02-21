@@ -78,7 +78,7 @@ export class LorryHireMemoComponent {
       finalCheNo: new FormControl(''),
       finalCheDate: new FormControl(''),
     });
-    this.lorryForm  = this.formBuilder.group({
+    this.lorryForm = this.formBuilder.group({
       lrNo: new FormControl(''),
       lrDate: new FormControl(''),
       memoNo: new FormControl(''),
@@ -144,7 +144,7 @@ export class LorryHireMemoComponent {
     });
   }
 
-  editData(lr: any){
+  editData(lr: any) {
     this.lorryForm.patchValue({
       lrNo: lr.lrNo,
       lrDate: lr.lrDate,
@@ -154,9 +154,9 @@ export class LorryHireMemoComponent {
   }
 
   formSubmit() {
-    if(!this.form.invalid){
-      this.apiService.addHireMemo(this.form.value).subscribe(res=>{
-        if(res){
+    if (!this.form.invalid) {
+      this.apiService.addHireMemo(this.form.value).subscribe(res => {
+        if (res) {
           this.cancel();
           $.toast({
             heading: 'Hire Memo Created!',
@@ -168,15 +168,15 @@ export class LorryHireMemoComponent {
             loader: false,
           });
         }
-      }, err=>{
+      }, err => {
         console.log(err);
       })
     }
   }
 
-  updateLorryHire(){
-    this.apiService.updateHireMemo(this.form.value).subscribe(res=>{
-      if(res){
+  updateLorryHire() {
+    this.apiService.updateHireMemo(this.form.value).subscribe(res => {
+      if (res) {
         this.cancel();
         $.toast({
           heading: 'Lorry Hire Memo Updated!',
@@ -195,9 +195,9 @@ export class LorryHireMemoComponent {
 
   deleteHireMemo() {
     const hireMemoId = this.form.get('lorryHireMemoId')?.value;
-    if(hireMemoId){
-      this.apiService.deleteHireMemo(hireMemoId).subscribe(res=>{
-        if(res){
+    if (hireMemoId) {
+      this.apiService.deleteHireMemo(hireMemoId).subscribe(res => {
+        if (res) {
           this.cancel();
           $.toast({
             heading: 'Lorry Hire Memo Deleted!',
@@ -221,8 +221,8 @@ export class LorryHireMemoComponent {
     let memoNo = this.lorryForm.get('memoNo')?.value;
     let memoDate = this.lorryForm.get('memoDate')?.value;
 
-    this.apiService.updateLrByLrNoAndMemoNo(lrNo, memoNo, lrDate, memoDate).subscribe(res =>{
-      if(res){
+    this.apiService.updateLrByLrNoAndMemoNo(lrNo, memoNo, lrDate, memoDate).subscribe(res => {
+      if (res) {
         this.cancel();
         $.toast({
           heading: 'Lorry Receipt Details Updated!',
@@ -234,7 +234,7 @@ export class LorryHireMemoComponent {
           loader: false,
         });
       }
-    }, err=>{
+    }, err => {
       console.log(err);
     });
 
@@ -298,7 +298,7 @@ export class LorryHireMemoComponent {
             })
           });
 
-          if(_memoStatus){
+          if (_memoStatus) {
             this.isEditModeOn = true;
             this.form.get('memo.memoNo')?.disable();
           }
@@ -386,7 +386,7 @@ export class LorryHireMemoComponent {
         finalCheNo: this.selectedHireItem.finalCheNo,
         finalCheDate: this.selectedHireItem.finalCheDate,
       });
-      if(this.isEditModeOn){
+      if (this.isEditModeOn) {
         this.form.get('memo.memoNo')?.disable();
       }
       this.closeHireModal();
@@ -428,11 +428,24 @@ export class LorryHireMemoComponent {
                 <title>VIP Logistics (Lorry Hire Memo)</title>
                 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
                 <style>
-                    @page {
-                        size: A4 portrait;
-                        padding: 10px;
+                    @media print {
+                      th,
+                      td {
+                            font-size: 8px;
+                            font-weight: 500;
+                        }
+                      p {
+                        font-size: 8px;
+                        font-weight: 700;
+                      }
+                      .custom-text-size {
+                          font-size: 9px;
+                      }
                     }
-                    * { font-size: 12.8px; }
+                    @page {
+                        size: A4 portrait !important;
+                    }
+                    * { font-size: 10.8px; }
                     .invoice-box {border: 1px solid black; padding: 5px; margin: 5px;}
                     .table th, .table td { border: 1px solid black; text-align: center; padding: 2px; margin: 0;}
                     .custom-table th, .custom-table td { border: 1px solid black; text-align: start; padding: 3px; margin: 0;}
@@ -457,7 +470,7 @@ export class LorryHireMemoComponent {
                         margin: 2px 0;
                         padding: 0;
                         line-height: 1.5;
-                        font-size: 12.8px;
+                        font-size: 10.8px;
                         font-weight: normal;
                     }
                     .dark-color.thin-line {
@@ -465,6 +478,9 @@ export class LorryHireMemoComponent {
                       height: 0.5px;
                       background-color: black; /* Dark color */
                       margin: 10px 0; /* Adjust spacing above and below the line */
+                    }
+                    .custom-text-size {
+                        font-size: 9px;
                     }
                 </style>
             </head>
@@ -481,7 +497,7 @@ export class LorryHireMemoComponent {
                   </div>
 
                     <div class="row d-flex">
-                        <div class="col-md-4">
+                        <div class="col-4">
                             <table class="table custom-table">
                                 <thead>
                                     <th>Memo No: </th>
@@ -497,8 +513,8 @@ export class LorryHireMemoComponent {
                                 </thead>
                             </table>
                         </div>
-                        <div class="col-md-4 text-center"></div>
-                        <div class="col-md-4 text-end">
+                        <div class="col-4 text-center"></div>
+                        <div class="col-4 text-end">
                             <table class="table custom-table">
                                 <thead>
                                     <th>Date: </th>
@@ -533,35 +549,35 @@ export class LorryHireMemoComponent {
                         </tbody>
                         <tfoot>
                             <tr>
-                                <th colspan="2">
+                                <th class="custom-text-size" colspan="2">
                                     <div class="row">
-                                        <div class="col text-start">
+                                        <div class="col text-start custom-text-size">
                                             Total Frt.
                                         </div>
-                                        <div class="col text-end">
+                                        <div class="col text-end custom-text-size">
                                             ₹${this.form.get('totalHire')?.value}
                                         </div>
                                     </div>
                                 </th>
                                 <td rowspan="5" colspan="3">
                                     <div class="row">
-                                        <div class="col-mg-12 text-start">
-                                            <p>Received the above goods in good condition.</p>
+                                        <div class="col-12 text-start">
+                                            <p class="middle-info text-center">Received the above goods in good condition.</p>
                                         </div>
-                                        <div class="col-md-12 text-start">
-                                            <p>I have read the overieaf Terms and Conditions.</p>
+                                        <div class="col-12 text-start">
+                                            <p class="middle-info text-center">I have read the overieaf Terms and Conditions.</p>
                                         </div>
                                     </div>
-                                    <div class="col-md-12 text-start">
-                                        <p>Shall abide the same.</p>
+                                    <div class="col-12 text-start">
+                                        <p class="middle-info text-center">Shall abide the same.</p>
                                     </div>
                                 </td>
-                                <th colspan="2">
+                                <th class="custom-text-size" colspan="2">
                                     <div class="row">
-                                        <div class="col text-start">
+                                        <div class="col text-start custom-text-size">
                                             Ext. Coll.
                                         </div>
-                                        <div class="col text-end">
+                                        <div class="col text-end custom-text-size">
                                             ₹${this.form.get('extraCollection')?.value}
                                         </div>
                                     </div>
@@ -569,22 +585,22 @@ export class LorryHireMemoComponent {
                             </tr>
 
                             <tr>
-                                <th colspan="2">
+                                <th class="custom-text-size" colspan="2">
                                     <div class="row">
-                                        <div class="col text-start">
+                                        <div class="col text-start custom-text-size">
                                             Adv.
                                         </div>
-                                        <div class="col text-end">
+                                        <div class="col text-end custom-text-size">
                                             ₹${this.form.get('advance')?.value}
                                         </div>
                                     </div>
                                 </th>
-                                <th colspan="2">
+                                <th class="custom-text-size" colspan="2">
                                     <div class="row">
-                                        <div class="col text-start">
+                                        <div class="col text-start custom-text-size">
                                             Commission
                                         </div>
-                                        <div class="col text-end">
+                                        <div class="col text-end custom-text-size">
                                             ₹${this.form.get('commission')?.value}
                                         </div>
                                     </div>
@@ -592,22 +608,22 @@ export class LorryHireMemoComponent {
                             </tr>
 
                             <tr>
-                                <th colspan="2">
+                                <th class="custom-text-size" colspan="2">
                                     <div class="row">
-                                        <div class="col text-start">
+                                        <div class="col text-start custom-text-size">
                                             Balance
                                         </div>
-                                        <div class="col text-end">
+                                        <div class="col text-end custom-text-size">
                                             ₹${this.form.get('balance')?.value}
                                         </div>
                                     </div>
                                 </th>
-                                <th colspan="2">
+                                <th class="custom-text-size" colspan="2">
                                     <div class="row">
-                                        <div class="col text-start">
+                                        <div class="col text-start custom-text-size">
                                             Hamali
                                         </div>
-                                        <div class="col text-end">
+                                        <div class="col text-end custom-text-size">
                                             ₹${this.form.get('hamali')?.value}
                                         </div>
                                     </div>
@@ -615,22 +631,22 @@ export class LorryHireMemoComponent {
                             </tr>
 
                             <tr>
-                                <th colspan="2">
+                                <th class="custom-text-size" colspan="2">
                                     <div class="row">
-                                        <div class="col text-start">
+                                        <div class="col text-start custom-text-size">
                                             To Pay
                                         </div>
-                                        <div class="col text-end">
+                                        <div class="col text-end custom-text-size">
 
                                         </div>
                                     </div>
                                 </th>
-                                <th colspan="2">
+                                <th class="custom-text-size" colspan="2">
                                     <div class="row">
-                                        <div class="col text-start">
+                                        <div class="col text-start custom-text-size">
                                             Misc.
                                         </div>
-                                        <div class="col text-end">
+                                        <div class="col text-end custom-text-size">
                                             ₹${this.form.get('misc')?.value}
                                         </div>
                                     </div>
@@ -639,12 +655,12 @@ export class LorryHireMemoComponent {
 
                             <tr>
                                 <th colspan="2"></th>
-                                <th colspan="2">
+                                <th class="custom-text-size" colspan="2">
                                     <div class="row">
-                                        <div class="col text-start">
+                                        <div class="col text-start custom-text-size">
                                             TOTAL
                                         </div>
-                                        <div class="col text-end">
+                                        <div class="col text-end custom-text-size">
                                             ₹${this.form.get('total')?.value}
                                         </div>
                                     </div>
@@ -654,29 +670,29 @@ export class LorryHireMemoComponent {
                         </tfoot>
                     </table>
                     <div class="row pt-3">
-                        <div class="col-md-3">
+                        <div class="col-3">
                             <p>Subject to Kolhapur Jurisdiction</p>
                         </div>
-                        <div class="col-md-6"></div>
-                        <div class="col-md-3">
+                        <div class="col-6"></div>
+                        <div class="col-3">
                             For <strong>VIP LOGISTICS</strong>
                         </div>
                     </div>
 
                     <div class="row pt-4">
-                        <div class="col-md-4"></div>
-                        <div class="col-md-4"></div>
-                        <div class="col-md-4 text-center">
+                        <div class="col-4"></div>
+                        <div class="col-4"></div>
+                        <div class="col-4 text-center">
                             <img class="sign" src="./../../images/vip-sign.png" alt="Loading...">
                         </div>
                     </div>
 
                     <div class="row pt-2">
-                        <div class="col-md-4">
+                        <div class="col-4">
                             <p>Signature of Owner/Driver in charge</p>
                         </div>
-                        <div class="col-md-5"></div>
-                        <div class="col-md-3">
+                        <div class="col-5"></div>
+                        <div class="col-3">
                             <p>Partner/Authorised Signatory</p>
                         </div>
                     </div>
@@ -688,7 +704,11 @@ export class LorryHireMemoComponent {
 
       // printWindow.close();
       printWindow.document.close();
-      printWindow.print();
+      // ✅ Print after content is loaded
+      setTimeout(() => {
+        printWindow.print();
+        printWindow.close(); // Close print window after printing
+      }, 500);
     }
   }
 

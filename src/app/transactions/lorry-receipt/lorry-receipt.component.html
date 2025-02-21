@@ -993,7 +993,7 @@
             <div class="col-lg-6">
               <div class="form-group d-flex">
                 <label class="text-muted custom-label text-muted w-50 pt-2">LR No: </label>
-                <input formControlName="lrNo" type="number" class="form-control" placeholder="Enter start lr no">
+                <input formControlName="lrNo" readonly type="number" class="form-control" placeholder="Enter start lr no">
               </div>
             </div>
           </div>
@@ -1015,7 +1015,7 @@
             <div class="col-lg-12">
               <label class="pt-2 text-muted custom-label text-muted">Party: </label>
               <div class="form-group d-flex" formGroupName="party">
-                <input formControlName="partyCode" type="text" class="form-control custom-label text-muted custom-form"
+                <input readonly formControlName="partyCode" type="text" class="form-control custom-label text-muted custom-form"
                        placeholder="Code">
                 <input formControlName="partyName" type="text" readonly class="form-control custom-label text-muted"
                        placeholder="Consignor name">

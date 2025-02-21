@@ -2,17 +2,15 @@ import {Component, inject} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup} from '@angular/forms';
 import {StorageService} from '../../services/storage/storage.service';
 import {ApiService} from '../../services/api/api.service';
-import {formatDate} from '@angular/common';
-
 declare var $: any;
 
 @Component({
-  selector: 'app-fright-bill',
+  selector: 'app-freight-bill-nagpur',
   standalone: false,
-  templateUrl: './fright-bill.component.html',
-  styleUrl: './fright-bill.component.scss'
+  templateUrl: './freight-bill-nagpur.component.html',
+  styleUrl: './freight-bill-nagpur.component.scss'
 })
-export class FrightBillComponent {
+export class FreightBillNagpurComponent {
   form!: FormGroup;
   billingData: any[] = [];
   lrRowSpanMap: { [key: string]: number } = {};
@@ -685,5 +683,4 @@ export class FrightBillComponent {
       }, 500);
     }
   }
-
 }
