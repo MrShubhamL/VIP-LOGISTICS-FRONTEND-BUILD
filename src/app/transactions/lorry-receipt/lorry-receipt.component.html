@@ -376,11 +376,12 @@
                   <div class="form-group d-flex p-0" formGroupName="extraCharges">
                     <select class="form-control" formControlName="chargesHeads">
                       <option disabled selected value="selected">Charges Head</option>
-                      <option value="COLLECTION">COLLECTION</option>
-                      <option value="LOADING">LOADING</option>
-                      <option value="UNLOADING">UNLOADING</option>
-                      <option value="PLYWOOD">PLYWOOD</option>
-                      <option value="DETENTION">DETENTION</option>
+                      <option value="LR_CHARGES">LR</option>
+                      <option value="COLLECTION_CHARGES">COLLECTION</option>
+                      <option value="LOADING_CHARGES">LOADING</option>
+                      <option value="UNLOADING_CHARGES">UNLOADING</option>
+                      <option value="PLYWOOD_CHARGES">PLYWOOD</option>
+                      <option value="DETENTION_CHARGES">DETENTION</option>
                     </select>
                     <input formControlName="chargesAmount" type="number" class="form-control w-25" placeholder="Amount">
                     <button [disabled]="form.get('extraCharges')?.invalid" type="button" (click)="addCharges()"
@@ -595,14 +596,15 @@
      [style.display]="isModalOpen ? 'block' : 'none'">
   <div class="modal-dialog custom-modal-dialog modal-lg">
     <div class="modal-content">
-      <div class="modal-header bg-orange">
-        <p class="modal-title text-white custom-label text-muted">Item Information</p>
+      <div class="modal-header bg-orange pt-2 pb-2">
+        <p class="modal-title text-white text-sm text-muted">
+          <i class="fas fa-info-circle mr-2"></i>Item Information</p>
         <button (click)="closeItemModal()" type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="false">&times;</span>
+          <span class="text-white text-lg" aria-hidden="false">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <div class="h-scrollable-table">
+        <div class="h-scrollable-table2">
           <table id="example1" class="table table-bordered table-striped">
             <thead>
             <tr class="text-center custom-label text-muted align-items-center justify-content-center">
@@ -613,7 +615,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr class="hover-row text-center align-items-start custom-label text-muted justify-content-center"
+            <tr class="hover-row text-center align-items-start custom-label justify-content-center"
                 *ngFor="let item of filteredItemData; let i = index;" (click)="selectItemRow(item)"
                 [class.selected]="item === selectedItem">
               <td hidden>
@@ -861,9 +863,10 @@
   <div class="modal-dialog modal-custom-vehicle-dialog">
     <div class="modal-content">
       <div class="modal-header bg-orange pt-2 pb-2">
-        <p class="modal-title text-white custom-label text-muted">Vehicle Help</p>
+        <p class="modal-title text-white text-sm text-muted">
+          <i class="fas fa-truck mr-2"></i>Vehicle Help</p>
         <button (click)="closeVehicleModal()" type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="false">&times;</span>
+          <span class="text-white text-lg" aria-hidden="false">&times;</span>
         </button>
       </div>
       <div class="modal-body">

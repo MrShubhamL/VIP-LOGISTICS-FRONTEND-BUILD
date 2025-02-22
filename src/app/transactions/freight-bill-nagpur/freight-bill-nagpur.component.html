@@ -3,7 +3,7 @@
     <div class="col-lg-12 mt-2">
       <div class="card">
         <div class="card-header bg-orange pb-2 pt-2">
-          <p class="card-title  text-white">Freight Bill (Mumbai Location)</p>
+          <p class="card-title  text-white">Freight Bill (Nagpur Location)</p>
           <div class="card-tools">
             <button type="button" class="btn btn-tool" data-card-widget="collapse">
               <i class="fas fa-minus text-white"></i>
@@ -25,6 +25,21 @@
                     <div class="col-8">
                       <input (input)="findFreightByBill()" formControlName="billNo" type="text" class="form-control"
                              placeholder="Enter bill number">
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-3">
+                  <div class="form-group d-flex">
+                    <div class="col-4">
+                      <label class=" pt-2">Select Route: </label>
+                    </div>
+                    <div class="col-8">
+                        <select class="form-control select2">
+                          <option disabled value="selected">Select route</option>
+                          <ng-container *ngFor="let r of routeData">
+                            <option>{{r.routeTo}}</option>
+                          </ng-container>
+                        </select>
                     </div>
                   </div>
                 </div>
@@ -129,22 +144,15 @@
                     <th class="text-xs text-muted">LR No.</th>
                     <th class="text-xs text-muted">LR Date</th>
                     <th class="text-xs text-muted">Unloading Date</th>
-                    <th class="text-xs text-muted">From</th>
-                    <th class="text-xs text-muted">To</th>
-                    <th class="text-xs text-muted">Invoice No</th>
-                    <th class="text-xs text-muted">Vendor Name</th>
-                    <th class="text-xs text-muted">Quantity</th>
                     <th class="text-xs text-muted">Vehicle No</th>
-                    <th class="text-xs text-muted">Rate</th>
+                    <th class="text-xs text-muted">Vendor Name</th>
+                    <th class="text-xs text-muted">Weight</th>
+                    <th class="text-xs text-muted">Rate/Kg</th>
                     <th class="text-xs text-muted">Freight</th>
-                    <th class="text-xs text-muted">Loading Charges</th>
                     <th class="text-xs text-muted">Unloading Charges</th>
                     <th class="text-xs text-muted">Plywood Charges</th>
-                    <th class="text-xs text-muted">Detention Charges</th>
+                    <th class="text-xs text-muted">Collection Charges</th>
                     <th class="text-xs text-muted">ST Charges</th>
-                    <th class="text-xs text-muted">Sub Total</th>
-                    <th class="text-xs text-muted">SGST 6%</th>
-                    <th class="text-xs text-muted">CGST 6%</th>
                     <th class="text-xs text-muted">Total Bill Value</th>
                   </tr>
                   </thead>
@@ -156,36 +164,32 @@
                     </td>
                     <td>{{formatDate(l.lrDate).toString()}}</td>
                     <td>{{formatDate(l.unloadingDate).toString()}}</td>
-                    <td>{{l.from}}</td>
-                    <td>{{l.to}}</td>
-                    <td>{{l.invoiceNo}}</td>
-                    <td>{{l.vendorName}}</td>
-                    <td>{{l.quantity}}</td>
                     <td>{{l.vehicleNo}}</td>
-                    <td>{{l.lcvFtl || '-'}}</td>
+                    <td>{{l.vendorName}}</td>
+                    <td *ngIf="shouldShowLrNo(l.lrNo, i)" [attr.rowSpan]="getLrRowSpan(l.lrNo)"
+                        class="text-center align-middle">
+                      {{getDisplayTotalWeight(l.lrNo) || 0}}
+                    </td>
+                    <td>2.66</td>
                     <td *ngIf="shouldShowLrNo(l.lrNo, i)" [attr.rowSpan]="getLrRowSpan(l.lrNo)"
                         class="text-center align-middle">
                       {{getDisplayTotalFreight(l.lrNo)}}
                     </td>
-                    <td>{{l.loadingCharges || '-'}}</td>
-                    <td>{{l.unloadingCharges || '-'}}</td>
-                    <td>{{l.plyWoodCharges || '-'}}</td>
-                    <td>{{l.detentionCharges || '-'}}</td>
+                    <td *ngIf="shouldShowLrNo(l.lrNo, i)" [attr.rowSpan]="getLrRowSpan(l.lrNo)"
+                        class="text-center align-middle">
+                      {{getDisplayTotalUnloadingCharges(l.lrNo)}}
+                    </td>
+                    <td *ngIf="shouldShowLrNo(l.lrNo, i)" [attr.rowSpan]="getLrRowSpan(l.lrNo)"
+                        class="text-center align-middle">
+                      {{getDisplayTotalPlywoodCharges(l.lrNo)}}
+                    </td>
+                    <td *ngIf="shouldShowLrNo(l.lrNo, i)" [attr.rowSpan]="getLrRowSpan(l.lrNo)"
+                        class="text-center align-middle">
+                      {{getDisplayTotalCollectionCharges(l.lrNo)}}
+                    </td>
                     <td *ngIf="shouldShowLrNo(l.lrNo, i)" [attr.rowSpan]="getLrRowSpan(l.lrNo)"
                         class="text-center align-middle">
                       {{getDisplaySTCharges(l.lrNo) || 0}}
-                    </td>
-                    <td *ngIf="shouldShowLrNo(l.lrNo, i)" [attr.rowSpan]="getLrRowSpan(l.lrNo)"
-                        class="text-center align-middle">
-                      {{getDisplaySubTotal(l.lrNo).toFixed(2)}}
-                    </td>
-                    <td *ngIf="shouldShowLrNo(l.lrNo, i)" [attr.rowSpan]="getLrRowSpan(l.lrNo)"
-                        class="text-center align-middle">
-                      {{getDisplaySGST(l.lrNo).toFixed(2)}}
-                    </td>
-                    <td *ngIf="shouldShowLrNo(l.lrNo, i)" [attr.rowSpan]="getLrRowSpan(l.lrNo)"
-                        class="text-center align-middle">
-                      {{getDisplayCGST(l.lrNo).toFixed(2)}}
                     </td>
                     <td *ngIf="shouldShowLrNo(l.lrNo, i)" [attr.rowSpan]="getLrRowSpan(l.lrNo)"
                         class="text-center align-middle">
@@ -204,8 +208,8 @@
       <div class="row d-flex justify-content-between text-start">
         <div class="col-lg col-sm-6">
           <div class="form-group mr-2">
-            <label class="text-xs">Quantity</label>
-            <input readonly formControlName="quantity" type="number" class="form-control" placeholder="quantity">
+            <label class="text-xs">Weight</label>
+            <input readonly formControlName="weight" type="number" class="form-control" placeholder="weight">
           </div>
         </div>
         <div class="col-lg col-sm-6">
@@ -214,13 +218,7 @@
             <input readonly formControlName="freight" type="number" class="form-control" placeholder="freight amount">
           </div>
         </div>
-        <div class="col-lg col-sm-6">
-          <div class="form-group mr-2">
-            <label class="text-xs">Loading Charges</label>
-            <input readonly formControlName="loadingCharges" type="number" class="form-control"
-                   placeholder="loading charges">
-          </div>
-        </div>
+
         <div class="col-lg col-sm-6">
           <div class="form-group mr-2">
             <label class="text-xs">Unloading Charges</label>
@@ -237,8 +235,8 @@
         </div>
         <div class="col-lg col-sm-6">
           <div class="form-group mr-2">
-            <label class="text-xs">Detention Charges</label>
-            <input readonly formControlName="detentionCharges" type="number" class="form-control"
+            <label class="text-xs">Collection Charges</label>
+            <input readonly formControlName="collectionCharges" type="number" class="form-control"
                    placeholder="Detention charges">
           </div>
         </div>

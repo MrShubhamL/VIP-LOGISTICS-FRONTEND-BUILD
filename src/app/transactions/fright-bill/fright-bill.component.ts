@@ -1,5 +1,5 @@
 import {Component, inject} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup} from '@angular/forms';
+import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {StorageService} from '../../services/storage/storage.service';
 import {ApiService} from '../../services/api/api.service';
 import {formatDate} from '@angular/common';
@@ -31,7 +31,7 @@ export class FrightBillComponent {
 
   constructor() {
     this.form = this.formBuilder.group({
-      billNo: new FormControl(''),
+      billNo: new FormControl('', Validators.required),
       billDate: new FormControl(''),
       partyName: new FormControl(''),
       partyAddress: new FormControl(''),
@@ -100,7 +100,8 @@ export class FrightBillComponent {
   findFreightByBill() {
     let billNo = this.form.get('billNo')?.value;
     if (billNo) {
-      this.apiService.getFreightByBillNo(billNo).subscribe(res => {
+      this.apiService.getMumbaiFreightByBillNo(billNo).subscribe(res => {
+        console.log(res);
         if (res !== 0) {
           this.billingData = res.mumbaiFreightBillDtos;
           this.billingCommonData = res.commonFreightBillDataDto;
@@ -426,7 +427,7 @@ export class FrightBillComponent {
       <head>
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1">
-          <title>Freight Bill (10001)</title>
+          <title>Mumbai Freight Bill (${this.billingCommonData.billNo})</title>
           <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
               integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
           <style>
@@ -463,17 +464,21 @@ export class FrightBillComponent {
               }
 
               th {
-                  min-height: 1px;
                   padding: 0;
+                  margin: 0;
                   vertical-align: middle;
                   font-weight: 700;
+                  min-height: 1px;  /* Ensures a minimum cell height */
+                  line-height: 0.5;  /* Adjust line height for better readability */
               }
 
               td {
-                  min-height: 1px;
                   padding: 0;
+                  margin: 0;
                   vertical-align: middle;
                   font-weight: 500;
+                  min-height: 1px;  /* Ensures a minimum cell height */
+                  line-height: 0.5;  /* Adjust line height for better readability */
               }
 
               .invoice {
@@ -541,16 +546,16 @@ export class FrightBillComponent {
                                                   <th>DETAILS OF CUSTOMER</th>
                                               </tr>
                                               <tr>
-                                                  <th>BILLING PARTY NAME</th>
+                                                  <th>NAME: <span class="text-muted">${(this.billingCommonData.partyName).replace(/\-\(.*?\)/g, '')}</span></th>
                                               </tr>
                                               <tr>
-                                                  <th>BILLING PARTY ADDRESS</th>
+                                                  <th>ADDRESS: <span class="text-muted">${this.billingCommonData.address}</span></th>
                                               </tr>
                                               <tr>
-                                                  <th>STATE (CODE)</th>
+                                                  <th>STATE CODE: <span class="text-muted">${this.billingCommonData.stateCode}</span></th>
                                               </tr>
                                               <tr>
-                                                  <th>GSTIN - 3453453453454354</th>
+                                                  <th>GSTIN: <span class="text-muted">27AAFCM2530H1ZO</span></th>
                                               </tr>
                                           </tbody>
                                       </table>

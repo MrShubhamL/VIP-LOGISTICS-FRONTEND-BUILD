@@ -557,10 +557,27 @@ export class ApiService {
 
   // ------------------- FREIGHT BILL ENDPOINTS -------------------------
 
-  public getFreightByBillNo(billNo: any): Observable<any> {
-    return this.http.get(BaseUrl + "/api/freight/mumbai-freight", {
+  public getMumbaiFreightByBillNo(billNo: any): Observable<any> {
+    return this.http.get(BaseUrl + "/api/mumbai-freight/mumbai-freight", {
       params: {billNo: billNo},
       responseType: 'json'
     });
   }
+
+  public getNagpurFreightByBillNo(billNo: any): Observable<any> {
+    return this.http.get(BaseUrl + "/api/nagpur-freight/nagpur-freight", {
+      params: {billNo: billNo},
+      responseType: 'json'
+    });
+  }
+
+  public getNagpurPickupFreightByBillNo(billNo: any): Observable<any> {
+    return this.http.get(BaseUrl + "/api/nagpur-pickup-freight/nagpur-pickup-freight", {
+      params: {billNo: billNo},
+      responseType: 'json'
+    });
+  }
+
+
+
 }
