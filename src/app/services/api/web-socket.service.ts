@@ -15,35 +15,35 @@ export class WebSocketService {
     // this.initializeWebSocketConnection();
   }
 
-  private initializeWebSocketConnection(): void {
-    const socketUrl = 'https://viplogistics.org/notify-app/ws'; // Ensure this matches the backend
-
-    this.stompClient = new Client({
-      webSocketFactory: () => new SockJS(socketUrl), // Ensure SockJS instance is created properly
-      reconnectDelay: 5000, // Auto-reconnect every 5 seconds
-      debug: (str) => console.log(str),
-    });
-
-    this.stompClient.onConnect = (frame) => {
-      console.log('Connected: ', frame);
-      this.isConnected = true;
-      this.stompClient.subscribe('/topic/notifications', (message: IMessage) => {
-        this.handleMessage(message);
-      });
-    };
-
-    this.stompClient.onStompError = (frame) => {
-      console.error('STOMP Error: ', frame);
-      this.isConnected = false;
-    };
-
-    this.stompClient.onDisconnect = () => {
-      console.warn('STOMP Disconnected. Attempting to reconnect...');
-      this.isConnected = false;
-    };
-
-    this.stompClient.activate();
-  }
+  // private initializeWebSocketConnection(): void {
+  //   const socketUrl = 'https://viplogistics.org/notify-app/ws'; // Ensure this matches the backend
+  //
+  //   this.stompClient = new Client({
+  //     webSocketFactory: () => new SockJS(socketUrl), // Ensure SockJS instance is created properly
+  //     reconnectDelay: 5000, // Auto-reconnect every 5 seconds
+  //     debug: (str) => console.log(str),
+  //   });
+  //
+  //   this.stompClient.onConnect = (frame) => {
+  //     console.log('Connected: ', frame);
+  //     this.isConnected = true;
+  //     this.stompClient.subscribe('/topic/notifications', (message: IMessage) => {
+  //       this.handleMessage(message);
+  //     });
+  //   };
+  //
+  //   this.stompClient.onStompError = (frame) => {
+  //     console.error('STOMP Error: ', frame);
+  //     this.isConnected = false;
+  //   };
+  //
+  //   this.stompClient.onDisconnect = () => {
+  //     console.warn('STOMP Disconnected. Attempting to reconnect...');
+  //     this.isConnected = false;
+  //   };
+  //
+  //   this.stompClient.activate();
+  // }
 
   public getMessages(): Observable<any> {
     return this.messagesSubject.asObservable();
@@ -65,7 +65,7 @@ export class WebSocketService {
       });
     } else {
       console.error('WebSocket is not connected. Retrying...');
-      this.initializeWebSocketConnection(); // Try to reconnect
+      // this.initializeWebSocketConnection(); // Try to reconnect
     }
   }
 

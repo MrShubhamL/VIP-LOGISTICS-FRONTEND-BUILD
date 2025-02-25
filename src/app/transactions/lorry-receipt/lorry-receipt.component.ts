@@ -379,6 +379,7 @@ export class LorryReceiptComponent {
     this.form.get('lorryReceiptItems.valueRs')?.setValue(0.00);
     this.form.get('stCharges')?.setValue(0.00);
     this.listItemData = [];
+    this.invoice_nos = [];
     this.listChargesData = [];
     this.total_amount = 0.0;
     this.total_charges_amount = 0.0;
@@ -480,6 +481,24 @@ export class LorryReceiptComponent {
   recalculateGST(event: any) {
     this.total_amount = Number(event.target.value);
     this.calculateGST();
+    let lorryReceiptItemId = this.form.get('lorryReceiptItems.lorryReceiptItemId')?.value;
+    let cgst = this.form.get('lorryReceiptItems.cgst')?.value;
+    let sgst = this.form.get('lorryReceiptItems.sgst')?.value;
+    let igst = this.form.get('lorryReceiptItems.igst')?.value;
+    let totalFreight = this.form.get('lorryReceiptItems.totalFreight')?.value;
+
+    const index = this.listItemData.findIndex(item => item.lorryReceiptItemId === lorryReceiptItemId);
+
+    if (index !== -1) {
+      this.listItemData[index] = {...this.listItemData[index],
+        lorryReceiptItemId : lorryReceiptItemId,
+        cgst : cgst,
+        sgst : sgst,
+        igst : igst,
+        totalFreight : totalFreight
+      };
+    }
+    console.log(this.listItemData);
   }
 
   stChargeCalculation(event: any) {
@@ -537,40 +556,23 @@ export class LorryReceiptComponent {
 
     let gstAmount = 0;
     let netAmount = 0;
-    let cgstAmount = 0;
-    let sgstAmount = 0;
-
     if (gstType === 'in-state') {
       gstAmount = (Number(totalCalculatedAmount) * (cgst + sgst)) / 100;
-      cgstAmount = Number(gstAmount) / 2;
-      sgstAmount = Number(gstAmount) / 2;
-      netAmount = Number(totalCalculatedAmount) + gstAmount;
+      let tempCGST = (Number(totalCalculatedAmount) * (cgst / 100));
+      let tempSGST = (Number(totalCalculatedAmount) * (sgst / 100));
 
-      // if (this.total_charges_amount == 0) {
-      //   this.form.get('lorryReceiptItems.totalFreight')?.setValue(this.total_amount.toFixed(2));
-      // } else {
-      //   this.form.get('lorryReceiptItems.totalFreight')?.setValue(Number(totalCalculatedAmount).toFixed(2));
-      // }
-      // this.form.get('lorryReceiptItems.cgst')?.setValue(cgstAmount.toFixed(2));
-      // this.form.get('lorryReceiptItems.sgst')?.setValue(sgstAmount.toFixed(2));
-      // this.form.get('lorryReceiptItems.igst')?.setValue(0.00);
+      netAmount = Number(totalCalculatedAmount) + gstAmount;
       this.form.get('grandTotal')?.setValue(netAmount.toFixed(2));
+      this.form.get('lorryReceiptItems.cgst')?.setValue(tempCGST.toFixed(2));
+      this.form.get('lorryReceiptItems.sgst')?.setValue(tempSGST.toFixed(2));
+      this.form.get('lorryReceiptItems.totalFreight')?.setValue(Number(totalCalculatedAmount).toFixed(2));
     } else if (gstType === 'out-state') {
       gstAmount = (Number(totalCalculatedAmount) * igst) / 100;
       netAmount = Number(totalCalculatedAmount) + gstAmount;
-
-      // if (this.total_charges_amount == 0) {
-      //   this.form.get('lorryReceiptItems.totalFreight')?.setValue(this.total_amount.toFixed(2));
-      // } else {
-      //   this.form.get('lorryReceiptItems.totalFreight')?.setValue(Number(totalCalculatedAmount).toFixed(2));
-      // }
-      // this.form.get('lorryReceiptItems.cgst')?.setValue(0.00);
-      // this.form.get('lorryReceiptItems.sgst')?.setValue(0.00);
-      // this.form.get('lorryReceiptItems.igst')?.setValue(gstAmount.toFixed(2));
       this.form.get('grandTotal')?.setValue(netAmount.toFixed(2));
+      this.form.get('lorryReceiptItems.igst')?.setValue(gstAmount.toFixed(2));
+      this.form.get('lorryReceiptItems.totalFreight')?.setValue(Number(totalCalculatedAmount).toFixed(2));
     }
-
-    // this.listItemData.push(items);
   }
 
   removeListItem(index: number) {
@@ -603,6 +605,7 @@ export class LorryReceiptComponent {
 
     this.form.patchValue({
       lorryReceiptItems: {
+        lorryReceiptItemId: item.lorryReceiptItemId,
         chalanNo: item.chalanNo,
         chalanDate: item.chalanDate,
         valueOnChalan: item.valueOnChalan,
@@ -1141,7 +1144,6 @@ export class LorryReceiptComponent {
 
   confirmLrSelection() {
     if (this.selectedLrItem) {
-      console.log(this.selectedLrItem);
       this.listItemData = this.selectedLrItem.lorryReceiptItems;
       this.listChargesData = this.selectedLrItem.extraCharges;
       this.listItemData.map((p: any) => {
@@ -1179,9 +1181,27 @@ export class LorryReceiptComponent {
         // igst: this.selectedLrItem.igst,
         grandTotal: this.selectedLrItem.grandTotal,
       });
+      if (this.selectedLrItem.memo.memoStatus) {
+        console.log(this.selectedLrItem.memo.memoStatus)
+        this.form.disable();
+        this.writeEnabled = false;
+        this.updateEnabled = false;
+        this.deleteEnabled = false;
+        $.toast({
+          heading: 'Memo Record is Locked!!',
+          text: 'This memo is locked now! Please contact to admin!',
+          showHideTransition: 'fade',
+          icon: 'info',
+          position: 'bottom-right',
+          bgColor: '#a91824',
+          loader: false,
+        });
+      }
       this.closeLrModal();
       this.form.get('lrNo')?.disable();
       this.form.get('memo.memoNo')?.disable();
+
+
     } else {
       alert('No item selected!');
     }
@@ -1256,7 +1276,7 @@ export class LorryReceiptComponent {
       })
     }
 
-    if(event == 'driver-copy'){
+    if (event == 'driver-copy') {
       this.printFor = "Driver Copy";
     }
 

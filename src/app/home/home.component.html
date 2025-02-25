@@ -81,8 +81,8 @@
               <li *ngFor="let user of users">
                 <img [src]="user.imageUrl" class="img-custom-circle" alt="User Image">
                 <a class="users-list-name" href="#">{{user.name}}</a>
-                <span class="users-list-date"><i class="fas fa-envelope fa-xs mr-1"></i>{{user.username}}</span>
-                <span class="users-list-date"><i class="fas fa-phone-alt fa-xs mr-1"></i>+91 {{user.contact}}</span>
+                <span class="users-list-name"><i class="fas fa-envelope fa-xs mr-1"></i>{{user.username}}</span>
+                <span class="text-xs text-overflow-x"><i class="fas fa-phone-alt fa-xs mr-1"></i>+91 {{user.contact}}</span>
               </li>
             </ul>
           </div>
@@ -143,16 +143,17 @@
       <mat-spinner diameter="70">
         <p class="text-blue text-md">Please wait..</p>
       </mat-spinner>
-
     </div>
   </div>
 </div>
+
 <!--ALL VEHICLES MODAL-->
 <div class="modal fade" id="all-vehicles-modal" tabindex="-1" aria-disabled="true">
   <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header bg-orange">
-        <p class="modal-title text-white text-sm">VEHICLE RECORDS</p>
+        <p class="modal-title text-white text-sm">
+          <i class="fas fa-info-circle mr-2"></i>VEHICLE RECORDS</p>
         <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -160,30 +161,41 @@
       <div class="modal-body">
         <div class="row">
           <div class="col-lg-12">
-            <table id="example2" class="table table-bordered table-striped">
-              <thead>
-              <tr class="text-center text-sm align-items-center justify-content-center">
-                <th>Sr. No.</th>
-                <th>Vehicle No.</th>
-                <th>Owner</th>
-                <th>Driver</th>
-                <th>Permit</th>
-                <th>Licence</th>
-              </tr>
-              </thead>
-              <tbody>
-              <!-- Use *ngFor to loop through filtered data with pagination -->
-              <tr class="text-center text-sm align-items-center justify-content-center"
-                  *ngFor="let v of vehicles | paginate: { itemsPerPage: itemsPerPage, currentPage: page }; let i = index">
-                <td width="100">{{ (page - 1) * itemsPerPage + i + 1 }}</td>
-                <td>{{ v.vehicleNumber }}</td>
-                <td>{{ v.ownerName }}</td>
-                <td>{{ v.driverName }}</td>
-                <td>{{ v.permitNo }}</td>
-                <td>{{ v.licenceNo }}</td>
-              </tr>
-              </tbody>
-            </table>
+            <div class="h-scrollable-table">
+              <table id="example2" class="table table-bordered table-striped">
+                <thead>
+                <tr class="text-center text-sm align-items-center justify-content-center">
+                  <th>Sr. No.</th>
+                  <th>Vehicle No.</th>
+                  <th>Owner</th>
+                  <th>Driver</th>
+                  <th>Permit</th>
+                  <th>Licence</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- Use *ngFor to loop through filtered data with pagination -->
+                <tr class="text-center text-sm align-items-center justify-content-center"
+                    *ngFor="let v of vehicles | paginate: { itemsPerPage: itemsPerPage, currentPage: page }; let i = index">
+                  <td width="100">{{ (page - 1) * itemsPerPage + i + 1 }}</td>
+                  <td>{{ v.vehicleNumber }}</td>
+                  <td>{{ v.ownerName }}</td>
+                  <td>{{ v.driverName }}</td>
+                  <td>{{ v.permitNo }}</td>
+                  <td>{{ v.licenceNo }}</td>
+                </tr>
+                </tbody>
+              </table>
+              <div *ngIf="isDatadLoading">
+                <div class="row">
+                  <div class="col mt-5 d-flex justify-content-center align-items-center">
+                    <mat-spinner diameter="70">
+                      <p class="text-blue text-md">Please wait..</p>
+                    </mat-spinner>
+                  </div>
+                </div>
+              </div>
+            </div>
             <!-- Pagination controls -->
             <pagination-controls (pageChange)="page = $event"></pagination-controls>
           </div>
@@ -200,7 +212,8 @@
   <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header bg-orange">
-        <p class="modal-title text-white text-sm">PARTY RECORDS</p>
+        <p class="modal-title text-white text-sm">
+          <i class="fas fa-info-circle mr-2"></i>PARTY RECORDS</p>
         <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -208,28 +221,30 @@
       <div class="modal-body">
         <div class="row">
           <div class="col-lg-12">
-            <table id="example44" class="table table-bordered table-striped">
-              <thead>
-              <tr class="text-center text-xs align-items-center justify-content-center">
-                <th>Sr. No.</th>
-                <th>Party Code</th>
-                <th>Party Name</th>
-                <th>Party Address</th>
-                <th>GST No.</th>
-              </tr>
-              </thead>
-              <tbody>
-              <!-- Use *ngFor to loop through filtered data with pagination -->
-              <tr class="text-center text-xs align-items-center justify-content-center"
-                  *ngFor="let party of parties | paginate: { itemsPerPage: itemsPerPage, currentPage: page }; let i = index">
-                <td width="100">{{ (page - 1) * itemsPerPage + i + 1 }}</td>
-                <td>{{ party.partyNo }}</td>
-                <td>{{ party.partyName }}</td>
-                <td>{{ party.address }}</td>
-                <td>{{ party.gstNumber }}</td>
-              </tr>
-              </tbody>
-            </table>
+            <div class="h-scrollable-table">
+              <table id="example44" class="table table-bordered table-striped">
+                <thead>
+                <tr class="text-center text-xs align-items-center justify-content-center">
+                  <th>Sr. No.</th>
+                  <th>Party Code</th>
+                  <th>Party Name</th>
+                  <th>Party Address</th>
+                  <th>GST No.</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- Use *ngFor to loop through filtered data with pagination -->
+                <tr class="text-center text-xs align-items-center justify-content-center"
+                    *ngFor="let party of parties | paginate: { itemsPerPage: itemsPerPage, currentPage: page }; let i = index">
+                  <td width="100">{{ (page - 1) * itemsPerPage + i + 1 }}</td>
+                  <td>{{ party.partyNo }}</td>
+                  <td>{{ party.partyName }}</td>
+                  <td>{{ party.address }}</td>
+                  <td>{{ party.gstNumber }}</td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
             <!-- Pagination controls -->
             <pagination-controls (pageChange)="page = $event"></pagination-controls>
           </div>
@@ -246,13 +261,15 @@
   <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header bg-orange">
-        <p class="modal-title text-white text-xs">Item Information</p>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <p class="modal-title text-white text-sm">
+         <i class="fas fa-info-circle mr-2"></i>ITEM INFORMATION</p>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="false">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <table id="example91" class="table table-bordered table-striped">
+        <div class="h-scrollable-table">
+          <table id="example91" class="table table-bordered table-striped">
           <thead class="text-xs">
           <tr class="text-center align-items-center justify-content-center">
             <th>Sr.No.</th>
@@ -290,33 +307,19 @@
           </tr>
           </tbody>
         </table>
+          <div *ngIf="isDatadLoading">
+            <div class="row">
+              <div class="col mt-5 d-flex justify-content-center align-items-center">
+                <mat-spinner diameter="70">
+                  <p class="text-blue text-md">Please wait..</p>
+                </mat-spinner>
+              </div>
+            </div>
+          </div>
+        </div>
         <pagination-controls (pageChange)="page = $event"></pagination-controls>
       </div>
     </div>
   </div>
 </div>
 
-<!--<div class="col-md-4">-->
-<!--  <div class="card card-md">-->
-<!--    <div class="card-header bg-orange text-sm">-->
-<!--      <h5 class="card-title text-sm text-white">Daily Recap Report</h5>-->
-<!--      <div class="card-tools">-->
-<!--        <button type="button" class="btn btn-tool" data-card-widget="collapse">-->
-<!--          <i class="fas fa-minus text-white"></i>-->
-<!--        </button>-->
-<!--        <button type="button" class="btn btn-tool" data-card-widget="remove">-->
-<!--          <i class="fas fa-times text-white"></i>-->
-<!--        </button>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--    <div class="card-body">-->
-<!--      <div class="row">-->
-<!--        <div class="col-md-12">-->
-<!--          <div class="chart custom-chart">-->
-<!--            <canvas id="canvas">{{pieChart}}</canvas>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--  </div>-->
-<!--</div>-->

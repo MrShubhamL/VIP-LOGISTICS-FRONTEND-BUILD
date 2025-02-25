@@ -111,9 +111,9 @@
                   <td class="text-xs">{{formatDate((lr.lrDate).toString())}}</td>
                   <td class="text-xs">{{lr.vehicleNo}}</td>
                   <td class="text-xs">{{lr.valueOnChalan}}</td>
-                  <td class="text-xs" *ngIf="isGranted">{{lr.billNo}}</td>
-                  <td class="text-xs" *ngIf="isGranted">{{formatDate((lr.billDate).toString())}}</td>
-                  <td class="text-xs" *ngIf="isGranted">{{formatDate((lr.unloadDate).toString())}}</td>
+                  <td class="text-xs" *ngIf="isGranted">{{lr.billNo || '-'}}</td>
+                  <td class="text-xs" *ngIf="isGranted">{{formatDate((lr.billDate || '').toString()) || '-'}}</td>
+                  <td class="text-xs" *ngIf="isGranted">{{formatDate((lr.unloadDate || '').toString()) || '-'}}</td>
                   <td class="text-xs">{{lr.totalWight.toFixed(2)}}</td>
                   <td class="text-xs">{{lr.totalFreight.toFixed(2)}}</td>
                   <td class="text-xs">{{lr.memoNo}}</td>

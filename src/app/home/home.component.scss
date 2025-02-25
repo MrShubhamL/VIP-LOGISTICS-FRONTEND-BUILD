@@ -3,8 +3,22 @@
   color: #6a4007;
 }
 
-.card-md{
+/* search.component.css */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1050;
+  overflow: hidden;
+}
 
+.modal-dialog {
+  position: relative;
+  margin: auto;
+  top: 5%;
 }
 
 .custom-chart{
@@ -32,3 +46,53 @@
 .scrollable-card card {
   min-width: 300px; /* Ensures table is wider than the container */
 }
+
+
+/* Scrollbar Styles */
+::-webkit-scrollbar {
+  height: 8px; /* Set the height for horizontal scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Light grey background */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888; /* Darker grey scrollbar */
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Even darker grey on hover */
+}
+
+/* Scrollable Table */
+.h-scrollable-table {
+  width: 100%;
+  height: 520px;
+  overflow-x: auto; /* Enables horizontal scrolling */
+  overflow-y: auto; /* Enables horizontal scrolling */
+  white-space: nowrap;
+}
+
+.h-scrollable-table table {
+  min-width: 300px; /* Ensures table is wider than the container */
+}
+
+
+@media (max-width: 768px) {
+  .modal-dialog {
+    position: relative;
+    margin: auto;
+    top: 0;
+  }
+
+  .text-overflow-x {
+    width: 70px; /* Adjust based on layout */
+    overflow-x: hidden;
+    white-space: nowrap;
+    display: block; /* Makes it scrollable */
+  }
+}
+
+

@@ -3,7 +3,7 @@
     <div class="col-lg-12 mt-2">
       <div class="card">
         <div class="card-header bg-orange pb-2 pt-2">
-          <p class="card-title  text-white">Freight Bill (Nagpur Pickup Location)</p>
+          <p class="card-title  text-white">Freight Bill (Nagpur Location)</p>
           <div class="card-tools">
             <button type="button" class="btn btn-tool" data-card-widget="collapse">
               <i class="fas fa-minus text-white"></i>
@@ -23,7 +23,8 @@
                       <label class=" pt-2">Bill No: </label>
                     </div>
                     <div class="col-8">
-                      <input (input)="findFreightByBill()" formControlName="billNo" type="text" class="form-control"
+                      <input (ngModelChange)="changeEvent($event)" formControlName="billNo" type="text"
+                             class="form-control"
                              placeholder="Enter bill number">
                     </div>
                   </div>
@@ -33,11 +34,12 @@
                     <div class="col-4">
                       <label class=" pt-2">Select Route: </label>
                     </div>
-                    <div class="col-8">
-                      <select class="form-control select2">
+                    <div class="col-8" formGroupName="route">
+                      <select (ngModelChange)="findFreightByBill($event)" formControlName="routeName"
+                              class="form-control select2">
                         <option disabled value="selected">Select route</option>
                         <ng-container *ngFor="let r of routeData">
-                          <option>{{r.routeTo}}</option>
+                          <option [hidden]="r.routeTo === 'WAI'" [value]="r.routeName">{{r.routeName}}</option>
                         </ng-container>
                       </select>
                     </div>
@@ -146,14 +148,14 @@
                     <th class="text-xs text-muted">Unloading Date</th>
                     <th class="text-xs text-muted">Vehicle No</th>
                     <th class="text-xs text-muted">Vendor Name</th>
-                    <th class="text-xs text-muted">Weight</th>
+                    <th class="text-xs text-muted">Weight/ Vehicle</th>
                     <th class="text-xs text-muted">Rate/Kg</th>
                     <th class="text-xs text-muted">Freight</th>
-                    <th class="text-xs text-muted">Unloading Charges</th>
+                    <th class="text-xs text-muted">Loading Charges</th>
                     <th class="text-xs text-muted">Plywood Charges</th>
                     <th class="text-xs text-muted">Collection Charges</th>
                     <th class="text-xs text-muted">ST Charges</th>
-                    <th class="text-xs text-muted">Total Bill Value</th>
+                    <th class="text-xs text-muted">Bill Amount</th>
                   </tr>
                   </thead>
                   <tbody>
@@ -168,7 +170,8 @@
                     <td>{{l.vendorName}}</td>
                     <td *ngIf="shouldShowLrNo(l.lrNo, i)" [attr.rowSpan]="getLrRowSpan(l.lrNo)"
                         class="text-center align-middle">
-                      {{getDisplayTotalWeight(l.lrNo) || 0}}
+                      <span *ngIf="!l.vehicleType">{{getDisplayTotalWeight(l.lrNo)}}</span>
+                      <span *ngIf="l.vehicleType">{{l.vehicleType}}</span>
                     </td>
                     <td>2.66</td>
                     <td *ngIf="shouldShowLrNo(l.lrNo, i)" [attr.rowSpan]="getLrRowSpan(l.lrNo)"
@@ -177,7 +180,7 @@
                     </td>
                     <td *ngIf="shouldShowLrNo(l.lrNo, i)" [attr.rowSpan]="getLrRowSpan(l.lrNo)"
                         class="text-center align-middle">
-                      {{getDisplayTotalUnloadingCharges(l.lrNo)}}
+                      {{getDisplayTotalLoadingCharges(l.lrNo)}}
                     </td>
                     <td *ngIf="shouldShowLrNo(l.lrNo, i)" [attr.rowSpan]="getLrRowSpan(l.lrNo)"
                         class="text-center align-middle">
@@ -221,8 +224,8 @@
 
         <div class="col-lg col-sm-6">
           <div class="form-group mr-2">
-            <label class="text-xs">Unloading Charges</label>
-            <input readonly formControlName="unloadCharges" type="number" class="form-control"
+            <label class="text-xs">Loading Charges</label>
+            <input readonly formControlName="loadingCharges" type="number" class="form-control"
                    placeholder="unload charges">
           </div>
         </div>

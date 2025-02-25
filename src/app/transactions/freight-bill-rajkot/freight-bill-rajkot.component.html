@@ -1,1 +1,357 @@
-<p>freight-bill-rajkot works!</p>
+<form [formGroup]="form">
+  <div class="row">
+    <div class="col-lg-12 mt-2">
+      <div class="card">
+        <div class="card-header bg-orange pb-2 pt-2">
+          <p class="card-title  text-white">Freight Bill (Mumbai Location)</p>
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+              <i class="fas fa-minus text-white"></i>
+            </button>
+            <button type="button" class="btn btn-tool" data-card-widget="remove">
+              <i class="fas fa-times text-white"></i>
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="row">
+                <div class="col-lg-3">
+                  <div class="form-group d-flex">
+                    <div class="col-4">
+                      <label class=" pt-2">Bill No: </label>
+                    </div>
+                    <div class="col-8">
+                      <input (input)="changeEvent($event)" formControlName="billNo" type="text" class="form-control"
+                             placeholder="Enter bill number">
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-3">
+                  <div class="form-group d-flex">
+                    <div class="col-4">
+                      <label class=" pt-2">Select Route: </label>
+                    </div>
+                    <div class="col-8" formGroupName="route">
+                      <select (ngModelChange)="findFreightByBill($event)" class="form-control select2"
+                              formControlName="routeName">
+                        <option disabled value="selected">Select route</option>
+                        <ng-container *ngFor="let r of routeData">
+                          <option [value]="r.routeName">{{r.routeName}}</option>
+                        </ng-container>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-3">
+                  <div class="form-group d-flex">
+                    <div class="col-4">
+                      <label class=" pt-2">Billing Date: </label>
+                    </div>
+                    <div class="col-8">
+                      <input readonly formControlName="billDate" type="date" class="form-control"
+                             placeholder="Enter bill number">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group d-flex">
+                    <div class="col-2">
+                      <label class="pt-2">Party Name: </label>
+                    </div>
+                    <div class="col-10">
+                      <input readonly formControlName="partyName" type="text" class="form-control"
+                             placeholder="Party name">
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group d-flex">
+                    <div class="col-6">
+                      <input readonly formControlName="partyAddress" type="text" class="form-control"
+                             placeholder="Address">
+                    </div>
+                    <div class="col-4">
+                      <input readonly formControlName="partyDist" type="text" class="form-control" placeholder="Dist">
+                    </div>
+                    <div class="col-2">
+                      <input readonly formControlName="partyStateCode" type="text" class="form-control"
+                             placeholder="State">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group d-flex">
+                    <div class="col-2">
+                      <label class=" pt-2">GST No: </label>
+                    </div>
+                    <div class="col-10">
+                      <input readonly formControlName="GSTNo" type="text" class="form-control" placeholder="GST number">
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-2">
+                  <div class="form-group d-flex">
+                    <div class="col-3">
+                      <label class=" pt-2">SAC: </label>
+                    </div>
+                    <div class="col-9">
+                      <input readonly formControlName="sacNo" type="text" class="form-control" placeholder="SAC number">
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-2">
+                  <div class="form-group d-flex">
+                    <div class="col-4">
+                      <label class="custom-label-width pt-2">ML Code: </label>
+                    </div>
+                    <div class="col-8">
+                      <input readonly formControlName="mlCode" type="text" class="form-control" placeholder="ML code">
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-2">
+                  <div class="form-group d-flex">
+                    <div class="col-3">
+                      <label class="custom-label-width pt-2">V Code: </label>
+                    </div>
+                    <div class="col-9">
+                      <input readonly formControlName="vCode" type="text" class="form-control" placeholder="ML code">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="h-scrollable-table">
+                <table class="table table-bordered">
+                  <thead>
+                  <tr class="text-xs">
+                    <th class="text-xs text-muted">LR No.</th>
+                    <th class="text-xs text-muted">LR Date</th>
+                    <th class="text-xs text-muted">Unloading Date</th>
+                    <th class="text-xs text-muted">From</th>
+                    <th class="text-xs text-muted">To</th>
+                    <th class="text-xs text-muted">Invoice No</th>
+                    <th class="text-xs text-muted">Vendor Name</th>
+                    <th class="text-xs text-muted">Quantity</th>
+                    <th class="text-xs text-muted">Vehicle No</th>
+                    <th class="text-xs text-muted">Rate</th>
+                    <th class="text-xs text-muted">Freight</th>
+                    <th class="text-xs text-muted">Loading Charges</th>
+                    <th class="text-xs text-muted">Unloading Charges</th>
+                    <th class="text-xs text-muted">Plywood Charges</th>
+                    <th class="text-xs text-muted">Detention Charges</th>
+                    <th class="text-xs text-muted">ST Charges</th>
+                    <th class="text-xs text-muted">Sub Total</th>
+                    <th class="text-xs text-muted">IGST 12%</th>
+                    <th class="text-xs text-muted">Total Bill Value</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr *ngFor="let l of billingData; let i = index;">
+                    <td *ngIf="shouldShowLrNo(l.lrNo, i)" [attr.rowSpan]="getLrRowSpan(l.lrNo)"
+                        class="text-center align-middle text-bold">
+                      {{l.lrNo}}
+                    </td>
+                    <td>{{formatDate(l.lrDate).toString()}}</td>
+                    <td>{{formatDate(l.unloadingDate).toString()}}</td>
+                    <td>{{l.from}}</td>
+                    <td>{{l.to}}</td>
+                    <td>{{l.invoiceNo}}</td>
+                    <td>{{l.vendorName}}</td>
+                    <td>{{l.quantity}}</td>
+                    <td>{{l.vehicleNo}}</td>
+                    <td>{{l.rate || '-'}}</td>
+                    <td *ngIf="shouldShowLrNo(l.lrNo, i)" [attr.rowSpan]="getLrRowSpan(l.lrNo)"
+                        class="text-center align-middle">
+                      {{getDisplayTotalFreight(l.lrNo).toFixed(2)}}
+                    </td>
+                    <td *ngIf="shouldShowLrNo(l.lrNo, i)" [attr.rowSpan]="getLrRowSpan(l.lrNo)"
+                        class="text-center align-middle">
+                    {{getDisplayLoadingCharges(l.lrNo) || '-'}}
+                    </td>
+                    <td *ngIf="shouldShowLrNo(l.lrNo, i)" [attr.rowSpan]="getLrRowSpan(l.lrNo)"
+                        class="text-center align-middle">
+                      {{getDisplayUnloadingCharges(l.lrNo) || '-'}}
+                    </td>
+                    <td *ngIf="shouldShowLrNo(l.lrNo, i)" [attr.rowSpan]="getLrRowSpan(l.lrNo)"
+                        class="text-center align-middle">
+                      {{getDisplayPlywoodCharges(l.lrNo) || '-'}}
+                    </td>
+                    <td *ngIf="shouldShowLrNo(l.lrNo, i)" [attr.rowSpan]="getLrRowSpan(l.lrNo)"
+                        class="text-center align-middle">
+                      {{getDisplayDetentionCharges(l.lrNo) || '-'}}
+                    </td>
+                    <td *ngIf="shouldShowLrNo(l.lrNo, i)" [attr.rowSpan]="getLrRowSpan(l.lrNo)"
+                        class="text-center align-middle">
+                      {{getDisplaySTCharges(l.lrNo) || 0}}
+                    </td>
+                    <td *ngIf="shouldShowLrNo(l.lrNo, i)" [attr.rowSpan]="getLrRowSpan(l.lrNo)"
+                        class="text-center align-middle">
+                      {{getDisplaySubTotal(l.lrNo).toFixed(2)}}
+                    </td>
+                    <td *ngIf="shouldShowLrNo(l.lrNo, i)" [attr.rowSpan]="getLrRowSpan(l.lrNo)"
+                        class="text-center align-middle">
+                      {{getDisplayIGST(l.lrNo).toFixed(2)}}
+                    </td>
+                    <td *ngIf="shouldShowLrNo(l.lrNo, i)" [attr.rowSpan]="getLrRowSpan(l.lrNo)"
+                        class="text-center align-middle">
+                      {{getTotalBillValue(l.lrNo).toFixed(2)}}
+                    </td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-12">
+      <div class="row d-flex justify-content-between text-start">
+        <div class="col-lg col-sm-6">
+          <div class="form-group mr-2">
+            <label class="text-xs">Quantity</label>
+            <input readonly formControlName="quantity" type="number" class="form-control" placeholder="quantity">
+          </div>
+        </div>
+        <div class="col-lg col-sm-6">
+          <div class="form-group mr-2">
+            <label class="text-xs">Freight</label>
+            <input readonly formControlName="freight" type="number" class="form-control" placeholder="freight amount">
+          </div>
+        </div>
+        <div class="col-lg col-sm-6">
+          <div class="form-group mr-2">
+            <label class="text-xs">Loading Charges</label>
+            <input readonly formControlName="loadingCharges" type="number" class="form-control"
+                   placeholder="loading charges">
+          </div>
+        </div>
+        <div class="col-lg col-sm-6">
+          <div class="form-group mr-2">
+            <label class="text-xs">Unloading Charges</label>
+            <input readonly formControlName="unloadCharges" type="number" class="form-control"
+                   placeholder="unload charges">
+          </div>
+        </div>
+        <div class="col-lg col-sm-6">
+          <div class="form-group mr-2">
+            <label class="text-xs">Plywood Charges</label>
+            <input readonly formControlName="plywoodCharges" type="number" class="form-control"
+                   placeholder="plywood charges">
+          </div>
+        </div>
+        <div class="col-lg col-sm-6">
+          <div class="form-group mr-2">
+            <label class="text-xs">Detention Charges</label>
+            <input readonly formControlName="detentionCharges" type="number" class="form-control"
+                   placeholder="Detention charges">
+          </div>
+        </div>
+        <div class="col-lg col-sm-6">
+          <div class="form-group mr-2">
+            <label class="text-xs">ST Charges</label>
+            <input readonly formControlName="stCharges" type="number" class="form-control"
+                   placeholder="ST charges">
+          </div>
+        </div>
+        <div class="col-lg col-sm-6">
+          <div class="form-group mr-2">
+            <label class="text-xs">Sub Total</label>
+            <input readonly formControlName="subTotal" type="number" class="form-control" placeholder="bill amount">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-12">
+      <div class="row">
+        <div class="col-lg-8"></div>
+        <div class="col-lg-4">
+          <div class="col-lg col-sm-6">
+            <div class="form-group mr-2">
+              <label class="text-xs">IGST 12%</label>
+              <input readonly formControlName="igst" type="number" class="form-control" placeholder="Enter weight">
+            </div>
+          </div>
+          <div class="col-lg col-sm-6">
+            <div class="form-group mr-2">
+              <label class="text-xs">Grand Total</label>
+              <input readonly formControlName="grandTotal" type="number" class="form-control"
+                     placeholder="Enter weight">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="fab-container">
+    <button [disabled]="form.invalid || !writeEnabled" type="button" (click)="saveMumbaiFreight()" mat-fab
+            class="fab-button">
+      <span class="text-xs"><i class="fas fa-save mr-2"></i>Save Freight</span>
+    </button>
+
+    <button type="button" [disabled]="form.invalid  || !updateEnabled" mat-fab
+            class="fab-button">
+      <span class="text-xs"><i class="fas fa-edit mr-2"></i>Update Freight</span>
+    </button>
+
+    <button [disabled]="form.invalid  || !deleteEnabled" type="button" data-toggle="modal"
+            data-target="#delete-hire-modal" mat-fab class="fab-button">
+      <span class="text-xs"><i class="fas fa-trash mr-2"></i>Delete Freight</span>
+    </button>
+
+    <button [disabled]="form.invalid  || !readEnabled" type="button" (click)="printFreight()" mat-fab
+            class="fab-button">
+      <span class="text-xs"><i class="fas fa-print mr-2"></i>Print Freight</span>
+    </button>
+
+
+    <button type="button" (click)="clearField()" mat-fab class="fab-button">
+      <span class="text-xs"><i class="fas fa-times mr-2"></i>Clear</span>
+    </button>
+  </div>
+
+  <div class="bottom-nav">
+    <button [disabled]="form.invalid || !writeEnabled" type="button" (click)="saveMumbaiFreight()" mat-button>
+      <span>Save</span>
+    </button>
+
+    <button type="button" [disabled]="form.invalid || !updateEnabled" mat-button>
+      <span>Update</span>
+    </button>
+
+    <button [disabled]="form.invalid || !deleteEnabled" type="button" data-toggle="modal"
+            data-target="#delete-hire-modal"
+            mat-button>
+      <span>Delete</span>
+    </button>
+
+    <button [disabled]="form.invalid || !readEnabled" type="button" mat-button>
+      <span>Print</span>
+    </button>
+
+    <button type="button" (click)="clearField()" mat-button>
+      <span>Clear</span>
+    </button>
+  </div>
+
+</form>

@@ -15,10 +15,18 @@ declare var $: any;
 export class FreightBillNagpurPickupComponent {
   form!: FormGroup;
   billingData: any[] = [];
+
   lrRowSpanMap: { [key: string]: number } = {};
   routeData: any[] = [];
   billingCommonData: any;
   filteredOptions!: Observable<string[]>;
+
+  billingCharges: any[] = [];
+  totalUnloadingCharges: number = 0;
+  totalLoadingCharges: number = 0;
+  totalPlywoodCharges: number = 0;
+  totalCollectionCharges: number = 0;
+  totalStCharges: number = 0;
 
   private formBuilder = inject(FormBuilder);
   private storageService = inject(StorageService);
@@ -50,7 +58,7 @@ export class FreightBillNagpurPickupComponent {
       }),
       weight: new FormControl(''),
       freight: new FormControl(''),
-      unloadCharges: new FormControl(''),
+      loadingCharges: new FormControl(''),
       plywoodCharges: new FormControl(''),
       collectionCharges: new FormControl(''),
       stCharges: new FormControl(''),
@@ -69,6 +77,8 @@ export class FreightBillNagpurPickupComponent {
     }, error => {
       console.log(error)
     });
+
+    this.form.get('route.routeName')?.disable();
 
     this.storageService.getCurrentUser().subscribe(res => {
       this.currentLoggedUser = res;
@@ -110,19 +120,34 @@ export class FreightBillNagpurPickupComponent {
     });
   }
 
-  findFreightByBill() {
+  changeEvent(event: any) {
+    if (event) {
+      this.form.get('route.routeName')?.enable();
+    }
+  }
+
+  findFreightByBill(event: any) {
     let billNo = this.form.get('billNo')?.value;
     if (billNo) {
-      this.apiService.getNagpurPickupFreightByBillNo(billNo).subscribe(res => {
+      this.apiService.getNagpurPickupFreightByBillNo(billNo, event).subscribe(res => {
         console.log(res);
         if (res !== 0) {
-          this.billingData = res.nagpurFreightBillDtos;
+          this.billingData = res.nagpurPickupFreightBillDtos;
           this.billingCommonData = res.commonFreightBillDataDto;
-          console.log(this.billingCommonData)
+          this.billingCharges = res.nagpurPickupExtraCharges;
+
+          this.billingCharges.map((b: any) => {
+            this.totalLoadingCharges += b.loadingCharges;
+            this.totalPlywoodCharges += b.plyWoodCharges;
+            this.totalCollectionCharges += b.collectionCharges;
+            this.totalStCharges += b.stCharges;
+          });
+
+
           this.calculateLrRowSpan();
           let weight = this.getTotalWeight();
           let freight = this.getTotalFreight();
-          let unloadCharges = this.getUnloadingCharges();
+          let loadingCharges = this.getLoadingCharges();
           let plywoodCharges = this.getPlyWoodCharges();
           let collectionCharges = this.getCollectionCharges();
           let stCharges = this.getStCharges();
@@ -142,7 +167,7 @@ export class FreightBillNagpurPickupComponent {
 
             weight: weight.toFixed(2),
             freight: freight.toFixed(2),
-            unloadCharges: unloadCharges.toFixed(2),
+            loadingCharges: loadingCharges.toFixed(2),
             plywoodCharges: plywoodCharges.toFixed(2),
             collectionCharges: collectionCharges.toFixed(2),
             stCharges: stCharges.toFixed(2),
@@ -152,6 +177,7 @@ export class FreightBillNagpurPickupComponent {
             grandTotal: (subTotal + cgst + sgst).toFixed(2)
           });
           this.form.get('billNo')?.disable();
+          this.form.get('route.routeName')?.disable();
         }
       }, err => {
         console.log(err)
@@ -201,59 +227,43 @@ export class FreightBillNagpurPickupComponent {
   }
 
 
-  getUnloadingCharges() {
-    let unLoadingCharges = 0;
-    this.billingData.map((d: any) => {
-      unLoadingCharges += d.unloadingCharges
-    });
-    return unLoadingCharges;
+  getLoadingCharges() {
+    return this.totalLoadingCharges;
   }
 
-  getDisplayTotalUnloadingCharges(lrNo: string): number {
-    return this.billingData
+  getDisplayTotalLoadingCharges(lrNo: string): number {
+    return this.billingCharges
       .filter((item) => item.lrNo === lrNo) // Filter records with the same lrNo
-      .reduce((sum, item) => sum + (item.unloadingCharges || 0), 0); // Sum only totalFreight values
+      .reduce((sum, item) => sum + (item.loadingCharges || 0), 0); // Sum only totalFreight values
   }
 
 
   getPlyWoodCharges() {
-    let plyWoodCharges = 0;
-    this.billingData.map((d: any) => {
-      plyWoodCharges += d.plyWoodCharges
-    });
-    return plyWoodCharges;
+    return this.totalPlywoodCharges;
   }
 
   getDisplayTotalPlywoodCharges(lrNo: string): number {
-    return this.billingData
+    return this.billingCharges
       .filter((item) => item.lrNo === lrNo) // Filter records with the same lrNo
       .reduce((sum, item) => sum + (item.plyWoodCharges || 0), 0); // Sum only totalFreight values
   }
 
   getCollectionCharges() {
-    let collectionCharges = 0;
-    this.billingData.map((d: any) => {
-      collectionCharges += d.collectionCharges
-    });
-    return collectionCharges;
+    return this.totalCollectionCharges;
   }
 
   getDisplayTotalCollectionCharges(lrNo: string): number {
-    return this.billingData
+    return this.billingCharges
       .filter((item) => item.lrNo === lrNo) // Filter records with the same lrNo
       .reduce((sum, item) => sum + (item.collectionCharges || 0), 0); // Sum only totalFreight values
   }
 
   getStCharges() {
-    let stCharges = 0;
-    this.billingData.map((d: any) => {
-      stCharges += d.stCharges
-    });
-    return stCharges;
+    return this.totalStCharges;
   }
 
   getDisplaySTCharges(lrNo: string): number {
-    return this.billingData
+    return this.billingCharges
       .filter((item) => item.lrNo === lrNo) // Filter records with the same lrNo
       .reduce((sum, item) => sum + (item.stCharges || 0), 0); // Sum only totalFreight values
   }
@@ -268,19 +278,19 @@ export class FreightBillNagpurPickupComponent {
 
   getTotalBillValue(lrNo: string): number {
     let totalFreight = this.getDisplayTotalFreight(lrNo) || 0;
-    let unloadingCharges = this.getDisplayTotalUnloadingCharges(lrNo) || 0;
+    let loadingCharges = this.getDisplayTotalLoadingCharges(lrNo) || 0;
     let plywoodCharges = this.getDisplayTotalPlywoodCharges(lrNo) || 0;
     let stCharges = this.getDisplaySTCharges(lrNo) || 0;
-    return (totalFreight + +unloadingCharges + plywoodCharges + stCharges);
+    return (totalFreight + loadingCharges + plywoodCharges + stCharges);
   }
 
   getSubTotal() {
     let subTotal = 0;
     let totalFreight = this.getTotalFreight();
-    let totalUnload = this.getUnloadingCharges();
+    let totalLoading = this.getLoadingCharges();
     let totalPlywood = this.getPlyWoodCharges();
     let totalStCharges = this.getStCharges();
-    return (totalFreight + totalUnload + totalPlywood + totalStCharges);
+    return (totalFreight + totalLoading + totalPlywood + totalStCharges);
   }
 
   getSGST() {
@@ -306,6 +316,7 @@ export class FreightBillNagpurPickupComponent {
     this.form.get('mlCode')?.setValue('ML485');
     this.form.get('vCode')?.setValue('30008227');
     this.form.get('billNo')?.enable();
+    this.form.get('route.routeName')?.disable();
   }
 
   // Calculate ROW Span for LR
@@ -377,36 +388,39 @@ export class FreightBillNagpurPickupComponent {
             <td>${this.formatDate(l.unloadingDate)}</td>
             <td>${l.vehicleNo}</td>
             <td>${l.vendorName}</td>
-            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayTotalWeight(l.lrNo)}</td>` : ""}
+            ${(shouldShowLrNo) && l.vehicleType === '' ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayTotalWeight(l.lrNo)}</td>` : ""}
+            ${(shouldShowLrNo) && l.vehicleType !== '' ? `<td rowspan="${rowSpan}" class="text-center align-middle">${l.vehicleType}</td>` : ""}
             <td>2.66</td>
             ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayTotalFreight(l.lrNo)}</td>` : ""}
-            ${(shouldShowLrNo) && l.unloadingCharges && l.unloadingCharges !== 0 ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayTotalUnloadingCharges(l.lrNo)}</td>` : ""}
-            ${(shouldShowLrNo) && l.plyWoodCharges && l.plyWoodCharges !== 0 ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayTotalPlywoodCharges(l.lrNo)}</td>` : ""}
-            ${(shouldShowLrNo) && l.collectionCharges && l.collectionCharges !== 0 ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayTotalCollectionCharges(l.lrNo)}</td>` : ""}
-
+            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayTotalLoadingCharges(l.lrNo)}</td>` : ""}
+            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayTotalPlywoodCharges(l.lrNo)}</td>` : ""}
+            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayTotalCollectionCharges(l.lrNo)}</td>` : ""}
             ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplaySTCharges(l.lrNo) || 0}</td>` : ""}
             ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getTotalBillValue(l.lrNo).toFixed(2)}</td>` : ""}
         </tr>
         `;
       }).join('');
 
-      let showUnloadingCharges = this.billingData.some(l => l.unloadingCharges && l.unloadingCharges !== 0);
-      let showPlyWoodCharges = this.billingData.some(l => l.plyWoodCharges && l.plyWoodCharges !== 0);
-      let showCollectionCharges = this.billingData.some(l => l.collectionCharges && l.collectionCharges !== 0);
+      let showLoadingCharges = this.billingCharges.some(l => l.loadingCharges && l.loadingCharges !== 0);
+      let showPlyWoodCharges = this.billingCharges.some(l => l.plyWoodCharges && l.plyWoodCharges !== 0);
+      let showCollectionCharges = this.billingCharges.some(l => l.collectionCharges && l.collectionCharges !== 0);
+
+      let showWeight = this.billingData.some(l => !l.vehicleType);
+      let showVehicleType = this.billingData.some(l => l.vehicleType);
 
       let invoiceTableHeader = `
               <tr class="text-center">
                   <th>LR No.</th>
-                  <th>Loory Date</th>
+                  <th>Lorry Date</th>
                   <th>Unloading Date</th>
                   <th>Vehicle No</th>
                   <th>Vendor Name</th>
-                  <th>Weight</th>
+                  <th>Weight/Vehicle</th>
                   <th>Rate/Kg</th>
                   <th>Freight</th>
-                  ${showUnloadingCharges ? '<th>Unloading Charges</th>' : ''}
-                  ${showPlyWoodCharges ? '<th>Plywood Charges</th>' : ''}
-                  ${showCollectionCharges ? '<th>Collection Charges</th>' : ''}
+                  <th>Loading Charges</th>
+                  <th>Plywood Charges</th>
+                  <th>Collection Charges</th>
                   <th>ST Charges</th>
                   <th>Total Bill</th>
               </tr>
@@ -415,36 +429,31 @@ export class FreightBillNagpurPickupComponent {
       let invoiceFooterTable = `
           <tr class="text-center">
               <th colspan="5" style="border: none !important;"></th>
-              <th style="border: 1px solid black !important;">₹${this.getTotalWeight().toFixed(2)}</th>
+              ${showWeight ? `<th style="border: 1px solid black !important;">₹${this.getTotalWeight().toFixed(2)}</th>`: ''}
+              ${showVehicleType ? `<th style="border: 1px solid black !important;">0.00</th>`: ''}
               <th style="border: none !important;"></th>
               <th style="border: 1px solid black !important;">₹${this.getTotalFreight().toFixed(2)}</th>
-              ${showUnloadingCharges ? `<th style="border: 1px solid black !important;">₹${this.getUnloadingCharges().toFixed(2)}</th>` : ''}
-              ${showPlyWoodCharges ? `<th style="border: 1px solid black !important;">₹${this.getPlyWoodCharges().toFixed(2)}</th>` : ''}
-              ${showCollectionCharges ? `<th style="border: 1px solid black !important;">₹${this.getCollectionCharges().toFixed(2)}</th>` : ''}
+              <th style="border: 1px solid black !important;">₹${this.getLoadingCharges().toFixed(2)}</th>
+              <th style="border: 1px solid black !important;">₹${this.getPlyWoodCharges().toFixed(2)}</th>
+              <th style="border: 1px solid black !important;">₹${this.getCollectionCharges().toFixed(2)}</th>
               <th style="border: 1px solid black !important;">₹${this.getStCharges().toFixed(2)}</th>
               <th style="border: 1px solid black !important;">₹${this.getSubTotal()}</th>
           </tr>
       `;
 
-
-      // Calculate the total number of columns based on conditions
-      let totalColumns = 10 + (showUnloadingCharges ? 1 : 0) + (showPlyWoodCharges ? 1 : 0) + (showCollectionCharges ? 1 : 0);
-      let colspanValue = totalColumns - 2; // Spanning all but the last two columns
-
-      // Footer row with dynamic colspan
       let invoiceFooterTable2 = `
           <tr class="text-center">
-              <th colspan="${colspanValue}" style="border: none !important;"></th>
+              <th colspan="11" style="border: none !important;"></th>
               <th style="border: 1px solid black !important;">CGST %6 </th>
               <th style="border: 1px solid black !important;">${this.getCGST().toFixed(2)}</th>
           </tr>
           <tr class="text-center">
-              <th colspan="${colspanValue}" style="border: none !important;"></th>
+              <th colspan="11" style="border: none !important;"></th>
               <th style="border: 1px solid black !important;">SGST %6 </th>
               <th style="border: 1px solid black !important;">${this.getSGST().toFixed(2)}</th>
           </tr>
           <tr class="text-center">
-              <th colspan="${colspanValue}" style="border: none !important;"></th>
+              <th colspan="11" style="border: none !important;"></th>
               <th style="border: 1px solid black !important;">Grand Totals</th>
               <th style="border: 1px solid black !important;">${this.getGrandTotal()}</th>
           </tr>
@@ -619,7 +628,7 @@ export class FreightBillNagpurPickupComponent {
                                           <tbody class="d-block-center">
                                               <tr>
                                                   <th>SAC:</th>
-                                                  <td>345345345</td>
+                                                  <td>996511</td>
                                               </tr>
                                               <tr>
                                                   <th>ML CODE:</th>

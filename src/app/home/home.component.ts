@@ -29,8 +29,9 @@ export class HomeComponent implements OnInit {
   lrCount: any;
 
   page: number = 1;
-  itemsPerPage: number = 5;
+  itemsPerPage: number = 12;
   isDashboardLoading = true;
+  isDatadLoading = true;
 
   readEnabled: boolean = false;
   writeEnabled: boolean = false;
@@ -251,9 +252,12 @@ export class HomeComponent implements OnInit {
   }
 
   getAllVehicles() {
+    this.isDatadLoading = true;
     this.apiService.getAllVehicles().subscribe(res => {
+      this.isDatadLoading = false;
       this.vehicles = res;
     }, err => {
+      this.isDashboardLoading = false;
       $.toast({
         heading: 'Session Timeout!!',
         text: 'Please Re-Login to the system.',
@@ -287,7 +291,9 @@ export class HomeComponent implements OnInit {
   }
 
   getAllItems() {
+    this.isDatadLoading = true;
     this.apiService.getAllItems().subscribe(res => {
+      this.isDatadLoading = false;
       this.items = res;
     }, err => {
       console.log(err);

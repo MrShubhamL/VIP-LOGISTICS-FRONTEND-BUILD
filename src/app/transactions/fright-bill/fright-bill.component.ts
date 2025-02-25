@@ -3,6 +3,7 @@ import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {StorageService} from '../../services/storage/storage.service';
 import {ApiService} from '../../services/api/api.service';
 import {formatDate} from '@angular/common';
+import {error} from '@angular/compiler-cli/src/transformers/util';
 
 declare var $: any;
 
@@ -16,8 +17,16 @@ export class FrightBillComponent {
   form!: FormGroup;
   billingData: any[] = [];
   lrRowSpanMap: { [key: string]: number } = {};
-
+  routeData: any[] = [];
   billingCommonData: any;
+
+  billingCharges: any[] = [];
+  totalUnloadingCharges: number = 0;
+  totalLoadingCharges: number = 0;
+  totalPlywoodCharges: number = 0;
+  totalCollectionCharges: number = 0;
+  totalDetentionCharges: number = 0;
+  totalStCharges: number = 0;
 
   private formBuilder = inject(FormBuilder);
   private storageService = inject(StorageService);
@@ -41,7 +50,12 @@ export class FrightBillComponent {
       sacNo: new FormControl('996511'),
       mlCode: new FormControl('ML485'),
       vCode: new FormControl('30008227'),
-
+      route: this.formBuilder.group({
+        routeNo: new FormControl(''),
+        routeName: new FormControl(''),
+        routeFrom: new FormControl(''),
+        routeTo: new FormControl(''),
+      }),
       quantity: new FormControl(''),
       freight: new FormControl(''),
       loadingCharges: new FormControl(''),
@@ -57,6 +71,14 @@ export class FrightBillComponent {
   }
 
   ngOnInit() {
+    this.apiService.getAllRoutes().subscribe(res => {
+      if (res) {
+        this.routeData = res;
+      }
+    }, error => {
+      console.log(error)
+    });
+    this.form.get('route.routeName')?.disable();
     this.storageService.getCurrentUser().subscribe(res => {
       this.currentLoggedUser = res;
       this.currentLoggedUser.roleDto.permissions.map((p: any) => {
@@ -97,14 +119,35 @@ export class FrightBillComponent {
     });
   }
 
-  findFreightByBill() {
+  changeEvent(event: any) {
+    if (event && event !== '') {
+      this.form.get('route.routeName')?.enable();
+    } else {
+      this.form.get('route.routeName')?.disable();
+    }
+  }
+
+  findFreightByBill(event: any) {
     let billNo = this.form.get('billNo')?.value;
     if (billNo) {
-      this.apiService.getMumbaiFreightByBillNo(billNo).subscribe(res => {
-        console.log(res);
+      this.apiService.getMumbaiFreightByBillNo(billNo, event).subscribe(res => {
         if (res !== 0) {
+
           this.billingData = res.mumbaiFreightBillDtos;
           this.billingCommonData = res.commonFreightBillDataDto;
+
+          console.log(this.billingData);
+
+          this.billingCharges = res.mumbaiExtraCharges;
+
+          this.billingCharges.map((b: any) => {
+            this.totalLoadingCharges += b.loadingCharges;
+            this.totalUnloadingCharges += b.unloadingCharges;
+            this.totalPlywoodCharges += b.plyWoodCharges;
+            this.totalDetentionCharges += b.detentionCharges;
+            this.totalStCharges += b.stCharges;
+          });
+
           this.calculateLrRowSpan();
           let qty = this.getTotalQuantity();
           let freight = this.getTotalFreight();
@@ -140,6 +183,7 @@ export class FrightBillComponent {
             grandTotal: (subTotal + cgst + sgst).toFixed(2)
           });
           this.form.get('billNo')?.disable();
+          this.form.get('route.routeName')?.disable();
         }
       }, err => {
         console.log(err)
@@ -175,47 +219,51 @@ export class FrightBillComponent {
   }
 
   getLoadingCharges() {
-    let loadingCharges = 0;
-    this.billingData.map((d: any) => {
-      loadingCharges += d.loadingCharges
-    });
-    return loadingCharges;
+    return this.totalLoadingCharges;
+  }
+
+  getDisplayLoadingCharges(lrNo: string): number {
+    return this.billingCharges
+      .filter((item) => item.lrNo === lrNo) // Filter records with the same lrNo
+      .reduce((sum, item) => sum + (item.loadingCharges || 0), 0); // Sum only totalFreight values
   }
 
   getUnloadingCharges() {
-    let unLoadingCharges = 0;
-    this.billingData.map((d: any) => {
-      unLoadingCharges += d.unloadingCharges
-    });
-    return unLoadingCharges;
+    return this.totalUnloadingCharges;
+  }
+
+  getDisplayUnloadingCharges(lrNo: string): number {
+    return this.billingCharges
+      .filter((item) => item.lrNo === lrNo) // Filter records with the same lrNo
+      .reduce((sum, item) => sum + (item.unloadingCharges || 0), 0); // Sum only totalFreight values
   }
 
   getPlyWoodCharges() {
-    let plyWoodCharges = 0;
-    this.billingData.map((d: any) => {
-      plyWoodCharges += d.plyWoodCharges
-    });
-    return plyWoodCharges;
+    return this.totalPlywoodCharges;
+  }
+
+  getDisplayPlywoodCharges(lrNo: string): number {
+    return this.billingCharges
+      .filter((item) => item.lrNo === lrNo) // Filter records with the same lrNo
+      .reduce((sum, item) => sum + (item.plyWoodCharges || 0), 0); // Sum only totalFreight values
   }
 
   getDetentionCharges() {
-    let detentionCharges = 0;
-    this.billingData.map((d: any) => {
-      detentionCharges += d.detentionCharges
-    });
-    return detentionCharges;
+    return this.totalDetentionCharges;
+  }
+
+  getDisplayDetentionCharges(lrNo: string): number {
+    return this.billingCharges
+      .filter((item) => item.lrNo === lrNo) // Filter records with the same lrNo
+      .reduce((sum, item) => sum + (item.detentionCharges || 0), 0); // Sum only totalFreight values
   }
 
   getStCharges() {
-    let stCharges = 0;
-    this.billingData.map((d: any) => {
-      stCharges += d.stCharges
-    });
-    return stCharges;
+    return this.totalStCharges;
   }
 
   getDisplaySTCharges(lrNo: string): number {
-    return this.billingData
+    return this.billingCharges
       .filter((item) => item.lrNo === lrNo) // Filter records with the same lrNo
       .reduce((sum, item) => sum + (item.stCharges || 0), 0); // Sum only totalFreight values
   }
@@ -230,8 +278,8 @@ export class FrightBillComponent {
 
   getDisplaySubTotal(lrNo: string): number {
     return this.billingData
-      .filter((item) => item.lrNo === lrNo) // Filter records with the same lrNo
-      .reduce((sum, item) => sum + (item.subTotal || 0), 0); // Sum only totalFreight values
+      .filter((item) => item.lrNo === lrNo)
+      .reduce((sum, item) => sum + (item.subTotal || 0), 0);
   }
 
   getSGST() {
@@ -271,7 +319,48 @@ export class FrightBillComponent {
 
 
   saveMumbaiFreight() {
-    console.log(this.form.value)
+    const formObj = {
+      "billNo": this.form.get('billNo')?.value,
+      "partyName": this.form.get('partyName')?.value,
+      "address": this.form.get('partyAddress')?.value,
+      "district": this.form.get('partyDist')?.value,
+      "stateCode": this.form.get('partyStateCode')?.value,
+      "gstNo": this.form.get('GSTNo')?.value,
+      "routeName": this.form.get('route.routeName')?.value,
+      "codeNo": this.form.get('vCode')?.value,
+      "ml": this.form.get('mlCode')?.value,
+      "sac": this.form.get('sacNo')?.value,
+      "isVerified": false
+    }
+    if (this.currentLoggedUser.roleDto.roleName === 'SUPER_ADMIN' || this.currentLoggedUser.roleDto.roleName === 'ADMIN') {
+      formObj.isVerified = true;
+    }
+
+    this.apiService.saveMumbaiFreight(formObj).subscribe(res => {
+      if (res) {
+        this.clearField();
+        $.toast({
+          heading: 'Mumbai freight bill has been submitted!',
+          text: 'You have submitted the mumbai freight bill. Please contact to respective authority member for approval.',
+          showHideTransition: 'fade',
+          icon: 'info',
+          position: 'top-center',
+          bgColor: '#31be33',
+          loader: false,
+        });
+      }
+    }, error => {
+      $.toast({
+        heading: 'Limited Access Alert!',
+        text: 'You dont have modification access on this service! Contact to administrator.',
+        showHideTransition: 'fade',
+        icon: 'info',
+        position: 'bottom-center',
+        bgColor: '#3152be',
+        loader: false,
+      });
+    });
+
   }
 
   clearField() {
@@ -281,6 +370,7 @@ export class FrightBillComponent {
     this.form.get('mlCode')?.setValue('ML485');
     this.form.get('vCode')?.setValue('30008227');
     this.form.get('billNo')?.enable();
+    this.form.get('route.routeName')?.disable();
   }
 
   // Calculate ROW Span for LR

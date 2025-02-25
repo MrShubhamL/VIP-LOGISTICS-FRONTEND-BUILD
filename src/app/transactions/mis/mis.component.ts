@@ -126,7 +126,15 @@ export class MisComponent {
         });
       }
     }, err => {
-      console.log(err)
+      $.toast({
+        heading: 'Bill Number Invalid!!',
+        text: 'You have given assigned bill number! Please give another bill no.',
+        showHideTransition: 'fade',
+        icon: 'success',
+        position: 'bottom-center',
+        bgColor: '#3266c7',
+        loader: false,
+      });
     });
 
     (modal as HTMLElement).classList.remove('show'); // Remove 'show' class

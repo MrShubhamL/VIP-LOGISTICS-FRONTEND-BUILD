@@ -557,27 +557,63 @@ export class ApiService {
 
   // ------------------- FREIGHT BILL ENDPOINTS -------------------------
 
-  public getMumbaiFreightByBillNo(billNo: any): Observable<any> {
+  public saveMumbaiFreight(freight: any): Observable<any> {
+    return this.http.post(BaseUrl + "/api/mumbai-freight/save-mumbai-freight-bill", {
+      responseType: 'json'
+    });
+  }
+
+  public getMumbaiFreightByBillNo(billNo: any, routeName: any): Observable<any> {
     return this.http.get(BaseUrl + "/api/mumbai-freight/mumbai-freight", {
-      params: {billNo: billNo},
+      params: {
+        billNo: billNo,
+        routeName: routeName
+      },
       responseType: 'json'
     });
   }
 
-  public getNagpurFreightByBillNo(billNo: any): Observable<any> {
+  public getNagpurFreightByBillNo(billNo: any, routeName: any): Observable<any> {
     return this.http.get(BaseUrl + "/api/nagpur-freight/nagpur-freight", {
-      params: {billNo: billNo},
+      params: {
+        billNo: billNo,
+        routeName: routeName
+      },
       responseType: 'json'
     });
   }
 
-  public getNagpurPickupFreightByBillNo(billNo: any): Observable<any> {
+  public getNagpurPickupFreightByBillNo(billNo: any, routeName: any): Observable<any> {
     return this.http.get(BaseUrl + "/api/nagpur-pickup-freight/nagpur-pickup-freight", {
-      params: {billNo: billNo},
+      params: {
+        billNo: billNo,
+        routeName: routeName
+      },
       responseType: 'json'
     });
   }
 
+
+  public getRajkotFreightByBillNo(billNo: any, routeName: any): Observable<any> {
+    return this.http.get(BaseUrl + "/api/rajkot-freight/rajkot-freight", {
+      params: {
+        billNo: billNo,
+        routeName: routeName
+      },
+      responseType: 'json'
+    });
+  }
+
+
+  public getChakanFreightByBillNo(billNo: any, routeName: any): Observable<any> {
+    return this.http.get(BaseUrl + "/api/chakan-freight/chakan-freight", {
+      params: {
+        billNo: billNo,
+        routeName: routeName
+      },
+      responseType: 'json'
+    });
+  }
 
 
 }

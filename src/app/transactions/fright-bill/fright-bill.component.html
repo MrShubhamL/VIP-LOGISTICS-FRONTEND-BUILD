@@ -23,8 +23,23 @@
                       <label class=" pt-2">Bill No: </label>
                     </div>
                     <div class="col-8">
-                      <input (input)="findFreightByBill()" formControlName="billNo" type="text" class="form-control"
+                      <input (input)="changeEvent($event)" formControlName="billNo" type="text" class="form-control"
                              placeholder="Enter bill number">
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-3">
+                  <div class="form-group d-flex">
+                    <div class="col-4">
+                      <label class=" pt-2">Select Route: </label>
+                    </div>
+                    <div class="col-8" formGroupName="route">
+                      <select (ngModelChange)="findFreightByBill($event)" class="form-control select2" formControlName="routeName">
+                        <option disabled value="selected">Select route</option>
+                        <ng-container *ngFor="let r of routeData">
+                          <option [hidden]="r.routeTo === 'NAGPUR'" [value]="r.routeName" >{{r.routeName}}</option>
+                        </ng-container>
+                      </select>
                     </div>
                   </div>
                 </div>
@@ -162,12 +177,24 @@
                     <td>{{l.lcvFtl || '-'}}</td>
                     <td *ngIf="shouldShowLrNo(l.lrNo, i)" [attr.rowSpan]="getLrRowSpan(l.lrNo)"
                         class="text-center align-middle">
-                      {{getDisplayTotalFreight(l.lrNo)}}
+                      {{getDisplayTotalFreight(l.lrNo).toFixed(2)}}
                     </td>
-                    <td>{{l.loadingCharges || '-'}}</td>
-                    <td>{{l.unloadingCharges || '-'}}</td>
-                    <td>{{l.plyWoodCharges || '-'}}</td>
-                    <td>{{l.detentionCharges || '-'}}</td>
+                    <td *ngIf="shouldShowLrNo(l.lrNo, i)" [attr.rowSpan]="getLrRowSpan(l.lrNo)"
+                        class="text-center align-middle">
+                      {{getDisplayLoadingCharges(l.lrNo)}}
+                    </td>
+                    <td *ngIf="shouldShowLrNo(l.lrNo, i)" [attr.rowSpan]="getLrRowSpan(l.lrNo)"
+                        class="text-center align-middle">
+                      {{getDisplayUnloadingCharges(l.lrNo)}}
+                    </td>
+                    <td *ngIf="shouldShowLrNo(l.lrNo, i)" [attr.rowSpan]="getLrRowSpan(l.lrNo)"
+                        class="text-center align-middle">
+                      {{getDisplayPlywoodCharges(l.lrNo)}}
+                    </td>
+                    <td *ngIf="shouldShowLrNo(l.lrNo, i)" [attr.rowSpan]="getLrRowSpan(l.lrNo)"
+                        class="text-center align-middle">
+                      {{getDisplayDetentionCharges(l.lrNo)}}
+                    </td>
                     <td *ngIf="shouldShowLrNo(l.lrNo, i)" [attr.rowSpan]="getLrRowSpan(l.lrNo)"
                         class="text-center align-middle">
                       {{getDisplaySTCharges(l.lrNo) || 0}}

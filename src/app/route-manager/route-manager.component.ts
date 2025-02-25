@@ -30,7 +30,7 @@ export class RouteManagerComponent implements OnInit {
 
   form!: FormGroup;
   page: number = 1;
-  itemsPerPage: number = 5;
+  itemsPerPage: number = 12;
   searchTerm: string = '';
   isDataLoding: boolean = false;
   allRoutes: any[] = [];
