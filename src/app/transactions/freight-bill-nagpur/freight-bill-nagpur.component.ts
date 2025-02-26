@@ -427,7 +427,7 @@ export class FreightBillNagpurComponent {
             <td>${this.formatDate(l.unloadingDate)}</td>
             <td>${l.vehicleNo}</td>
             <td>${l.vendorName}</td>
-            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayTotalWeight(l.lrNo)}</td>` : ""}
+            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayTotalWeight(l.lrNo).toFixed(2)}</td>` : ""}
             <td>2.66</td>
             ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayTotalFreight(l.lrNo)}</td>` : ""}
             ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayTotalUnloadingCharges(l.lrNo)}</td>` : ""}
@@ -461,7 +461,7 @@ export class FreightBillNagpurComponent {
       let invoiceFooterTable = `
           <tr class="text-center">
               <th colspan="5" style="border: none !important;"></th>
-              <th style="border: 1px solid black !important;">₹${this.getTotalWeight().toFixed(2)}</th>
+              <th style="border: 1px solid black !important;">${this.getTotalWeight().toFixed(2)}</th>
               <th style="border: none !important;"></th>
               <th style="border: 1px solid black !important;">₹${this.getTotalFreight().toFixed(2)}</th>
               <th style="border: 1px solid black !important;">₹${this.getUnloadingCharges().toFixed(2)}</th>
@@ -761,10 +761,8 @@ export class FreightBillNagpurComponent {
       `);
 
       printWindow.document.close();
-      // ✅ Print after content is loaded
       setTimeout(() => {
         printWindow.print();
-        printWindow.close(); // Close print window after printing
       }, 500);
     }
   }

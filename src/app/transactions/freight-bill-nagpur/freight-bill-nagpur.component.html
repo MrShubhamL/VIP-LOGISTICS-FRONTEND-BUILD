@@ -168,12 +168,12 @@
                     <td>{{l.vendorName}}</td>
                     <td *ngIf="shouldShowLrNo(l.lrNo, i)" [attr.rowSpan]="getLrRowSpan(l.lrNo)"
                         class="text-center align-middle">
-                      {{getDisplayTotalWeight(l.lrNo) || 0}}
+                      {{getDisplayTotalWeight(l.lrNo).toFixed(2) || 0}}
                     </td>
                     <td>2.66</td>
                     <td *ngIf="shouldShowLrNo(l.lrNo, i)" [attr.rowSpan]="getLrRowSpan(l.lrNo)"
                         class="text-center align-middle">
-                      {{getDisplayTotalFreight(l.lrNo)}}
+                      {{getDisplayTotalFreight(l.lrNo).toFixed(2)}}
                     </td>
                     <td *ngIf="shouldShowLrNo(l.lrNo, i)" [attr.rowSpan]="getLrRowSpan(l.lrNo)"
                         class="text-center align-middle">

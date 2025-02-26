@@ -219,6 +219,7 @@ export class LorryReceiptComponent {
 
   ngOnInit() {
     this.form.get('lrNo')?.disable();
+    this.form.get('whoItemList')?.disable();
     this.currentRole = this.storageService.getUserRole();
 
     // All Item Data
@@ -359,9 +360,11 @@ export class LorryReceiptComponent {
   }
 
   resetForm() {
+    this.form.enable();
+    this.ngOnInit();
     this.topViewSection.nativeElement.scrollIntoView({behavior: 'smooth', block: 'start'});
     this.form.reset();
-    this.ngOnInit();
+    this.form.get('whoItemList')?.disable();
     this.form.get('item.itemNo')?.enable()
     this.form.get('branch.branchNo')?.enable()
     this.form.get('route.routeNo')?.enable()
@@ -386,7 +389,6 @@ export class LorryReceiptComponent {
     this.isMemoFound = false;
     this.isLrFound = false;
     this.isMemoLocked = false;
-    this.form.enable();
   }
 
   addItems() {
@@ -915,6 +917,33 @@ export class LorryReceiptComponent {
 
   // ---------------------- Item Query Search ----------------------
 
+  unlockStatus(){
+    this.form.get('whoItemList')?.enable();
+  }
+
+  loadPartyItemData(event: any){
+    let consignorPartyCode = this.form.get('consignor.partyNo')?.value;
+    let consigneePartyCode = this.form.get('consignee.partyNo')?.value;
+    if(event === 'Consignor'){
+      this.apiService.getAllItemsByPartyNo(consignorPartyCode).subscribe(res=>{
+        if(res){
+          this.itemData = res;
+        }
+      }, error => {
+        console.log(error);
+      });
+    } else if(event === 'Consignee'){
+      this.apiService.getAllItemsByPartyNo(consigneePartyCode).subscribe(res => {
+        if (res) {
+          this.itemData = res;
+        }
+      }, error => {
+        console.log(error);
+      });
+    }
+  }
+
+
   onItemSearch() {
     const query = (this.form.get('lorryReceiptItems.item.itemName')?.value || '')
       .toString()
@@ -1065,6 +1094,7 @@ export class LorryReceiptComponent {
 
   confirmPartySelection() {
     if (this.selectedPartyItem) {
+      this.unlockStatus();
       this.form.patchValue({
         consignee: {
           partyNo: this.selectedPartyItem.partyNo,

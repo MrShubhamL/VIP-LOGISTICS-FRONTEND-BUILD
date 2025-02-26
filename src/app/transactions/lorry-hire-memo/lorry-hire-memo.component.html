@@ -393,7 +393,6 @@
             <th>Memo Date</th>
             <th>Branch Code</th>
             <th>Branch Name</th>
-            <th>Vehicle No</th>
             <th>Memo Status</th>
           </tr>
           </thead>
@@ -403,10 +402,9 @@
               <input type="radio" name="selectedItem" [checked]="item === selectedHireItem"/>
             </td>
             <td>{{item.memo.memoNo}}</td>
-            <td>Memo Date</td>
-            <td>Branch Code</td>
-            <td>Branch Name</td>
-            <td>Vehicle No</td>
+            <td>{{item.memo.memoDate}}</td>
+            <td>{{item.branch.branchNo}}</td>
+            <td>{{item.branch.branchName}}</td>
             <td>
               <span *ngIf="item.memo.memoStatus" class="text-danger"><i class="fas fa-lock mr-2"></i>Locked</span>
               <span *ngIf="!item.memo.memoStatus" class="text-success"><i class="fas fa-lock-open mr-2"></i>Open</span>

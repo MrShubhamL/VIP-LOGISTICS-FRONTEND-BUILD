@@ -782,7 +782,6 @@ export class FreightBillChakanComponent {
       // ✅ Print after content is loaded
       setTimeout(() => {
         printWindow.print();
-        printWindow.close(); // Close print window after printing
       }, 500);
     }
   }

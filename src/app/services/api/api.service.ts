@@ -109,6 +109,13 @@ export class ApiService {
     });
   }
 
+  public getAllItemsByPartyNo(partyNo: any): Observable<any> {
+    return this.http.get(BaseUrl + "/api/item/get-items-by-party-code", {
+      params: {partyNo: partyNo},
+      responseType: 'json'
+    });
+  }
+
 
   // ---------------------- ALL VEHICLE OPERATIONS ------------------------
 

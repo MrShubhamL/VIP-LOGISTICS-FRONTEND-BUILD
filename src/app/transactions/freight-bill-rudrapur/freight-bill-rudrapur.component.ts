@@ -702,7 +702,6 @@ export class FreightBillRudrapurComponent {
       // ✅ Print after content is loaded
       setTimeout(() => {
         printWindow.print();
-        printWindow.close(); // Close print window after printing
       }, 500);
     }
   }
