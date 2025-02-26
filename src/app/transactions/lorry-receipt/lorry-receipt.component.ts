@@ -1144,6 +1144,7 @@ export class LorryReceiptComponent {
 
   confirmLrSelection() {
     if (this.selectedLrItem) {
+
       this.listItemData = this.selectedLrItem.lorryReceiptItems;
       this.listChargesData = this.selectedLrItem.extraCharges;
       this.listItemData.map((p: any) => {
@@ -1163,7 +1164,7 @@ export class LorryReceiptComponent {
         whoItemList: this.selectedLrItem.whoItemList,
         memo: {...this.form.get('memo')?.value, ...this.selectedLrItem.memo},
         octBill: this.selectedLrItem.octBill,
-        bills: {...this.form.get('bills')?.value, ...this.selectedLrItem.bills},
+        bill: {...this.form.get('bill')?.value, ...this.selectedLrItem.bill},
         unloadDate: this.selectedLrItem.unloadDate,
         lrDate: this.selectedLrItem.lrDate,
         refTruckNo: this.selectedLrItem.refTruckNo,
@@ -1181,8 +1182,8 @@ export class LorryReceiptComponent {
         // igst: this.selectedLrItem.igst,
         grandTotal: this.selectedLrItem.grandTotal,
       });
+      console.log(this.form.value);
       if (this.selectedLrItem.memo.memoStatus) {
-        console.log(this.selectedLrItem.memo.memoStatus)
         this.form.disable();
         this.writeEnabled = false;
         this.updateEnabled = false;

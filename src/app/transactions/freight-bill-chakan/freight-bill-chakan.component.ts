@@ -21,6 +21,7 @@ export class FreightBillChakanComponent {
 
   billingCharges: any[] = [];
   totalUnloadingCharges: number = 0;
+  totalLRCharges: number = 0;
   totalLoadingCharges: number = 0;
   totalPlywoodCharges: number = 0;
   totalCollectionCharges: number = 0;
@@ -130,12 +131,11 @@ export class FreightBillChakanComponent {
     let billNo = this.form.get('billNo')?.value;
     if (billNo) {
       this.apiService.getChakanFreightByBillNo(billNo, event).subscribe(res => {
-        console.log(res);
         if (res !== 0) {
-
           this.billingData = res.chakanFreightBillDtos;
           this.billingCommonData = res.commonFreightBillDataDto;
 
+          console.log(this.billingCommonData);
 
           this.billingCharges = res.chakanExtraCharges;
 
@@ -144,6 +144,7 @@ export class FreightBillChakanComponent {
             this.totalUnloadingCharges += b.unloadingCharges;
             this.totalPlywoodCharges += b.plyWoodCharges;
             this.totalDetentionCharges += b.detentionCharges;
+            this.totalLRCharges += b.lrCharges;
             this.totalStCharges += b.stCharges;
           });
 
@@ -179,7 +180,7 @@ export class FreightBillChakanComponent {
             subTotal: subTotal.toFixed(2),
             cgst: cgst.toFixed(2),
             sgst: sgst.toFixed(2),
-            grandTotal: (subTotal + cgst + sgst).toFixed(2)
+            grandTotal: this.getGrandTotal()
           });
           this.form.get('billNo')?.disable();
           this.form.get('route.routeName')?.disable();
@@ -230,11 +231,19 @@ export class FreightBillChakanComponent {
   getUnloadingCharges() {
     return this.totalUnloadingCharges;
   }
-
   getDisplayUnloadingCharges(lrNo: string): number {
     return this.billingCharges
       .filter((item) => item.lrNo === lrNo) // Filter records with the same lrNo
       .reduce((sum, item) => sum + (item.unloadingCharges || 0), 0); // Sum only totalFreight values
+  }
+
+  getLRCharges() {
+    return this.totalLRCharges;
+  }
+  getDisplayLRCharges(lrNo: string): number {
+    return this.billingCharges
+      .filter((item) => item.lrNo === lrNo) // Filter records with the same lrNo
+      .reduce((sum, item) => sum + (item.lrCharges || 0), 0); // Sum only totalFreight values
   }
 
   getPlyWoodCharges() {
@@ -310,14 +319,20 @@ export class FreightBillChakanComponent {
   }
 
   getTotalBillValue(lrNo: string): number {
-    let subTotal = this.getDisplaySubTotal(lrNo) || 0;
+    let totalFreight = this.getDisplayTotalFreight(lrNo) || 0;
+    let unloadingCharge = this.getDisplayUnloadingCharges(lrNo) || 0;
+    let stCharge = this.getDisplaySTCharges(lrNo) || 0;
     let cgst = this.getDisplayCGST(lrNo) || 0;
     let sgst = this.getDisplaySGST(lrNo) || 0;
-    return (subTotal + cgst + sgst);
+    return (totalFreight + unloadingCharge + stCharge + cgst + sgst);
+  }
+
+  getGrandTotal(): number{
+    return Number((this.getTotalFreight() + this.totalUnloadingCharges + this.totalLRCharges + this.getCGST() + this.getSGST()).toFixed(2));
   }
 
 
-  saveMumbaiFreight() {
+  saveChakanFreight() {
     const formObj = {
       "billNo": this.form.get('billNo')?.value,
       "partyName": this.form.get('partyName')?.value,
@@ -441,70 +456,55 @@ export class FreightBillChakanComponent {
             <td>${this.formatDate(l.unloadingDate)}</td>
             <td>${l.from}</td>
             <td>${l.to}</td>
+            <td>${(l.consignor).replace(/\-\(.*?\)/g, '')}</td>
+            <td>${(l.consignee).replace(/\-\(.*?\)/g, '')}</td>
             <td>${l.invoiceNo}</td>
-            <td>${l.vendorName}</td>
-            <td>${l.quantity}</td>
             <td>${l.vehicleNo}</td>
-            <td>${l.lcvFtl || '-'}</td>
+            <td>${l.vehicleType || '-'}</td>
+            <td>TRIP NO</td>
             ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayTotalFreight(l.lrNo)}</td>` : ""}
-            ${l.loadingCharges && l.loadingCharges !== 0 ? `<td>${l.loadingCharges}</td>` : ""}
-            ${l.unloadingCharges && l.unloadingCharges !== 0 ? `<td>${l.unloadingCharges}</td>` : ""}
-            ${l.plyWoodCharges && l.plyWoodCharges !== 0 ? `<td>${l.plyWoodCharges}</td>` : ""}
-            ${l.detentionCharges && l.detentionCharges !== 0 ? `<td>${l.detentionCharges}</td>` : ""}
-            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplaySTCharges(l.lrNo) || 0}</td>` : ""}
-            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplaySubTotal(l.lrNo).toFixed(2)}</td>` : ""}
-            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplaySGST(l.lrNo).toFixed(2)}</td>` : ""}
+            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayUnloadingCharges(l.lrNo) || 0}</td>` : ""}
             ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayCGST(l.lrNo).toFixed(2)}</td>` : ""}
+            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplaySGST(l.lrNo).toFixed(2)}</td>` : ""}
+            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayLRCharges(l.lrNo).toFixed(2)}</td>` : ""}
             ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getTotalBillValue(l.lrNo).toFixed(2)}</td>` : ""}
         </tr>
         `;
       }).join('');
 
-      let showLoadingCharges = this.billingData.some(l => l.loadingCharges && l.loadingCharges !== 0);
-      let showUnloadingCharges = this.billingData.some(l => l.unloadingCharges && l.unloadingCharges !== 0);
-      let showPlyWoodCharges = this.billingData.some(l => l.plyWoodCharges && l.plyWoodCharges !== 0);
-      let showDetentionCharges = this.billingData.some(l => l.detentionCharges && l.detentionCharges !== 0);
-
       let invoiceTableHeader = `
             <thead>
               <tr>
                   <th>LR No.</th>
-                  <th>Loory Rept. Date</th>
-                  <th>Unloading Date</th>
+                  <th>LR Date</th>
+                  <th>Unl. Date</th>
                   <th>From</th>
                   <th>To</th>
+                  <th>Consignor</th>
+                  <th>Consignee</th>
                   <th>Invoice No.</th>
-                  <th>Vendor Name</th>
-                  <th>Qty</th>
                   <th>Vehicle No</th>
-                  <th>Rate</th>
+                  <th>Vehicle Type</th>
+                  <th>TRIP NO</th>
                   <th>Freight</th>
-                  ${showLoadingCharges ? '<th>Loading Charges</th>' : ''}
-                  ${showUnloadingCharges ? '<th>Unloading Charges</th>' : ''}
-                  ${showPlyWoodCharges ? '<th>Plywood Charges</th>' : ''}
-                  ${showDetentionCharges ? '<th>Detention Charges</th>' : ''}
-                  <th>ST Charges</th>
-                  <th>Sub Total</th>
-                  <th>SGST 6%</th>
+                  <th>Unloading Charges</th>
                   <th>CGST 6%</th>
-                  <th>Total Bill</th>
+                  <th>SGST 6%</th>
+                  <th>LR Charges</th>
+                  <th>Invoice Amount</th>
               </tr>
             </thead>
         `;
 
       let invoiceFooterTable = `
           <tr class="text-center">
-              <th colspan="10">Grand Totals - </th>
+              <th colspan="11">Grand Totals - </th>
               <th>₹${this.getTotalFreight().toFixed(2)}</th>
-              ${showLoadingCharges ? `<th>₹${this.getLoadingCharges().toFixed(2)}</th>` : ''}
-              ${showUnloadingCharges ? `<th>₹${this.getUnloadingCharges().toFixed(2)}</th>` : ''}
-              ${showPlyWoodCharges ? `<th>₹${this.getPlyWoodCharges().toFixed(2)}</th>` : ''}
-              ${showDetentionCharges ? `<th>₹${this.getDetentionCharges().toFixed(2)}</th>` : ''}
-              <th>₹${this.getStCharges().toFixed(2)}</th>
-              <th>₹${this.getSubTotal().toFixed(2)}</th>
-              <th>₹${this.getSGST().toFixed(2)}</th>
+              <th>₹${this.getUnloadingCharges().toFixed(2)}</th>
               <th>₹${this.getCGST().toFixed(2)}</th>
-              <th>₹${(this.getSubTotal() + this.getSGST() + this.getCGST()).toFixed(2)}</th>
+              <th>₹${this.getSGST().toFixed(2)}</th>
+              <th>₹${this.getLRCharges().toFixed(2)}</th>
+              <th>₹${(this.getGrandTotal().toFixed(2))}</th>
           </tr>
       `;
 
@@ -516,7 +516,7 @@ export class FreightBillChakanComponent {
       <head>
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1">
-          <title>Mumbai Freight Bill (${this.billingCommonData.billNo})</title>
+          <title>Chakan Freight Bill (${this.billingCommonData.billNo})</title>
           <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
               integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
           <style>
@@ -557,8 +557,8 @@ export class FreightBillChakanComponent {
                   margin: 0;
                   vertical-align: middle;
                   font-weight: 700;
-                  min-height: 1px;  /* Ensures a minimum cell height */
-                  line-height: 0.5;  /* Adjust line height for better readability */
+                  min-height: 2px;  /* Ensures a minimum cell height */
+                  line-height: 1.5;  /* Adjust line height for better readability */
               }
 
               td {
@@ -568,6 +568,10 @@ export class FreightBillChakanComponent {
                   font-weight: 500;
                   min-height: 1px;  /* Ensures a minimum cell height */
                   line-height: 0.5;  /* Adjust line height for better readability */
+                    overflow: hidden;  /* Hides overflow text */
+                    white-space: nowrap;  /* Prevents text from wrapping */
+                    text-overflow: ellipsis;  /* Adds '...' when text overflows */
+                    max-width: 100px;  /* Set a maximum width for truncation */
               }
 
               .invoice {
@@ -607,6 +611,11 @@ export class FreightBillChakanComponent {
                   display: block;
                   margin: 0 auto;
               }
+              .stamp {
+                  width: 100px;
+                  display: block;
+                  margin: 0 auto;
+              }
           </style>
       </head>
 
@@ -632,19 +641,19 @@ export class FreightBillChakanComponent {
                                       <table class="table table-bordered custom-border">
                                           <tbody class="d-block-start">
                                               <tr>
-                                                  <th>DETAILS OF CUSTOMER</th>
+                                                  <th>BA PAN No: <span class="text-muted">AKJPP0760D</span></th>
                                               </tr>
                                               <tr>
-                                                  <th>NAME: <span class="text-muted">${(this.billingCommonData.partyName).replace(/\-\(.*?\)/g, '')}</span></th>
+                                                  <th>Place of Supply: <span class="text-muted">MAHARASHTRA</span></th>
                                               </tr>
                                               <tr>
-                                                  <th>ADDRESS: <span class="text-muted">${this.billingCommonData.address}</span></th>
+                                                  <th>BA GSTIN: <span class="text-muted">27AAFCM2530H1ZO</span></th>
                                               </tr>
                                               <tr>
-                                                  <th>STATE CODE: <span class="text-muted">${this.billingCommonData.stateCode}</span></th>
+                                                  <th>BA CIN No: <span class="text-muted">NO</span></th>
                                               </tr>
                                               <tr>
-                                                  <th>GSTIN: <span class="text-muted">27AAFCM2530H1ZO</span></th>
+                                                  <th><span class="text-muted">GST payable under reverse charge:</span></th>
                                               </tr>
                                           </tbody>
                                       </table>
@@ -652,26 +661,19 @@ export class FreightBillChakanComponent {
 
                                   <!-- Center Section -->
                                   <div class="col-4 px-2 text-start">
-                                      <table class="table table-bordered custom-border text-center">
-                                          <tbody>
-                                              <tr>
-                                                  <th>Description of Service: Transportation of goods by Road</th>
-                                              </tr>
-                                          </tbody>
-                                      </table>
                                       <table class="table table-bordered custom-border">
                                           <tbody class="d-block-center">
                                               <tr>
-                                                  <th>SAC:</th>
-                                                  <td>345345345</td>
+                                                  <th>TO</th>
                                               </tr>
                                               <tr>
-                                                  <th>ML CODE:</th>
-                                                  <td>ML345</td>
+                                                  <th>${(this.billingCommonData.partyName).replace(/\-\(.*?\)/g, '')}</th>
                                               </tr>
                                               <tr>
-                                                  <th>V CODE:</th>
-                                                  <td>3000012</td>
+                                                  <th>${(this.billingCommonData.address)}</th>
+                                              </tr>
+                                              <tr>
+                                                  <th>STATE: MAHARASHTRA. STATE CODE 27</th>
                                               </tr>
                                           </tbody>
                                       </table>
@@ -683,31 +685,33 @@ export class FreightBillChakanComponent {
                                           <tbody class="d-block-end">
                                               <tr>
                                                   <th>Bill No</th>
-                                                  <td>10001</td>
+                                                  <td>${this.billingCommonData.billNo}</td>
                                                   <th>Bill Date</th>
-                                                  <td>02-10-2025</td>
+                                                  <td>${this.billingCommonData.billDate}</td>
                                               </tr>
                                               <tr>
-                                                  <th>BA Code</th>
-                                                  <td>30008227</td>
-                                                  <th>GSTIN</th>
-                                                  <td>27AKJPP0760D1Z9</td>
-                                              </tr>
-                                              <tr>
-                                                  <th>PAN No</th>
-                                                  <td>AKJPP0760D</td>
-                                                  <th>SAC No</th>
-                                                  <td>996511</td>
-                                              </tr>
-                                              <tr>
-                                                  <th>Place of Supply</th>
-                                                  <td>Maharashtra</td>
-                                                  <th>State Code</th>
-                                                  <td>27</td>
+                                                  <th>MLL Ref No</th>
+                                                  <td colspan="3">F25CIVP00000091</td>
                                               </tr>
                                               <tr>
                                                   <th>Nature of Service</th>
-                                                  <td colspan="3">Transport Goods By Road</td>
+                                                  <td colspan="3">Vehicle Hiring Service</td>
+                                              </tr>
+                                              <tr>
+                                                  <th>HSN / SAC</th>
+                                                  <td colspan="3">996511</td>
+                                              </tr>
+                                              <tr>
+                                                  <th>MLL PAN No</th>
+                                                  <td colspan="3">AAFCM2530H</td>
+                                              </tr>
+                                              <tr>
+                                                  <th>MLL GSTIN</th>
+                                                  <td colspan="3">${this.billingCommonData.gstNo}</td>
+                                              </tr>
+                                              <tr>
+                                                  <th>MLL CIN No</th>
+                                                  <td colspan="3">L63000MH2007PLC17346</td>
                                               </tr>
                                           </tbody>
                                       </table>
@@ -732,19 +736,22 @@ export class FreightBillChakanComponent {
 
                               <div class="row pt-0 mt-0">
                                   <div class="col-12 mb-0 mt-0 pt-0">
-                                      <h3 class="bottom-text-size">Amount In Words :- <strong>${this.convertNumberToWords(Number((this.getSubTotal() + this.getSGST() + this.getCGST()).toFixed(2)))}</strong></h3>
-                                      <h3 class="bottom-text-size"><strong>Remarks :- </strong> Customer is not liable to pay GST under Reverse Charge since M/s. Mahindra Logistics Ltd being GTA supplier has opted to pay GST under Forward Charge.</h3>
-                                      <p class="mb-0">"We hereby declare that though our aggregate turnover in any preceding financial year from 2017-18 onwards is more than the aggregate turnover notified under sub-rule (4) of rule 48, we are not required to prepare an invoice in terms of the provisions of the said sub-rule."</p>
-                                      <p class="mb-2">"I/we have taken registration under the CGST Act 2017 and have exercised the option to pay tax on services of Goods Transport Agency in relation to transport of goods supplied by us during the Financial year 2022-2023 under forward charge."</p>
+                                      <h3 class="bottom-text-size">Amount In Words :- <strong>${this.convertNumberToWords(Number((this.getGrandTotal()).toFixed(2)))}</strong></h3>
+                                      <h3 class="bottom-text-size"><strong>Remarks :- </strong>Exemted vide Sr no 22 of Notifacation no 12/2017-Central Tax dated 28 June 2017 and as notified By State Under GST LAW</h3>
                                   </div>
                                   <div class="col-12 mb-0 mt-0 pt-0">
                                       <div class="row">
-                                          <div class="col-8">
-                                              <h4 class="bottom-text-size">1. All Payments by cheques/drafts in favor of "VIP LOGISTICS" should be crossed to payee's account.</h4>
-                                      <h4 class="bottom-text-size">2. No Claims and/or discrepancies, if any, shall be considered unless brought to the notice of the company in writing within 3 days of the receipt of the bill.</h4>
-                                      <h4 class="bottom-text-size">3. <strong>Dispute if any shall be subjected to the jurisdiction of Mumbai Courts only.</strong></h4>
+                                          <div class="col-6">
+                                          <h4 class="bottom-text-size">Terms and Conditions:</h4>
+                                          <h4 class="bottom-text-size">Classifaction of supply- Exempted</h4>
+                                          <h4 class="bottom-text-size">1. All Payments by cheques / drafts in favor of " (Transporter Name) " should be crossed to payees account.</strong></h4>
                                           </div>
-                                          <div class="col-4 d-block-end">
+                                          <div class="col-2">
+                                              <div class="d-block-center">
+                                                <img class="stamp p-0 m-0" src="../../../images/VIP-STAMP.png" alt="Loading...">
+                                              </div>
+                                          </div>
+                                          <div class="col-4">
                                               <div class="d-block-center">
                                                   <p class="p-0 m-0">For <strong>VIP LOGISTICS</strong></p>
                                               <img class="sign p-0 m-0" src="../../../images/vip-sign.png" alt="Loading...">

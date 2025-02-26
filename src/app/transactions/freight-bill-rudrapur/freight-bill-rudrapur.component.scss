@@ -1,0 +1,112 @@
+* {
+  font-size: 0.8rem;
+}
+
+label {
+  color: #686868;
+  font-size: 0.75rem;
+}
+
+.custom-label-width {
+  min-width: 80px;
+}
+
+
+/* Scrollbar Styles */
+::-webkit-scrollbar {
+  height: 6px; /* Set the height for horizontal scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Light grey background */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888; /* Darker grey scrollbar */
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Even darker grey on hover */
+}
+
+/* Scrollable Table */
+.h-scrollable-table {
+  width: 100%;
+  overflow-x: auto; /* Enables horizontal scrolling */
+  white-space: nowrap;
+}
+
+.h-scrollable-table table {
+  min-width: 1200px; /* Ensures table is wider than the container */
+}
+
+
+.fab-container {
+  position: fixed;
+  bottom: 60px; /* Adjust as needed */
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 15px; /* Space between buttons */
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 5px;
+  border-radius: 20px;
+}
+
+.fab-button {
+  background: #FD7E14;
+  color: white;
+  width: 120px;
+  height: 35px;
+}
+
+
+.fab-button:hover {
+  background: #E56A10;
+}
+
+.bottom-nav {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .fab-container {
+    display: none;
+  }
+
+  .modal-custom-item-dialog {
+    position: relative;
+    margin: auto;
+    top: 0;
+  }
+
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    background: #fff;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    padding: 10px 0;
+    z-index: 1000;
+  }
+
+  .bottom-nav button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #E56A10;
+    border: none;
+    font-size: 10px;
+    color: #FFFFFF;
+  }
+
+  .bottom-nav button i {
+    font-size: 10px;
+  }
+}
+

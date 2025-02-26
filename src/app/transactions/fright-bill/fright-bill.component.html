@@ -37,7 +37,7 @@
                       <select (ngModelChange)="findFreightByBill($event)" class="form-control select2" formControlName="routeName">
                         <option disabled value="selected">Select route</option>
                         <ng-container *ngFor="let r of routeData">
-                          <option [hidden]="r.routeTo === 'NAGPUR'" [value]="r.routeName" >{{r.routeName}}</option>
+                          <option [value]="r.routeName" >{{r.routeName}}</option>
                         </ng-container>
                       </select>
                     </div>

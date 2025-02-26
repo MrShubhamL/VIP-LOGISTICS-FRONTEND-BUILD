@@ -615,5 +615,15 @@ export class ApiService {
     });
   }
 
+  public getRudrapurFreightByBillNo(billNo: any, routeName: any): Observable<any> {
+    return this.http.get(BaseUrl + "/api/rudrapur-freight/rudrapur-freight", {
+      params: {
+        billNo: billNo,
+        routeName: routeName
+      },
+      responseType: 'json'
+    });
+  }
+
 
 }

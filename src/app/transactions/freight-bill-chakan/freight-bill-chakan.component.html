@@ -38,7 +38,7 @@
                               formControlName="routeName">
                         <option disabled value="selected">Select route</option>
                         <ng-container *ngFor="let r of routeData">
-                          <option [hidden]="r.routeTo === 'NAGPUR'" [value]="r.routeName">{{r.routeName}}</option>
+                          <option [value]="r.routeName">{{r.routeName}}</option>
                         </ng-container>
                       </select>
                     </div>
@@ -195,7 +195,7 @@
                     </td>
                     <td *ngIf="shouldShowLrNo(l.lrNo, i)" [attr.rowSpan]="getLrRowSpan(l.lrNo)"
                         class="text-center align-middle">
-                      {{getTotalBillValue(l.lrNo).toFixed(2)}}
+                      {{getDisplayLRCharges(l.lrNo).toFixed(2)}}
                     </td>
                     <td *ngIf="shouldShowLrNo(l.lrNo, i)" [attr.rowSpan]="getLrRowSpan(l.lrNo)"
                         class="text-center align-middle">
@@ -265,7 +265,7 @@
 
 
   <div class="fab-container">
-    <button [disabled]="form.invalid || !writeEnabled" type="button" (click)="saveMumbaiFreight()" mat-fab
+    <button [disabled]="form.invalid || !writeEnabled" type="button" (click)="saveChakanFreight()" mat-fab
             class="fab-button">
       <span class="text-xs"><i class="fas fa-save mr-2"></i>Save Freight</span>
     </button>
@@ -292,7 +292,7 @@
   </div>
 
   <div class="bottom-nav">
-    <button [disabled]="form.invalid || !writeEnabled" type="button" (click)="saveMumbaiFreight()" mat-button>
+    <button [disabled]="form.invalid || !writeEnabled" type="button" (click)="saveChakanFreight()" mat-button>
       <span>Save</span>
     </button>
 
