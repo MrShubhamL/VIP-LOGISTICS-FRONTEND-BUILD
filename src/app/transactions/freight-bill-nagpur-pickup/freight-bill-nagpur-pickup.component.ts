@@ -1,5 +1,5 @@
 import {Component, inject} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup} from '@angular/forms';
+import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {Observable} from 'rxjs';
 import {StorageService} from '../../services/storage/storage.service';
 import {ApiService} from '../../services/api/api.service';
@@ -37,10 +37,12 @@ export class FreightBillNagpurPickupComponent {
   updateEnabled: boolean = false;
   deleteEnabled: boolean = false;
   currentLoggedUser: any;
+  private savedBillData: any;
 
   constructor() {
     this.form = this.formBuilder.group({
-      billNo: new FormControl(''),
+      freightBillReportId: new FormControl(''),
+      billNo: new FormControl('', Validators.required),
       billDate: new FormControl(''),
       partyName: new FormControl(''),
       partyAddress: new FormControl(''),
@@ -129,6 +131,7 @@ export class FreightBillNagpurPickupComponent {
   findFreightByBill(event: any) {
     let billNo = this.form.get('billNo')?.value;
     if (billNo) {
+      this.checkFreightBillExist(billNo);
       this.apiService.getNagpurPickupFreightByBillNo(billNo, event).subscribe(res => {
         console.log(res);
         if (res !== 0) {
@@ -182,6 +185,66 @@ export class FreightBillNagpurPickupComponent {
       }, err => {
         console.log(err)
       })
+    }
+  }
+
+  checkFreightBillExist(billNo: any) {
+    this.apiService.getNagpurPickupSavedFreightByBillNo(billNo).subscribe(res => {
+      if (res) {
+        this.savedBillData = res;
+        this.writeEnabled = false;
+        this.readEnabled = this.savedBillData.isVerified;
+        if (this.currentLoggedUser.roleDto.roleName === 'SUPER_ADMIN' || this.currentLoggedUser.roleDto.roleName === 'ADMIN') {
+          this.deleteEnabled = true;
+          this.readEnabled = true;
+        }
+
+        this.form.patchValue({
+          freightBillReportId: this.savedBillData.freightBillReportId
+        });
+      } else {
+        this.writeEnabled = true;
+        this.readEnabled = false;
+        this.deleteEnabled = false;
+        // if (this.currentLoggedUser.roleDto.roleName === 'SUPER_ADMIN' || this.currentLoggedUser.roleDto.roleName === 'ADMIN') {
+        //   this.readEnabled = true;
+        //   this.deleteEnabled = true;
+        // }
+      }
+    }, error => {
+      console.log(error);
+    });
+  }
+
+  deleteNagpurPickupFreightBill() {
+    let freightId = this.form.get('freightBillReportId')?.value;
+    if (freightId) {
+      this.apiService.deleteNagpurPickupFreightBill(freightId).subscribe(res => {
+        if (res) {
+          this.clearField();
+          $.toast({
+            heading: 'Bill Removed!',
+            text: 'You have deleted the nagpur-pickup bill information!!',
+            showHideTransition: 'fade',
+            icon: 'info',
+            position: 'top-center',
+            bgColor: '#1e6421',
+            loader: false,
+          });
+        }
+      }, err => {
+        console.log(err);
+      })
+    } else {
+      $.toast({
+        heading: 'Invalid Bill Information!',
+        text: 'Please select bill before delete!!',
+        showHideTransition: 'fade',
+        icon: 'info',
+        position: 'bottom-center',
+        bgColor: '#3152be',
+        loader: false,
+      });
     }
   }
 
@@ -305,8 +368,51 @@ export class FreightBillNagpurPickupComponent {
     return (this.getSubTotal() + this.getSGST() + this.getCGST()).toFixed(2);
   }
 
-  saveMumbaiFreight() {
-    console.log(this.form.value)
+  saveNagpurPickupFreight() {
+    const formObj = {
+      "billNo": this.form.get('billNo')?.value,
+      "billDate": this.form.get('billDate')?.value,
+      "partyName": this.form.get('partyName')?.value,
+      "address": this.form.get('partyAddress')?.value,
+      "district": this.form.get('partyDist')?.value,
+      "stateCode": this.form.get('partyStateCode')?.value,
+      "gstNo": this.form.get('GSTNo')?.value,
+      "routeName": this.form.get('route.routeName')?.value,
+      "codeNo": this.form.get('vCode')?.value,
+      "ml": this.form.get('mlCode')?.value,
+      "sac": this.form.get('sacNo')?.value,
+      "isVerified": false,
+      "requestedBy": this.currentLoggedUser.userName
+    }
+    if (this.currentLoggedUser.roleDto.roleName === 'SUPER_ADMIN' || this.currentLoggedUser.roleDto.roleName === 'ADMIN') {
+      formObj.isVerified = true;
+    }
+
+    this.apiService.saveNagpurPickupFreight(formObj).subscribe(res => {
+      if (res) {
+        this.clearField();
+        $.toast({
+          heading: 'Nagpur Pickup freight bill has been submitted!',
+          text: 'You have submitted the Nagpur Pickup freight bill. Please contact to respective authority member for approval.',
+          showHideTransition: 'fade',
+          icon: 'info',
+          position: 'top-center',
+          bgColor: '#257b26',
+          loader: false,
+        });
+      }
+    }, error => {
+      $.toast({
+        heading: 'Limited Access Alert!',
+        text: 'You dont have modification access on this service! Contact to administrator.',
+        showHideTransition: 'fade',
+        icon: 'info',
+        position: 'bottom-center',
+        bgColor: '#3152be',
+        loader: false,
+      });
+    });
+
   }
 
   clearField() {
@@ -466,7 +572,7 @@ export class FreightBillNagpurPickupComponent {
       <head>
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1">
-          <title>Nagpur Freight Bill (${this.billingCommonData.billNo})</title>
+          <title>Nagpur Pickup Freight Bill (${this.billingCommonData.billNo})</title>
           <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
               integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
           <style>
@@ -585,9 +691,9 @@ export class FreightBillNagpurPickupComponent {
                                           <tbody class="d-block-start">
                                               <tr>
                                                   <th>Bill No</th>
-                                                  <td class="text-muted">${this.billingCommonData.billNo}</td>
+                                                  <td>${this.billingCommonData.billNo}</td>
                                                   <th>Bill Date</th>
-                                                  <td class="text-muted">${this.billingCommonData.billDate}</td>
+                                                  <td>${this.formatDate(this.billingCommonData.billDate)}</td>
                                               </tr>
                                               <tr>
                                                   <th>BA Code</th>

@@ -19,6 +19,7 @@ export class FrightBillComponent {
   lrRowSpanMap: { [key: string]: number } = {};
   routeData: any[] = [];
   billingCommonData: any;
+  savedBillData: any;
 
   billingCharges: any[] = [];
   totalUnloadingCharges: number = 0;
@@ -40,6 +41,7 @@ export class FrightBillComponent {
 
   constructor() {
     this.form = this.formBuilder.group({
+      freightBillReportId: new FormControl(''),
       billNo: new FormControl('', Validators.required),
       billDate: new FormControl(''),
       partyName: new FormControl(''),
@@ -130,14 +132,12 @@ export class FrightBillComponent {
   findFreightByBill(event: any) {
     let billNo = this.form.get('billNo')?.value;
     if (billNo) {
+      this.checkFreightBillExist(billNo);
       this.apiService.getMumbaiFreightByBillNo(billNo, event).subscribe(res => {
         if (res !== 0) {
 
           this.billingData = res.mumbaiFreightBillDtos;
           this.billingCommonData = res.commonFreightBillDataDto;
-
-          console.log(this.billingData);
-
           this.billingCharges = res.mumbaiExtraCharges;
 
           this.billingCharges.map((b: any) => {
@@ -190,6 +190,67 @@ export class FrightBillComponent {
       })
     }
   }
+
+  checkFreightBillExist(billNo: any){
+    this.apiService.getMumbaiSavedFreightByBillNo(billNo).subscribe(res=>{
+      if (res) {
+        this.savedBillData = res;
+        this.writeEnabled = false;
+        this.readEnabled = this.savedBillData.isVerified;
+        if (this.currentLoggedUser.roleDto.roleName === 'SUPER_ADMIN' || this.currentLoggedUser.roleDto.roleName === 'ADMIN') {
+          this.deleteEnabled = true;
+          this.readEnabled = true;
+        }
+
+        this.form.patchValue({
+          freightBillReportId: this.savedBillData.freightBillReportId
+        });
+      } else {
+        this.writeEnabled = true;
+        this.readEnabled = false;
+        this.deleteEnabled = false;
+        // if (this.currentLoggedUser.roleDto.roleName === 'SUPER_ADMIN' || this.currentLoggedUser.roleDto.roleName === 'ADMIN') {
+        //   this.readEnabled = true;
+        //   this.deleteEnabled = true;
+        // }
+      }
+    }, error => {
+      console.log(error);
+    });
+  }
+
+  deleteMumbaiFreightBill(){
+    let freightId = this.form.get('freightBillReportId')?.value;
+    if(freightId){
+      this.apiService.deleteMumbaiFreightBill(freightId).subscribe(res=>{
+        if(res){
+          this.clearField();
+          $.toast({
+            heading: 'Bill Removed!',
+            text: 'You have deleted the mumbai bill information!!',
+            showHideTransition: 'fade',
+            icon: 'info',
+            position: 'top-center',
+            bgColor: '#1e6421',
+            loader: false,
+          });
+        }
+      }, err=>{
+        console.log(err);
+      })
+    } else {
+      $.toast({
+        heading: 'Invalid Bill Information!',
+        text: 'Please select bill before delete!!',
+        showHideTransition: 'fade',
+        icon: 'info',
+        position: 'bottom-center',
+        bgColor: '#3152be',
+        loader: false,
+      });
+    }
+  }
+
 
   formatDate(dateString: string): string {
     const [year, month, day] = dateString.split('-');
@@ -321,6 +382,7 @@ export class FrightBillComponent {
   saveMumbaiFreight() {
     const formObj = {
       "billNo": this.form.get('billNo')?.value,
+      "billDate": this.form.get('billDate')?.value,
       "partyName": this.form.get('partyName')?.value,
       "address": this.form.get('partyAddress')?.value,
       "district": this.form.get('partyDist')?.value,
@@ -330,7 +392,8 @@ export class FrightBillComponent {
       "codeNo": this.form.get('vCode')?.value,
       "ml": this.form.get('mlCode')?.value,
       "sac": this.form.get('sacNo')?.value,
-      "isVerified": false
+      "isVerified": false,
+      "requestedBy": this.currentLoggedUser.userName
     }
     if (this.currentLoggedUser.roleDto.roleName === 'SUPER_ADMIN' || this.currentLoggedUser.roleDto.roleName === 'ADMIN') {
       formObj.isVerified = true;
@@ -345,7 +408,7 @@ export class FrightBillComponent {
           showHideTransition: 'fade',
           icon: 'info',
           position: 'top-center',
-          bgColor: '#31be33',
+          bgColor: '#257b26',
           loader: false,
         });
       }
@@ -446,12 +509,12 @@ export class FrightBillComponent {
             <td>${l.vendorName}</td>
             <td>${l.quantity}</td>
             <td>${l.vehicleNo}</td>
-            <td>${l.lcvFtl || '-'}</td>
-            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayTotalFreight(l.lrNo)}</td>` : ""}
-            ${l.loadingCharges && l.loadingCharges !== 0 ? `<td>${l.loadingCharges}</td>` : ""}
-            ${l.unloadingCharges && l.unloadingCharges !== 0 ? `<td>${l.unloadingCharges}</td>` : ""}
-            ${l.plyWoodCharges && l.plyWoodCharges !== 0 ? `<td>${l.plyWoodCharges}</td>` : ""}
-            ${l.detentionCharges && l.detentionCharges !== 0 ? `<td>${l.detentionCharges}</td>` : ""}
+            <td width="40">${l.rate || '-'}</td>
+            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayTotalFreight(l.lrNo).toFixed(2)}</td>` : ""}
+            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayLoadingCharges(l.lrNo)}</td>` : ""}
+            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayUnloadingCharges(l.lrNo)}</td>` : ""}
+            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayPlywoodCharges(l.lrNo)}</td>` : ""}
+            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayDetentionCharges(l.lrNo)}</td>` : ""}
             ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplaySTCharges(l.lrNo) || 0}</td>` : ""}
             ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplaySubTotal(l.lrNo).toFixed(2)}</td>` : ""}
             ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplaySGST(l.lrNo).toFixed(2)}</td>` : ""}
@@ -461,16 +524,11 @@ export class FrightBillComponent {
         `;
       }).join('');
 
-      let showLoadingCharges = this.billingData.some(l => l.loadingCharges && l.loadingCharges !== 0);
-      let showUnloadingCharges = this.billingData.some(l => l.unloadingCharges && l.unloadingCharges !== 0);
-      let showPlyWoodCharges = this.billingData.some(l => l.plyWoodCharges && l.plyWoodCharges !== 0);
-      let showDetentionCharges = this.billingData.some(l => l.detentionCharges && l.detentionCharges !== 0);
-
       let invoiceTableHeader = `
             <thead>
-              <tr>
+              <tr class="text-center">
                   <th>LR No.</th>
-                  <th>Loory Rept. Date</th>
+                  <th>LR Date</th>
                   <th>Unloading Date</th>
                   <th>From</th>
                   <th>To</th>
@@ -478,12 +536,12 @@ export class FrightBillComponent {
                   <th>Vendor Name</th>
                   <th>Qty</th>
                   <th>Vehicle No</th>
-                  <th>Rate</th>
+                  <th width="40">Rate</th>
                   <th>Freight</th>
-                  ${showLoadingCharges ? '<th>Loading Charges</th>' : ''}
-                  ${showUnloadingCharges ? '<th>Unloading Charges</th>' : ''}
-                  ${showPlyWoodCharges ? '<th>Plywood Charges</th>' : ''}
-                  ${showDetentionCharges ? '<th>Detention Charges</th>' : ''}
+                  <th>Loading Charges</th>
+                  <th>Unloading Charges</th>
+                  <th>Plywood Charges</th>
+                  <th>Detention Charges</th>
                   <th>ST Charges</th>
                   <th>Sub Total</th>
                   <th>SGST 6%</th>
@@ -497,10 +555,10 @@ export class FrightBillComponent {
           <tr class="text-center">
               <th colspan="10">Grand Totals - </th>
               <th>₹${this.getTotalFreight().toFixed(2)}</th>
-              ${showLoadingCharges ? `<th>₹${this.getLoadingCharges().toFixed(2)}</th>` : ''}
-              ${showUnloadingCharges ? `<th>₹${this.getUnloadingCharges().toFixed(2)}</th>` : ''}
-              ${showPlyWoodCharges ? `<th>₹${this.getPlyWoodCharges().toFixed(2)}</th>` : ''}
-              ${showDetentionCharges ? `<th>₹${this.getDetentionCharges().toFixed(2)}</th>` : ''}
+              <th>₹${this.getLoadingCharges().toFixed(2)}</th>
+              <th>₹${this.getUnloadingCharges().toFixed(2)}</th>
+              <th>₹${this.getPlyWoodCharges().toFixed(2)}</th>
+              <th>₹${this.getDetentionCharges().toFixed(2)}</th>
               <th>₹${this.getStCharges().toFixed(2)}</th>
               <th>₹${this.getSubTotal().toFixed(2)}</th>
               <th>₹${this.getSGST().toFixed(2)}</th>
@@ -558,18 +616,22 @@ export class FrightBillComponent {
                   margin: 0;
                   vertical-align: middle;
                   font-weight: 700;
-                  min-height: 1px;  /* Ensures a minimum cell height */
-                  line-height: 0.5;  /* Adjust line height for better readability */
+                  min-height: 2px;  /* Ensures a minimum cell height */
+                  line-height: 1;  /* Adjust line height for better readability */
               }
 
               td {
-                  padding: 0;
-                  margin: 0;
-                  vertical-align: middle;
-                  font-weight: 500;
-                  min-height: 1px;  /* Ensures a minimum cell height */
-                  line-height: 0.5;  /* Adjust line height for better readability */
-              }
+                    padding: 0;
+                    margin: 0;
+                    vertical-align: middle;
+                    font-weight: 500;
+                    min-height: 1px;  /* Ensures a minimum cell height */
+                    line-height: 0.5;  /* Adjust line height for better readability */
+                    overflow: hidden;  /* Hides overflow text */
+                    white-space: nowrap;  /* Prevents text from wrapping */
+                    text-overflow: ellipsis;  /* Adds '...' when text overflows */
+                    max-width: 80px;  /* Set a maximum width for truncation */
+                }
 
               .invoice {
                   border: 1px solid black;
@@ -684,9 +746,9 @@ export class FrightBillComponent {
                                           <tbody class="d-block-end">
                                               <tr>
                                                   <th>Bill No</th>
-                                                  <td>10001</td>
+                                                  <td>${this.billingCommonData.billNo}</td>
                                                   <th>Bill Date</th>
-                                                  <td>02-10-2025</td>
+                                                  <td>${this.formatDate(this.billingCommonData.billDate)}</td>
                                               </tr>
                                               <tr>
                                                   <th>BA Code</th>

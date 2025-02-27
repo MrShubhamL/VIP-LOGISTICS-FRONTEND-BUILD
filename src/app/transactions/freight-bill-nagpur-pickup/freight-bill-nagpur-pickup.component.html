@@ -17,6 +17,8 @@
           <div class="row">
             <div class="col-lg-12">
               <div class="row">
+                <input type="hidden" formControlName="freightBillReportId" class="form-control"
+                       placeholder="Freight ID">
                 <div class="col-lg-3">
                   <div class="form-group d-flex">
                     <div class="col-4">
@@ -288,18 +290,17 @@
 
 
   <div class="fab-container">
-    <button [disabled]="form.invalid || !writeEnabled" type="button" (click)="saveMumbaiFreight()" mat-fab
+    <button [disabled]="form.invalid || !writeEnabled" type="button" (click)="saveNagpurPickupFreight()" mat-fab
             class="fab-button">
       <span class="text-xs"><i class="fas fa-save mr-2"></i>Save Freight</span>
     </button>
 
-    <button type="button" [disabled]="form.invalid  || !updateEnabled" mat-fab
-            class="fab-button">
-      <span class="text-xs"><i class="fas fa-edit mr-2"></i>Update Freight</span>
-    </button>
+<!--    <button type="button" [disabled]="form.invalid  || !updateEnabled" mat-fab-->
+<!--            class="fab-button">-->
+<!--      <span class="text-xs"><i class="fas fa-edit mr-2"></i>Update Freight</span>-->
+<!--    </button>-->
 
-    <button [disabled]="form.invalid  || !deleteEnabled" type="button" data-toggle="modal"
-            data-target="#delete-hire-modal" mat-fab class="fab-button">
+    <button [disabled]="form.invalid  || !deleteEnabled" type="button" (click)="deleteNagpurPickupFreightBill()" mat-fab class="fab-button">
       <span class="text-xs"><i class="fas fa-trash mr-2"></i>Delete Freight</span>
     </button>
 
@@ -315,17 +316,15 @@
   </div>
 
   <div class="bottom-nav">
-    <button [disabled]="form.invalid || !writeEnabled" type="button" (click)="saveMumbaiFreight()" mat-button>
+    <button [disabled]="form.invalid || !writeEnabled" type="button" (click)="saveNagpurPickupFreight()" mat-button>
       <span>Save</span>
     </button>
 
-    <button type="button" [disabled]="form.invalid || !updateEnabled" mat-button>
-      <span>Update</span>
-    </button>
+<!--    <button type="button" [disabled]="form.invalid || !updateEnabled" mat-button>-->
+<!--      <span>Update</span>-->
+<!--    </button>-->
 
-    <button [disabled]="form.invalid || !deleteEnabled" type="button" data-toggle="modal"
-            data-target="#delete-hire-modal"
-            mat-button>
+    <button [disabled]="form.invalid || !deleteEnabled" type="button" (click)="deleteNagpurPickupFreightBill()" mat-button>
       <span>Delete</span>
     </button>
 

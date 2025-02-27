@@ -24,6 +24,8 @@ import {FrightBillComponent} from './transactions/fright-bill/fright-bill.compon
 import {UserProfileComponent} from './user-profile/user-profile.component';
 import {OtpVerificationComponent} from './otp-verification/otp-verification.component';
 import {FreightGroupComponent} from './transactions/freight-group/freight-group.component';
+import {BillApprovalComponent} from './transactions/bill-approval/bill-approval.component';
+import {FreightRequestGroupComponent} from './transactions/freight-request-group/freight-request-group.component';
 
 const routes: Routes = [
   {
@@ -126,6 +128,12 @@ const routes: Routes = [
         component: FreightGroupComponent,
         canActivate: [PermissionGuard],
         data: {permission: 'freight-group'}
+      },
+      {
+        path: 'freight-request-group',
+        component: FreightRequestGroupComponent,
+        canActivate: [PermissionGuard],
+        data: {permission: 'freight-request-group'}
       },
       {
         path: 'mis',

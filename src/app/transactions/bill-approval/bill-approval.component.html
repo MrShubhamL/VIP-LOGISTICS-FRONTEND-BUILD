@@ -1,0 +1,64 @@
+<div class="row">
+  <div class="col-lg-12 mt-2">
+    <div class="card">
+      <div class="card-header bg-orange pb-2 pt-2">
+        <p class="card-title text-white text-sm">All Mumbai Approval Requests</p>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-lg-12 mb-3">
+            <div class="align-items-center justify-content-center d-flex">
+              <i class="text-orange fas fa-search mr-2"></i>
+              <input [(ngModel)]="searchLorry" type="text" class="form-control text-orange custom-search"
+                     placeholder="Search freight bill....">
+            </div>
+          </div>
+          <div class="col-lg-12">
+            <table *ngIf="!isDataLoading" class="table table-striped table-bordered">
+              <thead>
+              <tr class="text-xs text-muted text-center">
+                <th>Sr.No.</th>
+                <th>Bill No.</th>
+                <th>Bill Date</th>
+                <th>Location</th>
+                <th>Party</th>
+                <th>Requested By</th>
+                <th>Action</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr
+                *ngFor="let lr of requestedFreightBills | paginate: { itemsPerPage: itemsPerPage, currentPage: page }; let i = index"
+                class="text-xs text-center">
+                <td>{{ (page - 1) * itemsPerPage + i + 1 }}</td>
+                <td>{{lr.billNo}}</td>
+                <td>{{lr.billDate}}</td>
+                <td>{{lr.routeName}}</td>
+                <td>{{lr.partyName}}</td>
+                <td>{{lr.requestedBy}}</td>
+                <td>
+                  <div class="d-flex align-items-center justify-content-center">
+                    <button (click)="approveRequest(lr)" type="button"
+                            class="btn btn-xs text-xs text-bold p-1 approved-btn">Approve
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr *ngIf="filteredLorries.length === 0">
+                <td colspan="11" class="text-center text-danger text-sm text-bold">No Data Found!</td>
+              </tr>
+              </tbody>
+            </table>
+            <div *ngIf="isDataLoading" class="row">
+              <div class="col d-flex justify-content-center align-items-center">
+                <mat-spinner class="text-orange" diameter="70"></mat-spinner>
+              </div>
+            </div>
+            <pagination-controls (pageChange)="page = $event"></pagination-controls>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

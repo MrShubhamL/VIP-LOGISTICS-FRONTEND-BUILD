@@ -135,6 +135,7 @@ export class MisComponent {
         bgColor: '#3266c7',
         loader: false,
       });
+      console.log(err)
     });
 
     (modal as HTMLElement).classList.remove('show'); // Remove 'show' class

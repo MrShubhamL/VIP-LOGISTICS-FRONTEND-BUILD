@@ -63,36 +63,66 @@ export class RolesPermissionsComponent implements OnInit {
     });
   }
 
-  // private createPermissionControls() {
-  //   let controls: { [key: string]: FormControl } = {};
-  //   this.permissions.forEach(group => {
-  //     group.permission.forEach(permission => {
-  //       controls[permission] = new FormControl(false); // Initialize with false (unchecked)
-  //     });
-  //   });
-  //   return controls;
-  // }
 
   private createPermissionControls() {
     let controls: { [key: string]: FormControl } = {};
 
-    // Loop through permissions and add individual controls for each permission and its privileges
     this.permissions.forEach(group => {
       group.permission.forEach(permission => {
-        // Add control for the permission itself
-        controls[permission] = new FormControl(false);  // Initialize with false (unchecked)
+        // Create main permission control
+        controls[permission] = new FormControl(false);
 
-        // Add controls for each privilege associated with the permission
-        controls[`${permission}_READ`] = new FormControl(false);  // READ privilege
-        controls[`${permission}_WRITE`] = new FormControl(false); // WRITE privilege
-        controls[`${permission}_UPDATE`] = new FormControl(false); // UPDATE privilege
-        controls[`${permission}_DELETE`] = new FormControl(false); // DELETE privilege
+        // Create privilege controls (initially disabled)
+        controls[`${permission}_READ`] = new FormControl({value: false, disabled: true});
+        controls[`${permission}_WRITE`] = new FormControl({value: false, disabled: true});
+        controls[`${permission}_UPDATE`] = new FormControl({value: false, disabled: true});
+        controls[`${permission}_DELETE`] = new FormControl({value: false, disabled: true});
+
+        // Listen to changes in the main permission checkbox
+        controls[permission].valueChanges.subscribe(checked => {
+          this.toggleSubPermissions(controls, permission, checked);
+        });
+
+        // Listen to changes in WRITE permission
+        controls[`${permission}_WRITE`].valueChanges.subscribe(checked => {
+          if (checked) {
+            controls[`${permission}_READ`].setValue(true, {emitEvent: false});
+          }
+        });
+
+        // Listen to changes in UPDATE permission
+        controls[`${permission}_UPDATE`].valueChanges.subscribe(checked => {
+          if (checked) {
+            controls[`${permission}_READ`].setValue(true, {emitEvent: false});
+            controls[`${permission}_WRITE`].setValue(true, {emitEvent: false});
+          }
+        });
+
+        // Listen to changes in UPDATE permission
+        controls[`${permission}_DELETE`].valueChanges.subscribe(checked => {
+          if (checked) {
+            controls[`${permission}_READ`].setValue(true, {emitEvent: false});
+          }
+        });
+
+
       });
     });
 
     return controls;
   }
 
+
+  private toggleSubPermissions(controls: { [key: string]: FormControl }, permission: string, enable: boolean) {
+    ['_READ', '_WRITE', '_UPDATE', '_DELETE'].forEach(action => {
+      if (enable) {
+        controls[`${permission}${action}`].enable();
+      } else {
+        controls[`${permission}${action}`].disable();
+        controls[`${permission}${action}`].setValue(false, {emitEvent: false});
+      }
+    });
+  }
 
 
   clearFormData() {

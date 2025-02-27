@@ -43,6 +43,13 @@ import { FreightBillNagpurPickupComponent } from './transactions/freight-bill-na
 import { FreightBillRajkotComponent } from './transactions/freight-bill-rajkot/freight-bill-rajkot.component';
 import { FreightBillChakanComponent } from './transactions/freight-bill-chakan/freight-bill-chakan.component';
 import { FreightBillRudrapurComponent } from './transactions/freight-bill-rudrapur/freight-bill-rudrapur.component';
+import { BillApprovalComponent } from './transactions/bill-approval/bill-approval.component';
+import { FreightRequestGroupComponent } from './transactions/freight-request-group/freight-request-group.component';
+import { BillApprovalNagpurComponent } from './transactions/bill-approval-nagpur/bill-approval-nagpur.component';
+import { BillApprovalNagpurPickupComponent } from './transactions/bill-approval-nagpur-pickup/bill-approval-nagpur-pickup.component';
+import { BillApprovalRajkotComponent } from './transactions/bill-approval-rajkot/bill-approval-rajkot.component';
+import { BillApprovalChakanComponent } from './transactions/bill-approval-chakan/bill-approval-chakan.component';
+import { BillApprovalRudrapurComponent } from './transactions/bill-approval-rudrapur/bill-approval-rudrapur.component';
 
 
 @NgModule({
@@ -79,7 +86,14 @@ import { FreightBillRudrapurComponent } from './transactions/freight-bill-rudrap
     FreightBillNagpurPickupComponent,
     FreightBillRajkotComponent,
     FreightBillChakanComponent,
-    FreightBillRudrapurComponent
+    FreightBillRudrapurComponent,
+    BillApprovalComponent,
+    FreightRequestGroupComponent,
+    BillApprovalNagpurComponent,
+    BillApprovalNagpurPickupComponent,
+    BillApprovalRajkotComponent,
+    BillApprovalChakanComponent,
+    BillApprovalRudrapurComponent
   ],
   imports: [
     CommonModule,

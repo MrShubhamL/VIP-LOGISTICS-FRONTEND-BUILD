@@ -220,6 +220,7 @@ export class LorryReceiptComponent {
   ngOnInit() {
     this.form.get('lrNo')?.disable();
     this.form.get('whoItemList')?.disable();
+    this.form.get('lorryReceiptItems')?.disable();
     this.currentRole = this.storageService.getUserRole();
 
     // All Item Data
@@ -365,6 +366,7 @@ export class LorryReceiptComponent {
     this.topViewSection.nativeElement.scrollIntoView({behavior: 'smooth', block: 'start'});
     this.form.reset();
     this.form.get('whoItemList')?.disable();
+    this.form.get('lorryReceiptItems')?.disable();
     this.form.get('item.itemNo')?.enable()
     this.form.get('branch.branchNo')?.enable()
     this.form.get('route.routeNo')?.enable()
@@ -922,6 +924,7 @@ export class LorryReceiptComponent {
   }
 
   loadPartyItemData(event: any){
+    this.form.get('lorryReceiptItems')?.enable();
     let consignorPartyCode = this.form.get('consignor.partyNo')?.value;
     let consigneePartyCode = this.form.get('consignee.partyNo')?.value;
     if(event === 'Consignor'){

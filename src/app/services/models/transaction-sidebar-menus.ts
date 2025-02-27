@@ -12,12 +12,6 @@ let transaction_menus = [
     permission: 'lorry-hire-memo'
   },
   // {
-  //   path: 'memo-requests',
-  //   title: 'Memo Requests',
-  //   icon: 'fas fa-receipt nav-icon',
-  //   permission: 'memo-requests'
-  // },
-  // {
   //   path: 'lorry-receipt-temp',
   //   title: 'Lorry Receipt Temp',
   //   icon: 'fab fa-watchman-monitoring nav-icon',
@@ -28,7 +22,13 @@ let transaction_menus = [
     title: 'Freight Group',
     icon: 'fas fa-suitcase nav-icon',
     permission: 'freight-group'
-  }
+  },
+  {
+    path: 'freight-request-group',
+    title: 'Freight Requests',
+    icon: 'fas fa-receipt nav-icon',
+    permission: 'freight-request-group'
+  },
 ];
 
 export default transaction_menus;

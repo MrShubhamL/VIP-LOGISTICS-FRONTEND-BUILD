@@ -565,16 +565,57 @@ export class ApiService {
   // ------------------- FREIGHT BILL ENDPOINTS -------------------------
 
   public saveMumbaiFreight(freight: any): Observable<any> {
-    return this.http.post(BaseUrl + "/api/mumbai-freight/save-mumbai-freight-bill", {
+    return this.http.post(BaseUrl + "/api/mumbai-freight/save-mumbai-freight-bill", freight, {
       responseType: 'json'
     });
   }
+
+  public saveNagpurFreight(freight: any): Observable<any> {
+    return this.http.post(BaseUrl + "/api/nagpur-freight/save-nagpur-freight-bill", freight, {
+      responseType: 'json'
+    });
+  }
+
+  public saveNagpurPickupFreight(freight: any): Observable<any> {
+    return this.http.post(BaseUrl + "/api/nagpur-pickup-freight/save-nagpur-pickup-freight-bill", freight, {
+      responseType: 'json'
+    });
+  }
+
+  public saveRajkotFreight(freight: any): Observable<any> {
+    return this.http.post(BaseUrl + "/api/rajkot-freight/save-rajkot-freight-bill", freight, {
+      responseType: 'json'
+    });
+  }
+
+  public saveChakanFreight(freight: any): Observable<any> {
+    return this.http.post(BaseUrl + "/api/chakan-freight/save-chakan-freight-bill", freight, {
+      responseType: 'json'
+    });
+  }
+
+  public saveRudrapurFreight(freight: any): Observable<any> {
+    return this.http.post(BaseUrl + "/api/rudrapur-freight/save-rudrapur-freight-bill", freight, {
+      responseType: 'json'
+    });
+  }
+
+
 
   public getMumbaiFreightByBillNo(billNo: any, routeName: any): Observable<any> {
     return this.http.get(BaseUrl + "/api/mumbai-freight/mumbai-freight", {
       params: {
         billNo: billNo,
         routeName: routeName
+      },
+      responseType: 'json'
+    });
+  }
+
+  public getMumbaiSavedFreightByBillNo(billNo: any): Observable<any> {
+    return this.http.get(BaseUrl + "/api/mumbai-freight/get-mumbai-freight-by-bill-no", {
+      params: {
+        billNo: billNo,
       },
       responseType: 'json'
     });
@@ -590,11 +631,29 @@ export class ApiService {
     });
   }
 
+  public getNagpurSavedFreightByBillNo(billNo: any): Observable<any> {
+    return this.http.get(BaseUrl + "/api/nagpur-freight/get-nagpur-freight-by-bill-no", {
+      params: {
+        billNo: billNo,
+      },
+      responseType: 'json'
+    });
+  }
+
   public getNagpurPickupFreightByBillNo(billNo: any, routeName: any): Observable<any> {
     return this.http.get(BaseUrl + "/api/nagpur-pickup-freight/nagpur-pickup-freight", {
       params: {
         billNo: billNo,
         routeName: routeName
+      },
+      responseType: 'json'
+    });
+  }
+
+  public getNagpurPickupSavedFreightByBillNo(billNo: any): Observable<any> {
+    return this.http.get(BaseUrl + "/api/nagpur-pickup-freight/get-nagpur-pick-up-freight-by-bill-no", {
+      params: {
+        billNo: billNo,
       },
       responseType: 'json'
     });
@@ -611,12 +670,30 @@ export class ApiService {
     });
   }
 
+  public getRajkotSavedFreightByBillNo(billNo: any): Observable<any> {
+    return this.http.get(BaseUrl + "/api/rajkot-freight/get-rajkot-freight-by-bill-no", {
+      params: {
+        billNo: billNo,
+      },
+      responseType: 'json'
+    });
+  }
+
 
   public getChakanFreightByBillNo(billNo: any, routeName: any): Observable<any> {
     return this.http.get(BaseUrl + "/api/chakan-freight/chakan-freight", {
       params: {
         billNo: billNo,
         routeName: routeName
+      },
+      responseType: 'json'
+    });
+  }
+
+  public getChakanSavedFreightByBillNo(billNo: any): Observable<any> {
+    return this.http.get(BaseUrl + "/api/chakan-freight/get-chakan-freight-by-bill-no", {
+      params: {
+        billNo: billNo,
       },
       responseType: 'json'
     });
@@ -632,5 +709,122 @@ export class ApiService {
     });
   }
 
+  public getRudrapurSavedFreightByBillNo(billNo: any): Observable<any> {
+    return this.http.get(BaseUrl + "/api/rudrapur-freight/get-rudrapur-freight-by-bill-no", {
+      params: {
+        billNo: billNo,
+      },
+      responseType: 'json'
+    });
+  }
 
+
+  public deleteMumbaiFreightBill(freightId: any): Observable<any> {
+    return this.http.delete(BaseUrl + "/api/mumbai-freight/delete-mumbai-freight-bill", {
+      params: {freightBillReportId: freightId},
+      responseType: 'json'
+    });
+  }
+
+  public deleteNagpurFreightBill(freightId: any): Observable<any> {
+    return this.http.delete(BaseUrl + "/api/nagpur-freight/delete-nagpur-freight-bill", {
+      params: {freightBillReportId: freightId},
+      responseType: 'json'
+    });
+  }
+
+  public deleteNagpurPickupFreightBill(freightId: any): Observable<any> {
+    return this.http.delete(BaseUrl + "/api/nagpur-pickup-freight/delete-nagpur-pickup-freight-bill", {
+      params: {freightBillReportId: freightId},
+      responseType: 'json'
+    });
+  }
+
+  public deleteChakanFreightBill(freightId: any): Observable<any> {
+    return this.http.delete(BaseUrl + "/api/chakan-freight/delete-chakan-freight-bill", {
+      params: {freightBillReportId: freightId},
+      responseType: 'json'
+    });
+  }
+
+  public deleteRudrapurFreightBill(freightId: any): Observable<any> {
+    return this.http.delete(BaseUrl + "/api/rudrapur-freight/delete-rudrapur-freight-bill", {
+      params: {freightBillReportId: freightId},
+      responseType: 'json'
+    });
+  }
+
+  public deleteRajkotFreightBill(freightId: any): Observable<any> {
+    return this.http.delete(BaseUrl + "/api/rajkot-freight/delete-rajkot-freight-bill", {
+      params: {freightBillReportId: freightId},
+      responseType: 'json'
+    });
+  }
+
+  public getAllRequestedMumbaiFreightBills(): Observable<any> {
+    return this.http.get(BaseUrl + "/api/mumbai-freight/get-mumbai-requested-freight-bills", {
+      responseType: 'json'
+    });
+  }
+
+  public getAllRequestedNagpurFreightBills(): Observable<any> {
+    return this.http.get(BaseUrl + "/api/nagpur-freight/get-nagpur-requested-freight-bills", {
+      responseType: 'json'
+    });
+  }
+
+  public getAllRequestedNagpurPickupFreightBills(): Observable<any> {
+    return this.http.get(BaseUrl + "/api/nagpur-pickup-freight/get-nagpur-pickup-requested-freight-bills", {
+      responseType: 'json'
+    });
+  }
+
+  public getAllRequestedRajkotFreightBills(): Observable<any> {
+    return this.http.get(BaseUrl + "/api/rajkot-freight/get-rajkot-requested-freight-bills", {
+      responseType: 'json'
+    });
+  }
+
+  public getAllRequestedChakanFreightBills(): Observable<any> {
+    return this.http.get(BaseUrl + "/api/chakan-freight/get-chakan-requested-freight-bills", {
+      responseType: 'json'
+    });
+  }
+
+  public getAllRequestedRudrapurFreightBills(): Observable<any> {
+    return this.http.get(BaseUrl + "/api/rudrapur-freight/get-rudrapur-requested-freight-bills", {
+      responseType: 'json'
+    });
+  }
+
+  public updateMumbaiFreightBill(freight: any): Observable<any> {
+    return this.http.put(BaseUrl + "/api/mumbai-freight/update-mumbai-freight-bill", freight, {
+      responseType: 'json'
+    });
+  }
+  public updateNagpurFreightBill(freight: any): Observable<any> {
+    return this.http.put(BaseUrl + "/api/nagpur-freight/update-nagpur-freight-bill", freight, {
+      responseType: 'json'
+    });
+  }
+  public updateNagpurPickupFreightBill(freight: any): Observable<any> {
+    return this.http.put(BaseUrl + "/api/nagpur-pickup-freight/update-nagpur-pickup-freight-bill", freight, {
+      responseType: 'json'
+    });
+  }
+  public updateRajkotFreightBill(freight: any): Observable<any> {
+    return this.http.put(BaseUrl + "/api/rajkot-freight/update-rajkot-freight-bill", freight, {
+      responseType: 'json'
+    });
+  }
+  public updateChakanFreightBill(freight: any): Observable<any> {
+    return this.http.put(BaseUrl + "/api/chakan-freight/update-chakan-freight-bill", freight, {
+      responseType: 'json'
+    });
+  }
+  public updateRudrapurFreightBill(freight: any): Observable<any> {
+    return this.http.put(BaseUrl + "/api/rudrapur-freight/update-rudrapur-freight-bill", freight, {
+      responseType: 'json'
+    });
+  }
 }

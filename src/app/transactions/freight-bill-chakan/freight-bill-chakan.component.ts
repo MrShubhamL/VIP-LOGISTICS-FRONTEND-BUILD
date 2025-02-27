@@ -37,9 +37,11 @@ export class FreightBillChakanComponent {
   updateEnabled: boolean = false;
   deleteEnabled: boolean = false;
   currentLoggedUser: any;
+  private savedBillData: any;
 
   constructor() {
     this.form = this.formBuilder.group({
+      freightBillReportId: new FormControl(''),
       billNo: new FormControl('', Validators.required),
       billDate: new FormControl(''),
       partyName: new FormControl(''),
@@ -130,6 +132,7 @@ export class FreightBillChakanComponent {
   findFreightByBill(event: any) {
     let billNo = this.form.get('billNo')?.value;
     if (billNo) {
+      this.checkFreightBillExist(billNo);
       this.apiService.getChakanFreightByBillNo(billNo, event).subscribe(res => {
         if (res !== 0) {
           this.billingData = res.chakanFreightBillDtos;
@@ -188,6 +191,65 @@ export class FreightBillChakanComponent {
       }, err => {
         console.log(err)
       })
+    }
+  }
+
+  checkFreightBillExist(billNo: any) {
+    this.apiService.getChakanSavedFreightByBillNo(billNo).subscribe(res => {
+      if (res) {
+        this.savedBillData = res;
+        this.writeEnabled = false;
+        this.readEnabled = this.savedBillData.isVerified;
+        if (this.currentLoggedUser.roleDto.roleName === 'SUPER_ADMIN' || this.currentLoggedUser.roleDto.roleName === 'ADMIN') {
+          this.deleteEnabled = true;
+          this.readEnabled = true;
+        }
+        this.form.patchValue({
+          freightBillReportId: this.savedBillData.freightBillReportId
+        });
+      } else {
+        this.writeEnabled = true;
+        this.readEnabled = false;
+        this.deleteEnabled = false;
+        // if (this.currentLoggedUser.roleDto.roleName === 'SUPER_ADMIN' || this.currentLoggedUser.roleDto.roleName === 'ADMIN') {
+        //   this.readEnabled = true;
+        //   this.deleteEnabled = true;
+        // }
+      }
+    }, error => {
+      console.log(error);
+    });
+  }
+
+  deleteChakanFreightBill() {
+    let freightId = this.form.get('freightBillReportId')?.value;
+    if (freightId) {
+      this.apiService.deleteChakanFreightBill(freightId).subscribe(res => {
+        if (res) {
+          this.clearField();
+          $.toast({
+            heading: 'Bill Removed!',
+            text: 'You have deleted the rajkot bill information!!',
+            showHideTransition: 'fade',
+            icon: 'info',
+            position: 'top-center',
+            bgColor: '#1e6421',
+            loader: false,
+          });
+        }
+      }, err => {
+        console.log(err);
+      })
+    } else {
+      $.toast({
+        heading: 'Invalid Bill Information!',
+        text: 'Please select bill before delete!!',
+        showHideTransition: 'fade',
+        icon: 'info',
+        position: 'bottom-center',
+        bgColor: '#3152be',
+        loader: false,
+      });
     }
   }
 
@@ -335,6 +397,7 @@ export class FreightBillChakanComponent {
   saveChakanFreight() {
     const formObj = {
       "billNo": this.form.get('billNo')?.value,
+      "billDate": this.form.get('billDate')?.value,
       "partyName": this.form.get('partyName')?.value,
       "address": this.form.get('partyAddress')?.value,
       "district": this.form.get('partyDist')?.value,
@@ -344,22 +407,23 @@ export class FreightBillChakanComponent {
       "codeNo": this.form.get('vCode')?.value,
       "ml": this.form.get('mlCode')?.value,
       "sac": this.form.get('sacNo')?.value,
-      "isVerified": false
+      "isVerified": false,
+      "requestedBy": this.currentLoggedUser.userName
     }
     if (this.currentLoggedUser.roleDto.roleName === 'SUPER_ADMIN' || this.currentLoggedUser.roleDto.roleName === 'ADMIN') {
       formObj.isVerified = true;
     }
 
-    this.apiService.saveMumbaiFreight(formObj).subscribe(res => {
+    this.apiService.saveChakanFreight(formObj).subscribe(res => {
       if (res) {
         this.clearField();
         $.toast({
-          heading: 'Mumbai freight bill has been submitted!',
-          text: 'You have submitted the mumbai freight bill. Please contact to respective authority member for approval.',
+          heading: 'Chakan freight bill has been submitted!',
+          text: 'You have submitted the Chakan freight bill. Please contact to respective authority member for approval.',
           showHideTransition: 'fade',
           icon: 'info',
           position: 'top-center',
-          bgColor: '#31be33',
+          bgColor: '#257b26',
           loader: false,
         });
       }
@@ -687,7 +751,7 @@ export class FreightBillChakanComponent {
                                                   <th>Bill No</th>
                                                   <td>${this.billingCommonData.billNo}</td>
                                                   <th>Bill Date</th>
-                                                  <td>${this.billingCommonData.billDate}</td>
+                                                  <td>${this.formatDate(this.billingCommonData.billDate)}</td>
                                               </tr>
                                               <tr>
                                                   <th>MLL Ref No</th>

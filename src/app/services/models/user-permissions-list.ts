@@ -16,7 +16,7 @@ const userPermissionsList = [
     title: 'Transaction Access',
     permission: [
       'lorry-receipt', 'mis', 'memo-requests', 'lorry-receipt-temp', 'lorry-hire-memo',
-      'freight-group', 'bill-submission', 'octroi-bill', 'customer-receipt',
+      'freight-group', 'freight-request-group', 'octroi-bill', 'customer-receipt',
       'trip-expenses-voucher', 'other-receipt', 'other-payments', 'journal'
     ]
   },

@@ -35,9 +35,11 @@ export class FreightBillRajkotComponent {
   updateEnabled: boolean = false;
   deleteEnabled: boolean = false;
   currentLoggedUser: any;
+  private savedBillData: any;
 
   constructor() {
     this.form = this.formBuilder.group({
+      freightBillReportId: new FormControl(''),
       billNo: new FormControl('', Validators.required),
       billDate: new FormControl(''),
       partyName: new FormControl(''),
@@ -127,6 +129,7 @@ export class FreightBillRajkotComponent {
   findFreightByBill(event: any) {
     let billNo = this.form.get('billNo')?.value;
     if (billNo) {
+      this.checkFreightBillExist(billNo);
       this.apiService.getRajkotFreightByBillNo(billNo, event).subscribe(res => {
         if (res !== 0) {
           this.billingData = res.rajkotFreightBillDtos;
@@ -179,6 +182,65 @@ export class FreightBillRajkotComponent {
       }, err => {
         console.log(err)
       })
+    }
+  }
+
+  checkFreightBillExist(billNo: any) {
+    this.apiService.getRajkotSavedFreightByBillNo(billNo).subscribe(res => {
+      if (res) {
+        this.savedBillData = res;
+        this.writeEnabled = false;
+        this.readEnabled = this.savedBillData.isVerified;
+        if (this.currentLoggedUser.roleDto.roleName === 'SUPER_ADMIN' || this.currentLoggedUser.roleDto.roleName === 'ADMIN') {
+          this.deleteEnabled = true;
+          this.readEnabled = true;
+        }
+        this.form.patchValue({
+          freightBillReportId: this.savedBillData.freightBillReportId
+        });
+      } else {
+        this.writeEnabled = true;
+        this.readEnabled = false;
+        this.deleteEnabled = false;
+        // if (this.currentLoggedUser.roleDto.roleName === 'SUPER_ADMIN' || this.currentLoggedUser.roleDto.roleName === 'ADMIN') {
+        //   this.readEnabled = true;
+        //   this.deleteEnabled = true;
+        // }
+      }
+    }, error => {
+      console.log(error);
+    });
+  }
+
+  deleteRajkotFreightBill() {
+    let freightId = this.form.get('freightBillReportId')?.value;
+    if (freightId) {
+      this.apiService.deleteRajkotFreightBill(freightId).subscribe(res => {
+        if (res) {
+          this.clearField();
+          $.toast({
+            heading: 'Bill Removed!',
+            text: 'You have deleted the rajkot bill information!!',
+            showHideTransition: 'fade',
+            icon: 'info',
+            position: 'top-center',
+            bgColor: '#1e6421',
+            loader: false,
+          });
+        }
+      }, err => {
+        console.log(err);
+      })
+    } else {
+      $.toast({
+        heading: 'Invalid Bill Information!',
+        text: 'Please select bill before delete!!',
+        showHideTransition: 'fade',
+        icon: 'info',
+        position: 'bottom-center',
+        bgColor: '#3152be',
+        loader: false,
+      });
     }
   }
 
@@ -319,9 +381,10 @@ export class FreightBillRajkotComponent {
   }
 
 
-  saveMumbaiFreight() {
+  saveRajkotFreight() {
     const formObj = {
       "billNo": this.form.get('billNo')?.value,
+      "billDate": this.form.get('billDate')?.value,
       "partyName": this.form.get('partyName')?.value,
       "address": this.form.get('partyAddress')?.value,
       "district": this.form.get('partyDist')?.value,
@@ -331,22 +394,23 @@ export class FreightBillRajkotComponent {
       "codeNo": this.form.get('vCode')?.value,
       "ml": this.form.get('mlCode')?.value,
       "sac": this.form.get('sacNo')?.value,
-      "isVerified": false
+      "isVerified": false,
+      "requestedBy": this.currentLoggedUser.userName
     }
     if (this.currentLoggedUser.roleDto.roleName === 'SUPER_ADMIN' || this.currentLoggedUser.roleDto.roleName === 'ADMIN') {
       formObj.isVerified = true;
     }
 
-    this.apiService.saveMumbaiFreight(formObj).subscribe(res => {
+    this.apiService.saveRajkotFreight(formObj).subscribe(res => {
       if (res) {
         this.clearField();
         $.toast({
-          heading: 'Mumbai freight bill has been submitted!',
-          text: 'You have submitted the mumbai freight bill. Please contact to respective authority member for approval.',
+          heading: 'Rajkot freight bill has been submitted!',
+          text: 'You have submitted the Rajkot freight bill. Please contact to respective authority member for approval.',
           showHideTransition: 'fade',
           icon: 'info',
           position: 'top-center',
-          bgColor: '#31be33',
+          bgColor: '#257b26',
           loader: false,
         });
       }
@@ -510,7 +574,7 @@ export class FreightBillRajkotComponent {
       <head>
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1">
-          <title>Mumbai Freight Bill (${this.billingCommonData.billNo})</title>
+          <title>Rajkot Freight Bill (${this.billingCommonData.billNo})</title>
           <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
               integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
           <style>
@@ -565,7 +629,7 @@ export class FreightBillRajkotComponent {
                     overflow: hidden;  /* Hides overflow text */
                     white-space: nowrap;  /* Prevents text from wrapping */
                     text-overflow: ellipsis;  /* Adds '...' when text overflows */
-                    max-width: 80px;  /* Set a maximum width for truncation */
+                    max-width: 120px;  /* Set a maximum width for truncation */
                 }
 
               .invoice {
@@ -681,9 +745,9 @@ export class FreightBillRajkotComponent {
                                           <tbody class="d-block-end">
                                               <tr>
                                                   <th>Bill No</th>
-                                                  <td>10001</td>
+                                                  <td>${this.billingCommonData.billNo}</td>
                                                   <th>Bill Date</th>
-                                                  <td>02-10-2025</td>
+                                                  <td>${this.formatDate(this.billingCommonData.billDate)}</td>
                                               </tr>
                                               <tr>
                                                   <th>BA Code</th>
