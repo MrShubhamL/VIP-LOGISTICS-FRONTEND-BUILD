@@ -36,7 +36,7 @@ export class AppComponent {
     this.notification = message;
     const messageFor = this.notification.messageFor;
 
-    if (userRole !== 'SUPER_ADMIN' || 'ADMIN') {
+    if (userRole !== 'SUPER_ADMIN') {
       if (messageFor === 'ROLE-REQUEST') {
         this.audio.currentTime = 0; // Reset to start
         this.audio.play();
@@ -56,6 +56,9 @@ export class AppComponent {
         });
       }
 
+    }
+
+    if (userRole === 'ADMIN' || 'SUPER_ADMIN') {
       if (messageFor === 'FREIGHT-APPROVAL') {
         this.audio.currentTime = 0; // Reset to start
         this.audio.play();
