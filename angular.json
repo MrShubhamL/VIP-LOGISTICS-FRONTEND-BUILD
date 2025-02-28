@@ -51,6 +51,14 @@
               "node_modules/jquery/dist/jquery.min.js",
               "node_modules/jquery-toast-plugin/dist/jquery.toast.min.js",
               "node_modules/select2/dist/js/select2.min.js"
+            ],
+            "allowedCommonJsDependencies": [
+              "canvg",
+              "file-saver",
+              "jspdf-autotable",
+              "sockjs-client",
+              "html2canvas",
+              "dompurify"
             ]
           },
           "configurations": {

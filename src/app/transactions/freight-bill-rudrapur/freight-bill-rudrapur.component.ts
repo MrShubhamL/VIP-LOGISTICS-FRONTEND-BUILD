@@ -2,7 +2,10 @@ import {Component, inject} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {StorageService} from '../../services/storage/storage.service';
 import {ApiService} from '../../services/api/api.service';
-
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+import * as XLSX from 'xlsx';
+import {WebSocketService} from '../../services/api/web-socket.service';
 declare var $: any;
 
 @Component({
@@ -29,6 +32,7 @@ export class FreightBillRudrapurComponent {
   private formBuilder = inject(FormBuilder);
   private storageService = inject(StorageService);
   private apiService = inject(ApiService);
+  private webSocketService = inject(WebSocketService);
 
   readEnabled: boolean = false;
   writeEnabled: boolean = false;
@@ -364,6 +368,8 @@ export class FreightBillRudrapurComponent {
     this.apiService.saveRudrapurFreight(formObj).subscribe(res => {
       if (res) {
         this.clearField();
+        let message = "Hello there!!,  Freight Bill Approval Submitted!!";
+        this.webSocketService.sendMessage('/app/sendMessage', message, 'FREIGHT-APPROVAL');
         $.toast({
           heading: 'Rudrapur freight bill has been submitted!',
           text: 'You have submitted the Rudrapur freight bill. Please contact to respective authority member for approval.',
@@ -770,4 +776,419 @@ export class FreightBillRudrapurComponent {
       }, 500);
     }
   }
+
+  generatePDF() {
+    let printWindow = window.open('', '');
+    if (printWindow) {
+      let processedLrNos = new Set();
+
+      let invoiceRows = this.billingData.map((l, i) => {
+        let shouldShowLrNo = !processedLrNos.has(l.lrNo);
+        if (shouldShowLrNo) {
+          processedLrNos.add(l.lrNo);
+        }
+
+        let rowSpan = shouldShowLrNo ? this.getLrRowSpan(l.lrNo) : 1;
+
+        return `
+        <tr>
+            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle text-bold">${l.lrNo}</td>` : ""}
+            <td>${this.formatDate(l.lrDate)}</td>
+            <td>${this.formatDate(l.unloadingDate)}</td>
+            <td>${l.from}</td>
+            <td>${l.to}</td>
+            <td>${l.invoiceNo}</td>
+            <td>${l.supplierName}</td>
+            <td>${l.weight}</td>
+            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayTotalFreight(l.lrNo)}</td>` : ""}
+            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayLoadingCharges(l.lrNo) || 0}</td>` : ""}
+            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayDetentionCharges(l.lrNo) || 0}</td>` : ""}
+            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplaySTCharges(l.lrNo) || 0}</td>` : ""}
+            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayTaxableAmount(l.lrNo).toFixed(2)}</td>` : ""}
+            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayIGST(l.lrNo).toFixed(2)}</td>` : ""}
+            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">-</td>` : ""}
+            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getTotalBillValue(l.lrNo).toFixed(2)}</td>` : ""}
+        </tr>
+        `;
+      }).join('');
+
+      let invoiceTableHeader = `
+            <thead>
+              <tr>
+                  <th>LR No.</th>
+                  <th>Loory Rept. Date</th>
+                  <th>Unloading Date</th>
+                  <th>From</th>
+                  <th>To</th>
+                  <th>Invoice No.</th>
+                  <th>Supplier Name</th>
+                  <th>Weight</th>
+                  <th>Freight</th>
+                  <th>Loading Charges</th>
+                  <th>Detention Charges</th>
+                  <th>ST Charges</th>
+                  <th>Taxable Amount</th>
+                  <th>IGST 12%</th>
+                  <th>ROUND OFF</th>
+                  <th>Total Bill</th>
+              </tr>
+            </thead>
+        `;
+
+      let invoiceFooterTable = `
+          <tr class="text-center">
+              <th colspan="7">Grand Totals - </th>
+              <th>${this.getTotalWeight().toFixed(2)}</th>
+              <th>₹${this.getTotalFreight().toFixed(2)}</th>
+              <th>₹${this.getLoadingCharges().toFixed(2)}</th>
+              <th>₹${this.getDetentionCharges().toFixed(2)}</th>
+              <th>₹${this.getStCharges().toFixed(2)}</th>
+              <th>₹${this.getTotalTaxableAmount()}</th>
+              <th>₹${this.getIGST().toFixed(2)}</th>
+              <th></th>
+              <th>₹${(this.getGrandTotal()).toFixed(2)}</th>
+          </tr>
+      `;
+
+
+      let htmlContent = `
+      <!doctype html>
+      <html lang="en">
+
+      <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <title>Rudrapur Freight Bill (${this.billingCommonData.billNo})</title>
+          <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+              integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+          <style>
+              @media print {
+                  th,
+                  td {
+                      font-size: 8px;
+                      font-weight: 500;
+                  }
+              }
+
+              @page {
+                  size: A4 landscape !important;
+              }
+
+              body {
+                  padding: 10px;
+                  font-size: 10.8px;
+              }
+
+              .border-none {
+                  border: none;
+              }
+
+              .custom-border {
+                  border: none;
+                  /* Darker border for the table */
+              }
+
+              .custom-border th,
+              .custom-border td {
+                  border: 1px solid black !important;
+                  /* Darker borders for table cells */
+              }
+
+              th {
+                  padding: 0;
+                  margin: 0;
+                  vertical-align: middle;
+                  font-weight: 700;
+                  min-height: 1px;  /* Ensures a minimum cell height */
+                  line-height: 0.5;  /* Adjust line height for better readability */
+              }
+
+              td {
+                  padding: 0;
+                  margin: 0;
+                  vertical-align: middle;
+                  font-weight: 500;
+                  min-height: 1px;  /* Ensures a minimum cell height */
+                  line-height: 0.5;  /* Adjust line height for better readability */
+              }
+
+              .invoice {
+                  border: 1px solid black;
+              }
+
+              .d-block-start {
+                  display: block;
+                  justify-items: start;
+                  align-items: start;
+                  justify-content: start;
+              }
+
+              .d-block-end {
+                  display: block;
+                  justify-items: end;
+                  align-items: start;
+                  justify-content: start;
+              }
+
+              .d-block-center {
+                  display: block;
+                  justify-items: center;
+                  align-items: start;
+                  justify-content: start;
+              }
+
+              .card-border-bottom {
+                  border-bottom: 1px solid black;
+              }
+
+              .bottom-text-size {
+                  font-size: 9.8px;
+              }
+              .sign {
+                  width: 50px;
+                  display: block;
+                  margin: 0 auto;
+              }
+          </style>
+      </head>
+
+      <body>
+
+          <div class="container-fluid invoice">
+              <div class="row">
+                  <div class="col-12 p-0">
+                      <div class="card border-none">
+                          <div class="card-header card-border-bottom text-center p-1 m-0">
+                              <h3 class="card-title">VIP LOGISTICS</h3>
+                              <p class="card-subtitle">
+                                  PLOT NO 133, AMBEDKAR NAGAR, NAGAON PHATA, TAL. HATAKANGALE, DIST. KOLHAPUR - 416122.<br>
+                                  Contact - +91 7591919191, +91 9767919191 <br>
+                                  E-mail - viplogistics@yahoo.com
+                              </p>
+                          </div>
+
+                          <div class="card-body">
+                              <div class="row">
+                                  <!-- Left Section -->
+                                  <div class="col-4 px-2 text-start">
+                                      <table class="table table-bordered custom-border">
+                                          <tbody class="d-block-start">
+                                              <tr>
+                                                  <th>DETAILS OF CUSTOMER</th>
+                                              </tr>
+                                              <tr>
+                                                  <th>NAME: <span class="text-muted">${(this.billingCommonData.partyName).replace(/\-\(.*?\)/g, '')}</span></th>
+                                              </tr>
+                                              <tr>
+                                                  <th>ADDRESS: <span class="text-muted">${this.billingCommonData.address}</span></th>
+                                              </tr>
+                                              <tr>
+                                                  <th>STATE CODE: <span class="text-muted">${this.billingCommonData.stateCode}</span></th>
+                                              </tr>
+                                              <tr>
+                                                  <th>GSTIN: <span class="text-muted">${this.billingCommonData.gstNo}</span></th>
+                                              </tr>
+                                          </tbody>
+                                      </table>
+                                  </div>
+
+                                  <!-- Center Section -->
+                                  <div class="col-4 px-2">
+                                  </div>
+
+                                  <!-- Right Section -->
+                                  <div class="col-4 px-2 text-start">
+                                      <table class="table table-bordered custom-border">
+                                          <tbody class="d-block-end">
+                                              <tr>
+                                                  <th>Bill No</th>
+                                                  <td>${this.billingCommonData.billNo}</td>
+                                                  <th>Bill Date</th>
+                                                  <td>${this.formatDate(this.billingCommonData.billDate)}</td>
+                                              </tr>
+                                              <tr>
+                                                  <th>GSTIN</th>
+                                                  <td colspan="3">27AKJPP0760D1Z9</td>
+                                              </tr>
+                                              <tr>
+                                                  <th>PAN No</th>
+                                                  <td colspan="3">AKJPP0760D</td>
+                                              </tr>
+                                              <tr>
+                                                  <th>Place of Supply</th>
+                                                  <td>Rudrapur</td>
+                                                  <th>State Code</th>
+                                                  <td>05</td>
+                                              </tr>
+                                              <tr>
+                                                  <th>Description of Service</th>
+                                                  <td colspan="3">Transport Goods By Road</td>
+                                              </tr>
+                                          </tbody>
+                                      </table>
+                                  </div>
+                              </div>
+
+                              <div class="row mb-0">
+                                  <div class="col-12 px-2 pb-0 mb-0">
+                                      <table class="table table-bordered custom-border">
+                                          <thead class="text-center">
+                                              ${invoiceTableHeader}
+                                          </thead>
+                                          <tbody>
+                                              ${invoiceRows}
+                                          </tbody>
+                                          <tfoot>
+                                              ${invoiceFooterTable}
+                                          </tfoot>
+                                      </table>
+                                  </div>
+                              </div>
+
+                              <div class="row pt-0 mt-0">
+                                  <div class="col-12 mb-0 mt-0 pt-0">
+                                      <h3 class="bottom-text-size">Amount In Words :- <strong>${this.convertNumberToWords(Number((this.getGrandTotal()).toFixed(2)))}</strong></h3>
+                                      <h3 class="bottom-text-size"><strong>Remarks :- </strong>Exempted vide Sr. No. 22 of Notification no 12/2017 - Central Tax (Rate) dated. 28th June, 2017 and as notified by State under GST law.</h3>
+                                      <h3 class="bottom-text-size"><strong>Declaration:</strong></h3>
+                                      <p class="mb-0">"We hereby declare that though our aggregate turnover in any preceding financial year from 2017-18 onwards is more than the aggregate turnover notified under sub-rule (4) of rule 48, we are not required to prepare an invoice in terms of the provisions of the said sub-rule."</p>
+                                      <p class="mb-2">"I/we have taken registration under the CGST Act 2017 and have exercised the option to pay tax on services of Goods Transport Agency in relation to transport of goods supplied by us during the Financial year 2022-2023 under forward charge."</p>
+                                  </div>
+                                  <div class="col-12 mb-0 mt-0 pt-0">
+                                      <div class="row">
+                                          <div class="col-8">
+                                              <h4 class="bottom-text-size"><strong>TERMS & CONDITIONS:</strong></h4>
+                                              <h4 class="bottom-text-size">1. All Payments by cheques/drafts in favor of "VIP LOGISTICS" should be crossed to payee's account.</h4>
+                                              <h4 class="bottom-text-size">2. No Claims and/or discrepancies, if any, shall be considered unless brought to the notice of the company in writing within 3 days of the receipt of the bill.</h4>
+                                              <h4 class="bottom-text-size">3. <strong>Dispute if any shall be subjected to the jurisdiction of Mumbai Courts only.</strong></h4>
+                                              <h4 class="bottom-text-size">Name of Bank: <strong>IDBI BANK</strong></h4>
+                                              <h4 class="bottom-text-size">Branch: <strong>Shahupuri, Kolhapur</strong></h4>
+                                              <h4 class="bottom-text-size">Current A/c. No. <strong>0464102000020837</strong></h4>
+                                              <h4 class="bottom-text-size">IFSC Code: <strong>IBKL0000464</strong></h4>
+
+                                          </div>
+                                          <div class="col-4 d-block-end">
+                                              <div class="d-block-center mt-5">
+                                                  <p class="p-0 m-0">For <strong>VIP LOGISTICS</strong></p>
+                                              <img class="sign p-0 m-0" src="../../../images/vip-sign.png" alt="Loading...">
+                                              <p class="text-bold"><strong>AUTHORIZED SIGNATORY</strong></p>
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+
+                  </div>
+              </div>
+          </div>
+
+
+
+          <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+              integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+              crossorigin="anonymous"></script>
+      </body>
+
+      </html>
+      `
+
+      printWindow.document.open();
+      printWindow.document.write(htmlContent);
+      printWindow.document.close();
+
+      setTimeout(() => {
+        html2canvas(printWindow.document.body, {scale: 2}).then(canvas => {
+          const imgData = canvas.toDataURL('image/png');
+          const pdf = new jsPDF('l', 'mm', 'a4'); // 'l' for landscape
+          const pageWidth = 297; // A4 width in landscape
+          const pageHeight = 210; // A4 height in landscape
+
+          const imgWidth = pageWidth;
+          const imgHeight = (canvas.height * imgWidth) / canvas.width; // Maintain aspect ratio
+
+          if (imgHeight > pageHeight) {
+            // If content is larger than one page, split into multiple pages
+            let position = 0;
+            while (position < imgHeight) {
+              pdf.addImage(imgData, 'PNG', 0, position * -1, imgWidth, imgHeight);
+              position += pageHeight; // Move to the next page height
+              if (position < imgHeight) pdf.addPage();
+            }
+          } else {
+            pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+          }
+
+          pdf.save('rudrapur-freight-bill-' + this.billingCommonData.billNo + '.pdf');
+          printWindow.close();
+        });
+      }, 300);
+    }
+  }
+
+  exportToExcel() {
+    let wb = XLSX.utils.book_new(); // Create a new workbook
+    let wsData = [];
+
+    // Table headers
+    let headers = [
+      "LR No.", "Loory Rept. Date", "Unloading Date", "From", "To",
+      "Invoice No.", "Supplier Name", "Weight", "Freight", "Loading Charges",
+      "Detention Charges", "ST Charges", "Taxable Amount", "IGST 12%",
+      "ROUND OFF", "Total Bill"
+    ];
+    wsData.push(headers);
+
+    // Table body
+    let processedLrNos = new Set();
+    this.billingData.forEach(l => {
+      let shouldShowLrNo = !processedLrNos.has(l.lrNo);
+      if (shouldShowLrNo) {
+        processedLrNos.add(l.lrNo);
+      }
+
+      let row = [
+        shouldShowLrNo ? l.lrNo : "",
+        this.formatDate(l.lrDate),
+        this.formatDate(l.unloadingDate),
+        l.from,
+        l.to,
+        l.invoiceNo,
+        l.supplierName,
+        l.weight,
+        shouldShowLrNo ? this.getDisplayTotalFreight(l.lrNo) : "",
+        shouldShowLrNo ? this.getDisplayLoadingCharges(l.lrNo) || 0 : "",
+        shouldShowLrNo ? this.getDisplayDetentionCharges(l.lrNo) || 0 : "",
+        shouldShowLrNo ? this.getDisplaySTCharges(l.lrNo) || 0 : "",
+        shouldShowLrNo ? this.getDisplayTaxableAmount(l.lrNo).toFixed(2) : "",
+        shouldShowLrNo ? this.getDisplayIGST(l.lrNo).toFixed(2) : "",
+        shouldShowLrNo ? "-" : "",
+        shouldShowLrNo ? this.getTotalBillValue(l.lrNo).toFixed(2) : ""
+      ];
+      wsData.push(row);
+    });
+
+    // Table Footer (Grand Totals)
+    let footer = [
+      "Grand Totals -", "", "", "", "", "", "",
+      this.getTotalWeight().toFixed(2),
+      this.getTotalFreight().toFixed(2),
+      this.getLoadingCharges().toFixed(2),
+      this.getDetentionCharges().toFixed(2),
+      this.getStCharges().toFixed(2),
+      this.getTotalTaxableAmount(),
+      this.getIGST().toFixed(2),
+      "",
+      this.getGrandTotal().toFixed(2)
+    ];
+    wsData.push(footer);
+
+    // Convert data to a worksheet
+    let ws = XLSX.utils.aoa_to_sheet(wsData);
+    XLSX.utils.book_append_sheet(wb, ws, "Invoice Data");
+
+    // Save the file
+    XLSX.writeFile(wb, "rudrapur-freight-bill-" + this.billingCommonData.billNo + ".xlsx");
+  }
+
 }

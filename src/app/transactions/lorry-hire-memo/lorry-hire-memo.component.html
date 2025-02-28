@@ -294,23 +294,23 @@
 
       <div class="bottom-nav">
         <button *ngIf="!isEditModeOn" [disabled]="form.invalid || !writeEnabled" type="submit" mat-button>
-          <span>Save</span>
+          <span><i class="fas fa-save mr-2"></i>Save</span>
         </button>
 
         <button type="button" (click)="updateLorryHire()" [disabled]="form.invalid || !updateEnabled" mat-button>
-          <span>Update</span>
+          <span><i class="fas fa-edit mr-2"></i>Update</span>
         </button>
 
         <button [disabled]="form.invalid || !deleteEnabled" type="button" data-toggle="modal" data-target="#delete-hire-modal" mat-button>
-          <span>Delete</span>
+          <span><i class="fas fa-trash mr-2"></i>Delete</span>
         </button>
 
-        <button [disabled]="form.invalid || !readEnabled" type="button" (click)="printDocument()" mat-button>
-          <span>Print</span>
-        </button>
+<!--        <button [disabled]="form.invalid || !readEnabled" type="button" (click)="printDocument()" mat-button>-->
+<!--          <span>Print</span>-->
+<!--        </button>-->
 
         <button (click)="cancel()" type="button" mat-button>
-          <span>Clear</span>
+          <span><i class="fas fa-times mr-2"></i>Clear</span>
         </button>
       </div>
 

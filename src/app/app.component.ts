@@ -14,12 +14,15 @@ declare var $: any;
 })
 export class AppComponent {
   title = 'vip-logistics';
+  private audio = new Audio();
   private webSocketService = inject(WebSocketService);
   private storageService = inject(StorageService);
   receivedMessages: any[] = [];
   notification: any;
 
   constructor(private toastr: ToastrService, private router: Router) {
+    this.audio.src = 'notification-tone.mp3'; // Ensure the correct path
+    this.audio.load();
   }
 
   ngOnInit(): void {
@@ -33,8 +36,10 @@ export class AppComponent {
     this.notification = message;
     const messageFor = this.notification.messageFor;
 
-    if (userRole !== 'SUPER_ADMIN') {
+    if (userRole !== 'SUPER_ADMIN' || 'ADMIN') {
       if (messageFor === 'ROLE-REQUEST') {
+        this.audio.currentTime = 0; // Reset to start
+        this.audio.play();
         const toastRef = this.toastr.info(
           'Role has been updated. Please login again!! Note: Please ignore this message if it is not for you.',
           'Security & Access',
@@ -50,9 +55,27 @@ export class AppComponent {
           this.storageService.logout();
         });
       }
+
+      if (messageFor === 'FREIGHT-APPROVAL') {
+        this.audio.currentTime = 0; // Reset to start
+        this.audio.play();
+        const toastRef = this.toastr.info(
+          'You have received new freight bill approval!!',
+          'Freight Bill Approval',
+          {
+            enableHtml: true,
+            closeButton: true,
+            positionClass: 'toast-top-center',
+            timeOut: 0,
+            tapToDismiss: false,
+          }
+        );
+      }
     }
 
     if (messageFor === 'LR-APPROVED-REQUEST') {
+      this.audio.currentTime = 0; // Reset to start
+      this.audio.play();
       const toastRef = this.toastr.success(
         'LR Request is Approved!!,  Lorry Receipt Request is Approved.',
         'LR Approved',
@@ -67,6 +90,8 @@ export class AppComponent {
     }
 
     if (messageFor === 'LR-REJECTED-REQUEST') {
+      this.audio.currentTime = 0; // Reset to start
+      this.audio.play();
       const toastRef = this.toastr.error(
         'LR Request Rejected!!,  Lorry Receipt Request is Rejected.',
         'LR Rejected',
@@ -81,6 +106,8 @@ export class AppComponent {
     }
 
     if (messageFor === 'LR-DELETED') {
+      this.audio.currentTime = 0; // Reset to start
+      this.audio.play();
       const toastRef = this.toastr.info(
         'Someone is deleted the LR.',
         'LR Deleted',
@@ -93,32 +120,10 @@ export class AppComponent {
         }
       );
     }
-
-
-    if (userRole === 'MANAGER') {
-      if (messageFor === 'LR-CREATE-REQUEST') {
-        const toastRef = this.toastr.info(
-          'New memo request is generated. Please check.',
-          'New Memo Request Generated',
-          {
-            enableHtml: true,
-            closeButton: true,
-            positionClass: 'toast-bottom-right',
-            timeOut: 0,
-            tapToDismiss: false,
-          }
-        );
-        toastRef.onTap.subscribe(() => {
-          this.router.navigate(['/dashboard/memo-requests'])
-        });
-      }
-    }
-
-
   }
 
-  // ngOnDestroy(): void {
-  //   this.webSocketService.disconnect();
-  // }
+  ngOnDestroy(): void {
+    this.webSocketService.disconnect();
+  }
 
 }

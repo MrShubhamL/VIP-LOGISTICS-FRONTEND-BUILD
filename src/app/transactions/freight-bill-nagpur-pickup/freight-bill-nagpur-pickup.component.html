@@ -295,11 +295,6 @@
       <span class="text-xs"><i class="fas fa-save mr-2"></i>Save Freight</span>
     </button>
 
-<!--    <button type="button" [disabled]="form.invalid  || !updateEnabled" mat-fab-->
-<!--            class="fab-button">-->
-<!--      <span class="text-xs"><i class="fas fa-edit mr-2"></i>Update Freight</span>-->
-<!--    </button>-->
-
     <button [disabled]="form.invalid  || !deleteEnabled" type="button" (click)="deleteNagpurPickupFreightBill()" mat-fab class="fab-button">
       <span class="text-xs"><i class="fas fa-trash mr-2"></i>Delete Freight</span>
     </button>
@@ -307,6 +302,14 @@
     <button [disabled]="form.invalid  || !readEnabled" type="button" (click)="printFreight()" mat-fab
             class="fab-button">
       <span class="text-xs"><i class="fas fa-print mr-2"></i>Print Freight</span>
+    </button>
+
+    <button [disabled]="form.invalid  || !readEnabled" type="button" (click)="generatePDF()" mat-fab class="fab-button">
+      <span class="text-xs"><i class="fas fa-file-pdf mr-2"></i>Download PDF</span>
+    </button>
+
+    <button [disabled]="form.invalid  || !readEnabled" type="button" (click)="exportToExcel()" mat-fab class="fab-button">
+      <span class="text-xs"><i class="fas fa-file-excel mr-2"></i>Export Excel</span>
     </button>
 
 
@@ -320,16 +323,8 @@
       <span>Save</span>
     </button>
 
-<!--    <button type="button" [disabled]="form.invalid || !updateEnabled" mat-button>-->
-<!--      <span>Update</span>-->
-<!--    </button>-->
-
     <button [disabled]="form.invalid || !deleteEnabled" type="button" (click)="deleteNagpurPickupFreightBill()" mat-button>
       <span>Delete</span>
-    </button>
-
-    <button [disabled]="form.invalid || !readEnabled" type="button" mat-button>
-      <span>Print</span>
     </button>
 
     <button type="button" (click)="clearField()" mat-button>
