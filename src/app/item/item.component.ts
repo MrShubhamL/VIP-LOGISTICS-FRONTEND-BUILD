@@ -45,6 +45,7 @@ export class ItemComponent implements OnInit {
   updateEnabled: boolean = false;
   deleteEnabled: boolean = false;
   currentLoggedUser: any;
+  currentLoggedUserRole: any;
 
   constructor() {
     this.form = this.formBuilder.group({
@@ -122,6 +123,9 @@ export class ItemComponent implements OnInit {
 
     this.storageService.getCurrentUser().subscribe(res=>{
       this.currentLoggedUser = res;
+      this.currentLoggedUserRole = this.currentLoggedUser.roleDto.roleName;
+
+      console.log(this.currentLoggedUserRole)
       this.currentLoggedUser.roleDto.permissions.map((p: any) => {
         if(p.userPermission == 'ALL_PERMISSIONS'){
           this.readEnabled = true;

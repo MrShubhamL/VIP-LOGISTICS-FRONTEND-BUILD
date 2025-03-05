@@ -24,6 +24,7 @@ export class LoginComponent {
   private audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
   private buffer: AudioBuffer | null = null;
   private source: AudioBufferSourceNode | null = null;
+  showPassword: boolean = false;
 
   constructor() {
     this.form = this.formBuilder.group({
@@ -74,6 +75,10 @@ export class LoginComponent {
       this.source.buffer = this.buffer;
       this.source.connect(this.audioContext.destination);
       this.source.start();
+  }
+
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
   }
 
 }

@@ -211,7 +211,7 @@
   <div class="modal-dialog modal-custom-item-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header bg-orange">
-        <p class="modal-title text-white text-xs">Item Information</p>
+        <p class="modal-title text-white text-md">Item Information</p>
         <button (click)="closeItemModal()" type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="false">&times;</span>
         </button>
@@ -228,8 +228,8 @@
               <th>Route No.</th>
               <th>Party Code.</th>
               <th>Qty in Box</th>
-              <th>Rate on Box</th>
-              <th>Rate on Weight</th>
+              <th *ngIf="currentLoggedUserRole === 'ADMIN' || currentLoggedUserRole === 'SUPER_ADMIN'">Rate on Box</th>
+              <th *ngIf="currentLoggedUserRole === 'ADMIN' || currentLoggedUserRole === 'SUPER_ADMIN'">Rate on Weight</th>
               <th>Weight per Box</th>
               <th>Vendor Code</th>
               <th>Item Date</th>
@@ -247,8 +247,8 @@
               <td>{{ item.route.routeNo }}</td>
               <td>{{ item.party.partyNo }}</td>
               <td>{{ item.qtyInBox }}</td>
-              <td>{{ item.rateOnBox }}</td>
-              <td>{{ item.rateOnWeight }}</td>
+              <td *ngIf="currentLoggedUserRole === 'ADMIN' || currentLoggedUserRole === 'SUPER_ADMIN'">{{ item.rateOnBox }}</td>
+              <td *ngIf="currentLoggedUserRole === 'ADMIN' || currentLoggedUserRole === 'SUPER_ADMIN'">{{ item.rateOnWeight }}</td>
               <td>{{ item.weightPerBox }}</td>
               <td>{{ item.vendorCode }}</td>
               <td width="120">{{ item.itemDate }}</td>

@@ -16,13 +16,15 @@
             </div>
           </div>
           <div class="input-group mb-3">
-            <input formControlName="password" type="password" class="form-control" placeholder="Password">
+            <input [type]="showPassword ? 'text' : 'password'" formControlName="password" class="form-control"
+                   placeholder="Password">
             <div class="input-group-append">
-              <div class="input-group-text">
-                <span class="fas fa-lock"></span>
+              <div class="input-group-text" (click)="togglePasswordVisibility()" style="cursor: pointer;">
+                <span [ngClass]="showPassword ? 'fas fa-eye' : 'fas fa-eye-slash'"></span>
               </div>
             </div>
           </div>
+
           <div class="">
             <button type="ngSubmit" [disabled]="form.invalid" class="btn btn-block bg-orange">
               <i class="text-white fas fa-sign-in-alt mr-2"></i> <span class="text-white">Sign In</span>
