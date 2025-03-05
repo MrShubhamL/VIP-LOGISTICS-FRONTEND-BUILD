@@ -65,11 +65,13 @@
               <input formControlName="weightPerBox" type="text" class="form-control"
                      placeholder="Enter weight per quantity">
             </div>
-            <div class="form-group m-0 pb-1 col-lg-3">
+            <div class="form-group m-0 pb-1 col-lg-3"
+                 *ngIf="currentLoggedUserRole === 'ADMIN' || currentLoggedUserRole === 'SUPER_ADMIN'">
               <label class="text-muted">Rate On Box</label>
               <input formControlName="rateOnBox" type="text" class="form-control" placeholder="Enter rate on box">
             </div>
-            <div class="form-group m-0 pb-1 col-lg-3">
+            <div class="form-group m-0 pb-1 col-lg-3"
+                 *ngIf="currentLoggedUserRole === 'ADMIN' || currentLoggedUserRole === 'SUPER_ADMIN'">
               <label class="text-muted">Rate On Weight</label>
               <input formControlName="rateOnWeight" type="text" class="form-control" placeholder="Enter rate on weight">
             </div>
