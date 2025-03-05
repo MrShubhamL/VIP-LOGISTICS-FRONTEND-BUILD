@@ -16,11 +16,11 @@ export class WebSocketService {
   }
 
   private initializeWebSocketConnection(): void {
-    const socketUrl = 'https://viplogistics.org/notify-app/ws'; // Ensure this matches the backend
+    const socketUrl = 'https://viplogistics.org/notify-app/ws';
 
     this.stompClient = new Client({
-      webSocketFactory: () => new SockJS(socketUrl), // Ensure SockJS instance is created properly
-      reconnectDelay: 5000, // Auto-reconnect every 5 seconds
+      webSocketFactory: () => new SockJS(socketUrl),
+      reconnectDelay: 5000,
       debug: (str) => console.log(str),
     });
 

@@ -28,6 +28,7 @@ export class LorryReceiptComponent {
   lastMemoNo: any;
   formPatchObj: any;
   printFor: any;
+  printForDriver: any;
   memoExistInfo: any;
 
   invoice_nos: any[] = [];
@@ -112,6 +113,7 @@ export class LorryReceiptComponent {
     latestMemoNo: ''
   }
   temp_amount: number = 0.00;
+  private memoLorryInfo: any;
 
 
   constructor() {
@@ -219,7 +221,7 @@ export class LorryReceiptComponent {
 
   ngOnInit() {
     this.form.get('lrNo')?.disable();
-    this.form.get('whoItemList')?.disable();
+    // this.form.get('whoItemList')?.disable();
     this.form.get('lorryReceiptItems')?.disable();
     this.currentRole = this.storageService.getUserRole();
 
@@ -365,7 +367,7 @@ export class LorryReceiptComponent {
     this.ngOnInit();
     this.topViewSection.nativeElement.scrollIntoView({behavior: 'smooth', block: 'start'});
     this.form.reset();
-    this.form.get('whoItemList')?.disable();
+    // this.form.get('whoItemList')?.disable();
     this.form.get('lorryReceiptItems')?.disable();
     this.form.get('item.itemNo')?.enable()
     this.form.get('branch.branchNo')?.enable()
@@ -814,6 +816,7 @@ export class LorryReceiptComponent {
     this.apiService.isMemoExisted(memoNo).subscribe(res => {
       if (res) {
         this.memoExistInfo = res;
+        this.memoLorryInfo = this.memoExistInfo.lorryReceipt;
         this.isMemoFound = true;
         this.form.get("memo.memoNo")?.disable();
         this.lrNoInput.nativeElement.focus();
@@ -823,11 +826,19 @@ export class LorryReceiptComponent {
           whoItemList: this.memoExistInfo.whoItemList,
           whoPay: this.memoExistInfo.whoPay,
           refTruckNo: this.memoExistInfo.refTruckNo,
+          branch: this.memoLorryInfo.branch,
+          route: this.memoLorryInfo.route,
+          consignor: this.memoLorryInfo.consignor,
+          consignee: this.memoLorryInfo.consignee,
+          bill: this.memoLorryInfo.bill,
+          lrDate: this.memoLorryInfo.lrDate,
         });
 
-        this.form.get('remark')?.disable();
-        this.form.get('whoItemList')?.disable();
-        this.form.get('whoPay')?.disable();
+        let currentRemark = this.form.get('whoItemList')?.value;
+        this.loadPartyItemData(currentRemark);
+
+        // this.form.get('remark')?.disable();
+        // this.form.get('whoItemList')?.disable();
         this.form.get('refTruckNo')?.disable();
 
         let _memoStatus: boolean = false;
@@ -1311,7 +1322,7 @@ export class LorryReceiptComponent {
     }
 
     if (event == 'driver-copy') {
-      this.printFor = "Driver Copy";
+      this.printForDriver = "Driver Copy";
     }
 
     const lrNo = this.printForm.get('lrNo')?.value;
@@ -1379,7 +1390,7 @@ export class LorryReceiptComponent {
       let totalQuantity = this.printData.invoice_list.reduce((sum: number, p: any) => sum + (p.quantity || 0), 0);
       this.printData.invoice_list.forEach((p: any) => this.invoice_nos.push(p.invoice_no));
 
-      printWindow.document.write(`
+      let printCopies = `
             <!DOCTYPE html>
             <html lang="en">
             <head>
@@ -1391,6 +1402,7 @@ export class LorryReceiptComponent {
                     @media print {
                         th { font-size: 10px; font-weight: 700; }
                         td { font-size: 10px; font-weight: 500; }
+                        .page-break { page-break-after: always; }
                     }
                     @page { size: A4 portrait; padding: 10px; }
                     * { font-size: 10.8px; }
@@ -1412,83 +1424,99 @@ export class LorryReceiptComponent {
                 </style>
             </head>
             <body>
-                <div class="invoice-box">
-                    <div class="d-flex align-items-center">
-                        <img src="../../../vpi-logo.png" alt="VIP Logistics Logo" class="logo me-3">
-                        <div class="text-center flex-grow-1">
-                            <h2 class="header">VIP LOGISTICS</h2>
-                            <p>PLOT NO 133, AMBEDKAR NAGAR, NAGAON PHATA, TAL. HATAKANGALE, DIST. KOLHAPUR - 416122.<br>
-                            E-mail - viplogistics@yahoo.com</p>
-                        </div>
+        `;
+
+      const generateInvoice = (printFor: string) => `
+            <div class="invoice-box">
+                <div class="d-flex align-items-center">
+                    <img src="../../../vpi-logo.png" alt="VIP Logistics Logo" class="logo me-3">
+                    <div class="text-center flex-grow-1">
+                        <h2 class="header">VIP LOGISTICS</h2>
+                        <p>PLOT NO 133, AMBEDKAR NAGAR, NAGAON PHATA, TAL. HATAKANGALE, DIST. KOLHAPUR - 416122.<br>
+                        E-mail - viplogistics@yahoo.com</p>
                     </div>
-                    <div class="row d-flex mb-0 pb-0">
-                        <div class="col-4">
-                            <table class="table custom-table">
-                                <tr><th width="60">GST No: </th><td>27AKJPP0760D1Z9</td></tr>
-                                <tr><th width="60">PAN No: </th><td>AKJPP0760D</td></tr>
-                            </table>
-                        </div>
-                        <div class="col-4 text-center">
-                            <table class="table custom-table">
-                                <tr><th width="50">FROM: </th><td>${this.printData.route.routeFrom}</td></tr>
-                                <tr><th width="50">TO: </th><td>${this.printData.route.routeTo}</td></tr>
-                            </table>
-                        </div>
-                        <div class="col-4 text-end">
-                            <table class="table custom-table">
-                                <tr><th width="80">VEHICLE No: </th><td>${this.printData.vehicleNo}</td></tr>
-                                <tr><th width="80">L.R. No: </th><td>${this.printData.lrNo}</td></tr>
-                                <tr><th width="80">DATE: </th><td>${this.formatDate((this.printData.date).toString())}</td></tr>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-6">
-                            <p><strong>CONSIGNOR M/S:</strong> ${(this.printData.consignor.partyName).replace(/\-\(.*?\)/g, '')}</p>
-                            <p class="pt-1 pb-1"><strong>CONSIGNEE M/S:</strong> ${(this.printData.consignee.partyName).replace(/\-\(.*?\)/g, '')}</p>
-                            <p><small>This L/R is made on behalf of ${(this.printData.behalfOf).replace(/\-\(.*?\)/g, '')}</small></p>
-                        </div>
-                    </div>
-                    <table class="table table-bordered">
-                        <thead class="text-sm">
-                            <tr>
-                                <th width="80">Invoice No</th>
-                                <th width="300">Particulars of Goods</th>
-                                <th width="80">No of Pkg</th>
-                                <th width="250">Remark</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td class="td-height">${this.invoice_nos.join(',  ')}</td>
-                                <td class="td-height"></td>
-                                <td class="td-height">${totalQuantity} Units</td>
-                                <td class="td-height"></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <p class="note">1. Transit insurance necessary on the owner of the goods.</p>
-                    <p class="note">2. If there is any complaint related to the goods then intimate us within 1 day, we will not be responsible for any complaint.</p>
-                    <h5 class="text-center mt-2">${this.printFor}</h5>
-                    <p class="text-end">
-                        <img class="sign" src="../../../images/vip-sign.png" alt="Loading..." >
-                    </p>
-                    <p class="text-end">For VIP LOGISTICS</p>
-                    <p class="text-center">Daily Services: Mumbai/Nashik/Pune/Belgaum/Nagpur</p>
                 </div>
+                <div class="row d-flex mb-0 pb-0">
+                    <div class="col-4">
+                        <table class="table custom-table">
+                            <tr><th width="60">GST No: </th><td>27AKJPP0760D1Z9</td></tr>
+                            <tr><th width="60">PAN No: </th><td>AKJPP0760D</td></tr>
+                        </table>
+                    </div>
+                    <div class="col-4 text-center">
+                        <table class="table custom-table">
+                            <tr><th width="50">FROM: </th><td>${this.printData.route.routeFrom}</td></tr>
+                            <tr><th width="50">TO: </th><td>${this.printData.route.routeTo}</td></tr>
+                        </table>
+                    </div>
+                    <div class="col-4 text-end">
+                        <table class="table custom-table">
+                            <tr><th width="80">VEHICLE No: </th><td>${this.printData.vehicleNo}</td></tr>
+                            <tr><th width="80">L.R. No: </th><td>${this.printData.lrNo}</td></tr>
+                            <tr><th width="80">DATE: </th><td>${this.formatDate((this.printData.date).toString())}</td></tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <p><strong>CONSIGNOR M/S:</strong> ${(this.printData.consignor.partyName).replace(/\-\(.*?\)/g, '')}</p>
+                        <p class="pt-1 pb-1"><strong>CONSIGNEE M/S:</strong> ${(this.printData.consignee.partyName).replace(/\-\(.*?\)/g, '')}</p>
+                        <p><small>This L/R is made on behalf of ${(this.printData.behalfOf).replace(/\-\(.*?\)/g, '')}</small></p>
+                    </div>
+                </div>
+                <table class="table table-bordered">
+                    <thead class="text-sm">
+                        <tr>
+                            <th width="80">Invoice No</th>
+                            <th width="300">Particulars of Goods</th>
+                            <th width="80">No of Pkg</th>
+                            <th width="250">Remark</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="td-height">${this.invoice_nos.join(',  ')}</td>
+                            <td class="td-height"></td>
+                            <td class="td-height">${totalQuantity} Units</td>
+                            <td class="td-height"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p class="note">1. Transit insurance necessary on the owner of the goods.</p>
+                <p class="note">2. If there is any complaint related to the goods then intimate us within 1 day, we will not be responsible for any complaint.</p>
+                <h5 class="text-center mt-2">${printFor}</h5>
+                <p class="text-end">
+                    <img class="sign" src="../../../images/vip-sign.png" alt="Loading..." >
+                </p>
+                <p class="text-end">For VIP LOGISTICS</p>
+                <p class="text-center">Daily Services: Mumbai/Nashik/Pune/Belgaum/Nagpur</p>
+            </div>
+        `;
+
+      // Add copies based on conditions
+      if (this.printFor === 'Consignee Copy') {
+        printCopies += generateInvoice('Consignee Copy');
+      }
+      if (this.printFor === 'Consignor Copy') {
+        printCopies += `<div style="margin-top: 30px;"></div>` + generateInvoice('Consignee Copy');
+      }
+      if (this.printForDriver === 'Driver Copy') {
+        printCopies += `<div style="margin-top: 30px;"></div>` + generateInvoice('Driver Copy'); // Added spacing
+      }
+
+      printCopies += `
             </body>
             </html>
-        `);
+        `;
 
+      printWindow.document.write(printCopies);
       printWindow.document.close();
 
-      // ✅ Print after content is loaded
       setTimeout(() => {
         printWindow.print();
-        printWindow.close(); // Close print window after printing
+        printWindow.close();
       }, 500);
     }
   }
-
 
 }
