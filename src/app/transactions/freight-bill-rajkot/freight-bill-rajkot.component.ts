@@ -590,6 +590,7 @@ export class FreightBillRajkotComponent {
                       font-size: 8px;
                       font-weight: 500;
                   }
+                  .printButton {display: none;}
               }
 
               @page {
@@ -679,7 +680,12 @@ export class FreightBillRajkotComponent {
       </head>
 
       <body>
-
+                <div class="row">
+                    <div class="col d-flex justify-content-center p-2">
+                        <button class="btn printButton btn-block btn-lg btn-primary px-4 pt-2 pb-2 mx-2" onclick="window.print()">Print</button>
+                        <button class="btn printButton btn-block btn-lg btn-danger px-4 pt-2 pb-2 mx-2" onclick="window.close()">Cancel</button>
+                    </div>
+                </div>
           <div class="container-fluid invoice">
               <div class="row">
                   <div class="col-12 p-0">
@@ -840,10 +846,6 @@ export class FreightBillRajkotComponent {
       `);
 
       printWindow.document.close();
-      // ✅ Print after content is loaded
-      setTimeout(() => {
-        printWindow.print();
-      }, 500);
     }
   }
 
@@ -944,6 +946,7 @@ export class FreightBillRajkotComponent {
                       font-size: 8px;
                       font-weight: 500;
                   }
+                  .printButton {display: none}
               }
 
               @page {
@@ -1033,7 +1036,6 @@ export class FreightBillRajkotComponent {
       </head>
 
       <body>
-
           <div class="container-fluid invoice">
               <div class="row">
                   <div class="col-12 p-0">

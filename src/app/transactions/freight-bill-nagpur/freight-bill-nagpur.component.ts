@@ -478,11 +478,6 @@ export class FreightBillNagpurComponent {
     if (printWindow) {
       let processedLrNos = new Set();
 
-      let showUnloadingCharges = this.billingData.some(l => l.unloadingCharges && l.unloadingCharges !== 0);
-      let showPlyWoodCharges = this.billingData.some(l => l.plyWoodCharges && l.plyWoodCharges !== 0);
-      let showCollectionCharges = this.billingData.some(l => l.collectionCharges && l.collectionCharges !== 0);
-      let showStCharges = this.billingData.some(l => l.stCharges && l.stCharges !== 0);
-
       let invoiceRows = this.billingData.map((l, i) => {
         let shouldShowLrNo = !processedLrNos.has(l.lrNo);
         if (shouldShowLrNo) {
@@ -580,6 +575,9 @@ export class FreightBillNagpurComponent {
                       font-size: 8px;
                       font-weight: 500;
                   }
+                  .printButton {
+                    display: none;
+                  }
               }
 
               @page {
@@ -665,7 +663,12 @@ export class FreightBillNagpurComponent {
       </head>
 
       <body>
-
+        <div class="row">
+            <div class="col d-flex justify-content-center p-2">
+                <button class="btn printButton btn-block btn-lg btn-primary px-4 pt-2 pb-2 mx-2" onclick="window.print()">Print</button>
+                <button class="btn printButton btn-block btn-lg btn-danger px-4 pt-2 pb-2 mx-2" onclick="window.close()">Cancel</button>
+            </div>
+        </div>
           <div class="container-fluid invoice">
               <div class="row">
                   <div class="col-12 p-0">
@@ -821,8 +824,6 @@ export class FreightBillNagpurComponent {
               </div>
           </div>
 
-
-
           <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
               integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
               crossorigin="anonymous"></script>
@@ -832,9 +833,6 @@ export class FreightBillNagpurComponent {
       `);
 
       printWindow.document.close();
-      setTimeout(() => {
-        printWindow.print();
-      }, 500);
     }
   }
 

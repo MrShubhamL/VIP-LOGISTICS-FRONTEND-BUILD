@@ -441,9 +441,13 @@ export class LorryHireMemoComponent {
                       .custom-text-size {
                           font-size: 9px;
                       }
+                      .printButton {
+                        display: none;
+                    }
                     }
                     @page {
                         size: A4 portrait !important;
+                        padding: 10px;
                     }
                     * { font-size: 10.8px; }
                     .invoice-box {border: 1px solid black; padding: 5px; margin: 5px;}
@@ -484,8 +488,13 @@ export class LorryHireMemoComponent {
                     }
                 </style>
             </head>
-
             <body>
+            <div class="row">
+                    <div class="col d-flex justify-content-center p-2">
+                        <button class="printButton btn btn-block btn-lg btn-primary p-4 mx-2" onclick="window.print()">Print</button>
+                        <button class="printButton btn btn-block btn-lg btn-danger p-4 mx-2" onclick="window.close()">Cancel</button>
+                    </div>
+                </div>
                 <div class="invoice-box">
                     <div class="d-flex align-items-center mb-1">
                       <img src="../../../vpi-logo.png" alt="VIP Logistics Logo" class="logo me-3">
@@ -501,7 +510,7 @@ export class LorryHireMemoComponent {
                             <table class="table custom-table">
                                 <thead>
                                     <th>Memo No: </th>
-                                    <td>${this.memoDate.memoDate}</td>
+                                    <td>${this.memoDate.memoNo}</td>
                                 </thead>
                                 <thead>
                                     <th>Driver Name: </th>
@@ -702,13 +711,8 @@ export class LorryHireMemoComponent {
             </html>
         `);
 
-      // printWindow.close();
+      printWindow.document.write();
       printWindow.document.close();
-      // ✅ Print after content is loaded
-      setTimeout(() => {
-        printWindow.print();
-        printWindow.close(); // Close print window after printing
-      }, 500);
     }
   }
 

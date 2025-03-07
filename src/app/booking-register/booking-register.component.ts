@@ -173,7 +173,7 @@ export class BookingRegisterComponent {
         // If memoNo changes in the next record or it's the last row, insert total row
         if (index === this.searchRecordData.length - 1 || currentMemoNo !== this.searchRecordData[index + 1].memoNo) {
           exportData.push([
-            "", "", "", "", "", "", "", "Total of To Pay", "", "", "", "", totalToPay, "", "",
+            "", "", "", "", "", "", "", "Total of To Pay", "", "", "", "", totalToPay.toFixed(2), "", "",
           ]);
 
           totalToPay = 0; // Reset total
@@ -273,7 +273,7 @@ export class BookingRegisterComponent {
         // Insert total row if memo changes or last row
         if (index === this.searchRecordData.length - 1 || currentMemoNo !== this.searchRecordData[index + 1].memoNo) {
           exportData.push([
-            "", "", "", "", "", "", "", "", "", "", "", "", totalToPay, "", "",
+            "", "", "", "", "", "", "", "", "", "", "", "", totalToPay.toFixed(2), "", "",
           ]);
           totalToPay = 0; // Reset total
         }
@@ -312,7 +312,7 @@ export class BookingRegisterComponent {
         total += record.toPay || 0
       }
     });
-    return total;
+    return Number(total.toFixed(2));
   }
 
 

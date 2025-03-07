@@ -363,6 +363,7 @@ export class LorryReceiptComponent {
   }
 
   resetForm() {
+    this.invoice_nos = [];
     this.form.enable();
     this.ngOnInit();
     this.topViewSection.nativeElement.scrollIntoView({behavior: 'smooth', block: 'start'});
@@ -1384,7 +1385,8 @@ export class LorryReceiptComponent {
   }
 
   printDocument() {
-    let printWindow = window.open('', '_blank');
+    this.invoice_nos = [];
+    let printWindow = window.open('', 'Lorry Receipt');
 
     if (printWindow) {
       let totalQuantity = this.printData.invoice_list.reduce((sum: number, p: any) => sum + (p.quantity || 0), 0);
@@ -1403,6 +1405,7 @@ export class LorryReceiptComponent {
                         th { font-size: 10px; font-weight: 700; }
                         td { font-size: 10px; font-weight: 500; }
                         .page-break { page-break-after: always; }
+                        #printButton { display: none; } /* Hide the print button when printing */
                     }
                     @page { size: A4 portrait; padding: 10px; }
                     * { font-size: 10.8px; }
@@ -1424,6 +1427,12 @@ export class LorryReceiptComponent {
                 </style>
             </head>
             <body>
+                <div class="row">
+                    <div class="col d-flex justify-content-center p-2">
+                        <button id="printButton" class="btn btn-block btn-lg btn-primary p-4 mx-2" onclick="window.print()">Print</button>
+                        <button id="printButton" class="btn btn-block btn-lg btn-danger p-4 mx-2" onclick="window.close()">Cancel</button>
+                    </div>
+                </div>
         `;
 
       const generateInvoice = (printFor: string) => `
@@ -1467,10 +1476,10 @@ export class LorryReceiptComponent {
                 <table class="table table-bordered">
                     <thead class="text-sm">
                         <tr>
-                            <th width="80">Invoice No</th>
-                            <th width="300">Particulars of Goods</th>
+                            <th width="300">Invoice No</th>
+                            <th width="80">Particulars of Goods</th>
                             <th width="80">No of Pkg</th>
-                            <th width="250">Remark</th>
+                            <th width="80">Remark</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -1498,7 +1507,7 @@ export class LorryReceiptComponent {
         printCopies += generateInvoice('Consignee Copy');
       }
       if (this.printFor === 'Consignor Copy') {
-        printCopies += `<div style="margin-top: 30px;"></div>` + generateInvoice('Consignee Copy');
+        printCopies += `<div style="margin-top: 30px;"></div>` + generateInvoice('Consignor Copy');
       }
       if (this.printForDriver === 'Driver Copy') {
         printCopies += `<div style="margin-top: 30px;"></div>` + generateInvoice('Driver Copy'); // Added spacing
@@ -1511,12 +1520,8 @@ export class LorryReceiptComponent {
 
       printWindow.document.write(printCopies);
       printWindow.document.close();
-
-      setTimeout(() => {
-        printWindow.print();
-        printWindow.close();
-      }, 500);
     }
   }
+
 
 }
