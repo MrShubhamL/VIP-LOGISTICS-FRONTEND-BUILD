@@ -497,12 +497,13 @@ export class LorryReceiptComponent {
     const index = this.listItemData.findIndex(item => item.lorryReceiptItemId === lorryReceiptItemId);
 
     if (index !== -1) {
-      this.listItemData[index] = {...this.listItemData[index],
-        lorryReceiptItemId : lorryReceiptItemId,
-        cgst : cgst,
-        sgst : sgst,
-        igst : igst,
-        totalFreight : totalFreight
+      this.listItemData[index] = {
+        ...this.listItemData[index],
+        lorryReceiptItemId: lorryReceiptItemId,
+        cgst: cgst,
+        sgst: sgst,
+        igst: igst,
+        totalFreight: totalFreight
       };
     }
     console.log(this.listItemData);
@@ -822,6 +823,8 @@ export class LorryReceiptComponent {
         this.form.get("memo.memoNo")?.disable();
         this.lrNoInput.nativeElement.focus();
 
+        console.log(res);
+
         this.form.patchValue({
           remark: this.memoExistInfo.remark,
           whoItemList: this.memoExistInfo.whoItemList,
@@ -833,10 +836,14 @@ export class LorryReceiptComponent {
           consignee: this.memoLorryInfo.consignee,
           bill: this.memoLorryInfo.bill,
           lrDate: this.memoLorryInfo.lrDate,
+          memo: this.memoLorryInfo.memo
         });
 
         let currentRemark = this.form.get('whoItemList')?.value;
-        this.loadPartyItemData(currentRemark);
+        console.log(currentRemark)
+        if (currentRemark) {
+          this.loadPartyItemData(currentRemark);
+        }
 
         // this.form.get('remark')?.disable();
         // this.form.get('whoItemList')?.disable();
@@ -931,23 +938,23 @@ export class LorryReceiptComponent {
 
   // ---------------------- Item Query Search ----------------------
 
-  unlockStatus(){
+  unlockStatus() {
     this.form.get('whoItemList')?.enable();
   }
 
-  loadPartyItemData(event: any){
+  loadPartyItemData(event: any) {
     this.form.get('lorryReceiptItems')?.enable();
     let consignorPartyCode = this.form.get('consignor.partyNo')?.value;
     let consigneePartyCode = this.form.get('consignee.partyNo')?.value;
-    if(event === 'Consignor'){
-      this.apiService.getAllItemsByPartyNo(consignorPartyCode).subscribe(res=>{
-        if(res){
+    if (event === 'Consignor') {
+      this.apiService.getAllItemsByPartyNo(consignorPartyCode).subscribe(res => {
+        if (res) {
           this.itemData = res;
         }
       }, error => {
         console.log(error);
       });
-    } else if(event === 'Consignee'){
+    } else if (event === 'Consignee') {
       this.apiService.getAllItemsByPartyNo(consigneePartyCode).subscribe(res => {
         if (res) {
           this.itemData = res;

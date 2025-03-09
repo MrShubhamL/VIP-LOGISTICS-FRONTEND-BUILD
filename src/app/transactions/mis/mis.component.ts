@@ -94,7 +94,6 @@ export class MisComponent {
   }
 
   editData(lr: any) {
-    console.log(lr);
     this.form.get('lrNo')?.setValue(lr.lrNo);
     this.form.get('lrDate')?.setValue(lr.lrDate);
     this.form.get('billNo')?.setValue(lr.billNo || 10001);

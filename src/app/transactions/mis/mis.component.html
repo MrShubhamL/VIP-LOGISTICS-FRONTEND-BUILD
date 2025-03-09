@@ -129,7 +129,7 @@
                     </div>
                   </td>
                 </tr>
-                <div class="modal fade" #modalUpdateLr id="lr-update-modal" tabindex="-1" role="dialog"
+                <div *ngIf="isGranted" class="modal fade" #modalUpdateLr id="lr-update-modal" tabindex="-1" role="dialog"
                      aria-labelledby="modal-default-label" aria-hidden="false">
                   <div class="modal-dialog modal-dialog-centered modal-lg">
                     <div class="modal-content">
