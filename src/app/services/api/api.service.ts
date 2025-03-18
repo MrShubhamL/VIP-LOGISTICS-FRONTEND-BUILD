@@ -570,6 +570,12 @@ export class ApiService {
     });
   }
 
+  public saveCustomLorryReceiptNumber(lorryReceipt: any): Observable<any> {
+    return this.http.put(BaseUrl + "/api/lorry-receipt/update-custom-lorry-receipt-number", lorryReceipt, {
+      responseType: 'json'
+    });
+  }
+
   public saveNagpurFreight(freight: any): Observable<any> {
     return this.http.post(BaseUrl + "/api/nagpur-freight/save-nagpur-freight-bill", freight, {
       responseType: 'json'

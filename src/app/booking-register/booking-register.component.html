@@ -41,6 +41,7 @@
           <th>To Pay</th>
           <th>Billed</th>
           <th>Bill No</th>
+          <th>Mahindra LR No</th>
         </tr>
       </thead>
       <tbody>
@@ -64,6 +65,7 @@
             <td>{{r.toPay}}</td>
             <td>{{r.billed}}</td>
             <td>{{r.billNo}}</td>
+            <td>{{r.customLrNo}}</td>
           </tr>
           <tr *ngIf="i === searchRecordData.length - 1 || r.memoNo !== searchRecordData[i + 1].memoNo">
             <td colspan="12"><strong class="text-xs">Total:</strong></td>

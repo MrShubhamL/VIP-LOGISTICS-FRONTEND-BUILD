@@ -6,6 +6,7 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import * as XLSX from 'xlsx';
 import {WebSocketService} from '../../services/api/web-socket.service';
+import {MatButtonToggleChange} from '@angular/material/button-toggle';
 declare var $: any;
 
 @Component({
@@ -40,9 +41,11 @@ export class FreightBillRudrapurComponent {
   deleteEnabled: boolean = false;
   currentLoggedUser: any;
   private savedBillData: any;
+  customPrintLrStatus: Boolean = false;
 
   constructor() {
     this.form = this.formBuilder.group({
+      customLrStatus: new FormControl('system-lr'),
       freightBillReportId: new FormControl(''),
       billNo: new FormControl('', Validators.required),
       billDate: new FormControl(''),
@@ -130,6 +133,11 @@ export class FreightBillRudrapurComponent {
     } else {
       this.form.get('route.routeName')?.disable();
     }
+  }
+
+  customLrData: { [key: number]: string } = {};
+  updateCustomLr(index: number, value: string): void {
+    this.customLrData[index] = value;
   }
 
   findFreightByBill(event: any) {
@@ -400,6 +408,7 @@ export class FreightBillRudrapurComponent {
     this.form.get('sacNo')?.setValue('996511');
     this.form.get('mlCode')?.setValue('ML485');
     this.form.get('vCode')?.setValue('30008227');
+    this.form.get('customLrStatus')?.setValue('system-lr');
     this.form.get('billNo')?.enable();
     this.form.get('route.routeName')?.disable();
   }
@@ -468,7 +477,9 @@ export class FreightBillRudrapurComponent {
 
         return `
         <tr>
-            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle text-bold">${l.lrNo}</td>` : ""}
+            ${shouldShowLrNo && !this.customPrintLrStatus ? `<td rowspan="${rowSpan}" class="text-center align-middle text-bold">${l.customLrNo}</td>` : ""}
+            ${shouldShowLrNo && this.customPrintLrStatus ? `<td rowspan="${rowSpan}" class="text-center align-middle text-bold">${l.lrNo}</td>` : ""}
+
             <td>${this.formatDate(l.lrDate)}</td>
             <td>${this.formatDate(l.unloadingDate)}</td>
             <td>${l.from}</td>
@@ -794,7 +805,9 @@ export class FreightBillRudrapurComponent {
 
         return `
         <tr>
-            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle text-bold">${l.lrNo}</td>` : ""}
+            ${shouldShowLrNo && !this.customPrintLrStatus ? `<td rowspan="${rowSpan}" class="text-center align-middle text-bold">${l.customLrNo}</td>` : ""}
+            ${shouldShowLrNo && this.customPrintLrStatus ? `<td rowspan="${rowSpan}" class="text-center align-middle text-bold">${l.lrNo}</td>` : ""}
+
             <td>${this.formatDate(l.lrDate)}</td>
             <td>${this.formatDate(l.unloadingDate)}</td>
             <td>${l.from}</td>
@@ -1150,7 +1163,8 @@ export class FreightBillRudrapurComponent {
       }
 
       let row = [
-        shouldShowLrNo ? l.lrNo : "",
+        shouldShowLrNo && !this.customPrintLrStatus ? l.customLrNo : "",
+        shouldShowLrNo && this.customPrintLrStatus ? l.lrNo : "",
         this.formatDate(l.lrDate),
         this.formatDate(l.unloadingDate),
         l.from,
@@ -1193,4 +1207,16 @@ export class FreightBillRudrapurComponent {
     XLSX.writeFile(wb, "rudrapur-freight-bill-" + this.billingCommonData.billNo + ".xlsx");
   }
 
+  changeLrStatus(status: MatButtonToggleChange) {
+    if(status){
+      let lrStatus = status.value;
+      if(lrStatus === "custom-lr"){
+        this.customPrintLrStatus = false;
+      }
+      if (lrStatus !== "system-lr") {
+        return;
+      }
+      this.customPrintLrStatus = true;
+    }
+  }
 }

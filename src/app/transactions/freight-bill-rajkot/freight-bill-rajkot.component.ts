@@ -6,6 +6,7 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import * as XLSX from 'xlsx';
 import {WebSocketService} from '../../services/api/web-socket.service';
+import {MatButtonToggleChange} from '@angular/material/button-toggle';
 declare var $: any;
 
 @Component({
@@ -40,9 +41,11 @@ export class FreightBillRajkotComponent {
   deleteEnabled: boolean = false;
   currentLoggedUser: any;
   private savedBillData: any;
+  customPrintLrStatus: Boolean = true;
 
   constructor() {
     this.form = this.formBuilder.group({
+      customLrStatus: new FormControl('system-lr'),
       freightBillReportId: new FormControl(''),
       billNo: new FormControl('', Validators.required),
       billDate: new FormControl(''),
@@ -385,6 +388,12 @@ export class FreightBillRajkotComponent {
   }
 
 
+  customLrData: { [key: number]: string } = {};
+  updateCustomLr(index: number, value: string): void {
+    this.customLrData[index] = value;
+  }
+
+
   saveRajkotFreight() {
     const formObj = {
       "billNo": this.form.get('billNo')?.value,
@@ -440,6 +449,7 @@ export class FreightBillRajkotComponent {
     this.form.get('sacNo')?.setValue('996511');
     this.form.get('mlCode')?.setValue('ML485');
     this.form.get('vCode')?.setValue('30008227');
+    this.form.get("customLrStatus")?.setValue('system-lr');
     this.form.get('billNo')?.enable();
     this.form.get('route.routeName')?.disable();
   }
@@ -508,7 +518,9 @@ export class FreightBillRajkotComponent {
 
         return `
         <tr>
-            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle text-bold">${l.lrNo}</td>` : ""}
+            ${shouldShowLrNo && !this.customPrintLrStatus ? `<td rowspan="${rowSpan}" class="text-center align-middle text-bold">${l.customLrNo}</td>` : ""}
+            ${shouldShowLrNo && this.customPrintLrStatus ? `<td rowspan="${rowSpan}" class="text-center align-middle text-bold">${l.lrNo}</td>` : ""}
+
             <td>${this.formatDate(l.lrDate)}</td>
             <td>${this.formatDate(l.unloadingDate)}</td>
             <td>${l.from}</td>
@@ -737,15 +749,15 @@ export class FreightBillRajkotComponent {
                                           <tbody class="d-block-center">
                                               <tr>
                                                   <th>SAC:</th>
-                                                  <td>345345345</td>
+                                                  <td>996511</td>
                                               </tr>
                                               <tr>
                                                   <th>ML CODE:</th>
-                                                  <td>ML345</td>
+                                                  <td>ML485</td>
                                               </tr>
                                               <tr>
                                                   <th>V CODE:</th>
-                                                  <td>3000012</td>
+                                                  <td>30008227</td>
                                               </tr>
                                           </tbody>
                                       </table>
@@ -864,7 +876,9 @@ export class FreightBillRajkotComponent {
 
         return `
         <tr>
-            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle text-bold">${l.lrNo}</td>` : ""}
+            ${shouldShowLrNo && !this.customPrintLrStatus ? `<td rowspan="${rowSpan}" class="text-center align-middle text-bold">${l.customLrNo}</td>` : ""}
+            ${shouldShowLrNo && this.customPrintLrStatus ? `<td rowspan="${rowSpan}" class="text-center align-middle text-bold">${l.lrNo}</td>` : ""}
+
             <td>${this.formatDate(l.lrDate)}</td>
             <td>${this.formatDate(l.unloadingDate)}</td>
             <td>${l.from}</td>
@@ -1085,17 +1099,17 @@ export class FreightBillRajkotComponent {
                                       </table>
                                       <table class="table table-bordered custom-border">
                                           <tbody class="d-block-center">
-                                              <tr>
+                                               <tr>
                                                   <th>SAC:</th>
-                                                  <td>345345345</td>
+                                                  <td>996511</td>
                                               </tr>
                                               <tr>
                                                   <th>ML CODE:</th>
-                                                  <td>ML345</td>
+                                                  <td>ML485</td>
                                               </tr>
                                               <tr>
                                                   <th>V CODE:</th>
-                                                  <td>3000012</td>
+                                                  <td>30008227</td>
                                               </tr>
                                           </tbody>
                                       </table>
@@ -1251,7 +1265,8 @@ export class FreightBillRajkotComponent {
       }
 
       let row = [
-        shouldShowLrNo ? l.lrNo : "",
+        shouldShowLrNo && !this.customPrintLrStatus ? l.customLrNo : "",
+        shouldShowLrNo && this.customPrintLrStatus ? l.lrNo : "",
         this.formatDate(l.lrDate),
         this.formatDate(l.unloadingDate),
         l.from,
@@ -1297,4 +1312,14 @@ export class FreightBillRajkotComponent {
     XLSX.writeFile(wb, "rajkot-freight-bill-" + this.billingCommonData.billNo + ".xlsx");
   }
 
+  changeLrStatus(status: MatButtonToggleChange) {
+    if(status){
+      let lrStatus = status.value;
+      if(lrStatus === "custom-lr"){
+        this.customPrintLrStatus = false;
+      } if(lrStatus === "system-lr"){
+        this.customPrintLrStatus = true;
+      }
+    }
+  }
 }

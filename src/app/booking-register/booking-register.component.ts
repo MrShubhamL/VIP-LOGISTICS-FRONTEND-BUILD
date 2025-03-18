@@ -165,6 +165,7 @@ export class BookingRegisterComponent {
           toPay,
           lr.billed,
           lr.billNo,
+          lr.customLrNo,
         ]);
 
         // Accumulate total "To Pay"
@@ -184,7 +185,7 @@ export class BookingRegisterComponent {
       const headers = [
         "Sr.No", "Memo Date", "Vehicle Type", "Memo No", "Truck No", "LR No",
         "Consignor", "Consignee", "Quantity", "Weight", "Chalan No", "Paid",
-        "To Pay", "Billed", "Bill No"
+        "To Pay", "Billed", "Bill No", "Mahindra LR No"
       ];
 
       // Convert JSON data to a worksheet
@@ -241,7 +242,7 @@ export class BookingRegisterComponent {
       const headers = [
         "Sr.No", "Memo Date", "Vehicle Type", "Memo No", "Truck No", "LR No",
         "Consignor", "Consignee", "Quantity", "Weight", "Chalan No", "Paid",
-        "To Pay", "Billed", "Bill No"
+        "To Pay", "Billed", "Bill No", "Mahindra LR No"
       ];
 
       // Process Data
@@ -266,6 +267,7 @@ export class BookingRegisterComponent {
           toPay,
           lr.billed,
           lr.billNo,
+          lr.customLrNo,
         ]);
 
         totalToPay += toPay; // Accumulate total

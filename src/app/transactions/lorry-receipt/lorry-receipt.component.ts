@@ -119,7 +119,7 @@ export class LorryReceiptComponent {
   constructor() {
     this.form = this.formBuilder.group({
       lrId: new FormControl(""),
-      lrNo: new FormControl("", Validators.required),
+      lrNo: new FormControl({value: "", disabled: true}, Validators.required),
       lrSearchQuery: new FormControl(""),
       branch: this.formBuilder.group({
         branchNo: new FormControl("", Validators.required),
@@ -264,6 +264,8 @@ export class LorryReceiptComponent {
       if (res) {
         this.latestLorryNo = res;
         this.placeholders.latestLorryNo = this.latestLorryNo.newLrNo;
+        this.form.get('lrNo')?.setValue(this.placeholders.latestLorryNo);
+        console.log(this.placeholders.latestLorryNo)
       }
     }, error => {
       console.log(error)
@@ -375,7 +377,7 @@ export class LorryReceiptComponent {
     this.form.get('route.routeNo')?.enable()
     this.form.get('party.partyNo')?.enable()
     this.form.get("memo.memoNo")?.enable();
-    this.form.get('lrNo')?.enable();
+    this.form.get('lrNo')?.disable();
     this.form.get('branch')?.enable();
     this.form.get('route')?.enable();
     this.form.get('consignor')?.enable();
@@ -810,7 +812,6 @@ export class LorryReceiptComponent {
   }
 
   isMemoExisted(event: any) {
-    this.form.get('lrNo')?.enable();
     if (!event) {
       this.form.get('lrNo')?.disable();
     }

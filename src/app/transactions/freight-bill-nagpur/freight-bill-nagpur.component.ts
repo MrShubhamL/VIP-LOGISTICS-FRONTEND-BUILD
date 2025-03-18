@@ -7,6 +7,7 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import * as XLSX from 'xlsx';
 import {WebSocketService} from '../../services/api/web-socket.service';
+import {MatButtonToggleChange} from '@angular/material/button-toggle';
 declare var $: any;
 
 @Component({
@@ -40,9 +41,11 @@ export class FreightBillNagpurComponent {
   deleteEnabled: boolean = false;
   currentLoggedUser: any;
   savedBillData: any;
+  customPrintLrStatus: Boolean = true;
 
   constructor() {
     this.form = this.formBuilder.group({
+      customLrStatus: new FormControl('system-lr'),
       freightBillReportId: new FormControl(''),
       billNo: new FormControl('', Validators.required),
       billDate: new FormControl(''),
@@ -185,6 +188,11 @@ export class FreightBillNagpurComponent {
         console.log(err)
       })
     }
+  }
+
+  customLrData: { [key: number]: string } = {};
+  updateCustomLr(index: number, value: string): void {
+    this.customLrData[index] = value;
   }
 
   checkFreightBillExist(billNo: any) {
@@ -385,6 +393,27 @@ export class FreightBillNagpurComponent {
       formObj.isVerified = true;
     }
 
+
+    const combinedData: any[] = [];
+    this.billingData.forEach((item, index) => {
+      const existingEntry = combinedData.find(entry => entry.lrNo === item.lrNo);
+      if (existingEntry) {
+        if (this.customLrData[index]) {
+          existingEntry.customLrNo +=
+            existingEntry.customLrNo
+              ? `, ${this.customLrData[index]}`
+              : this.customLrData[index];
+        }
+      } else {
+        combinedData.push({
+          lrNo: item.lrNo,
+          customLrNo: this.customLrData[index] || ''
+        });
+      }
+    });
+
+
+
     this.apiService.saveNagpurFreight(formObj).subscribe(res => {
       if (res) {
         this.clearField();
@@ -400,6 +429,17 @@ export class FreightBillNagpurComponent {
           loader: false,
         });
       }
+
+      if(combinedData.length !== 0) {
+        this.apiService.saveCustomLorryReceiptNumber(combinedData).subscribe(res=> {
+          if(res){
+            console.log(res);
+          }
+        }, error => {
+          console.log(error);
+        });
+      }
+
     }, error => {
       $.toast({
         heading: 'Limited Access Alert!',
@@ -421,6 +461,7 @@ export class FreightBillNagpurComponent {
     this.form.get('mlCode')?.setValue('ML485');
     this.form.get('vCode')?.setValue('30008227');
     this.form.get('billNo')?.enable();
+    this.form.get('customLrStatus')?.setValue('system-lr');
     this.form.get('route.routeName')?.disable();
   }
 
@@ -488,19 +529,20 @@ export class FreightBillNagpurComponent {
 
         return `
         <tr class="text-center">
-            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle text-bold">${l.lrNo}</td>` : ""}
+            ${shouldShowLrNo && !this.customPrintLrStatus ? `<td rowspan="${rowSpan}" class="text-center align-middle text-bold">${l.customLrNo}</td>` : ""}
+            ${shouldShowLrNo && this.customPrintLrStatus ? `<td rowspan="${rowSpan}" class="text-center align-middle text-bold">${l.lrNo}</td>` : ""}
             <td>${this.formatDate(l.lrDate)}</td>
             <td>${this.formatDate(l.unloadingDate)}</td>
             <td>${l.vehicleNo}</td>
             <td>${l.vendorName}</td>
-            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayTotalWeight(l.lrNo).toFixed(2)}</td>` : ""}
+            ${shouldShowLrNo ? `<td style="width: 70px;" rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayTotalWeight(l.lrNo).toFixed(2)}</td>` : ""}
             <td>2.66</td>
-            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayTotalFreight(l.lrNo)}</td>` : ""}
-            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayTotalUnloadingCharges(l.lrNo)}</td>` : ""}
-            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayTotalPlywoodCharges(l.lrNo)}</td>` : ""}
-            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayTotalCollectionCharges(l.lrNo)}</td>` : ""}
-            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplaySTCharges(l.lrNo) || 0}</td>` : ""}
-            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getTotalBillValue(l.lrNo).toFixed(2)}</td>` : ""}
+            ${shouldShowLrNo ? `<td style="width: 70px;" rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayTotalFreight(l.lrNo)}</td>` : ""}
+            ${shouldShowLrNo ? `<td style="width: 70px;" rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayTotalUnloadingCharges(l.lrNo)}</td>` : ""}
+            ${shouldShowLrNo ? `<td style="width: 70px;" rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayTotalPlywoodCharges(l.lrNo)}</td>` : ""}
+            ${shouldShowLrNo ? `<td style="width: 70px;" rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayTotalCollectionCharges(l.lrNo)}</td>` : ""}
+            ${shouldShowLrNo ? `<td style="width: 70px;" rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplaySTCharges(l.lrNo) || 0}</td>` : ""}
+            ${shouldShowLrNo ? `<td style="width: 70px;" rowspan="${rowSpan}" class="text-center align-middle">${this.getTotalBillValue(l.lrNo).toFixed(2)}</td>` : ""}
         </tr>
         `;
       }).join('');
@@ -515,12 +557,12 @@ export class FreightBillNagpurComponent {
                   <th>Vendor Name</th>
                   <th>Weight</th>
                   <th>Rate/Kg</th>
-                  <th>Freight</th>
-                  <th>Unl. Charges</th>
-                  <th>Ply. Charges</th>
-                  <th>Coll. Charges</th>
-                  <th>ST Charges</th>
-                  <th>Total Bill</th>
+                  <th style="width: 70px;">Freight</th>
+                  <th style="width: 70px;">Unl. Charges</th>
+                  <th style="width: 70px;">Ply. Charges</th>
+                  <th style="width: 70px;">Coll. Charges</th>
+                  <th style="width: 70px;">ST Charges</th>
+                  <th style="width: 70px;">Total Bill</th>
               </tr>
         `;
 
@@ -609,7 +651,7 @@ export class FreightBillNagpurComponent {
                   vertical-align: middle;
                   font-weight: 700;
                   min-height: 1px;  /* Ensures a minimum cell height */
-                  line-height: 0.5;  /* Adjust line height for better readability */
+                  line-height: 1;  /* Adjust line height for better readability */
               }
 
               td {
@@ -618,7 +660,7 @@ export class FreightBillNagpurComponent {
                   vertical-align: middle;
                   font-weight: 500;
                   min-height: 1px;  /* Ensures a minimum cell height */
-                  line-height: 0.5;  /* Adjust line height for better readability */
+                  line-height: 1;  /* Adjust line height for better readability */
               }
 
               .invoice {
@@ -733,15 +775,15 @@ export class FreightBillNagpurComponent {
                                           <tbody class="d-block-center">
                                               <tr>
                                                   <th>SAC:</th>
-                                                  <td>345345345</td>
+                                                  <td>996511</td>
                                               </tr>
                                               <tr>
                                                   <th>ML CODE:</th>
-                                                  <td>ML345</td>
+                                                  <td>ML485</td>
                                               </tr>
                                               <tr>
                                                   <th>V CODE:</th>
-                                                  <td>3000012</td>
+                                                  <td>30008227</td>
                                               </tr>
                                           </tbody>
                                       </table>
@@ -851,7 +893,9 @@ export class FreightBillNagpurComponent {
 
         return `
         <tr class="text-center">
-            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle text-bold">${l.lrNo}</td>` : ""}
+            ${shouldShowLrNo && !this.customPrintLrStatus ? `<td rowspan="${rowSpan}" class="text-center align-middle text-bold">${l.customLrNo}</td>` : ""}
+            ${shouldShowLrNo && this.customPrintLrStatus ? `<td rowspan="${rowSpan}" class="text-center align-middle text-bold">${l.lrNo}</td>` : ""}
+
             <td>${this.formatDate(l.lrDate)}</td>
             <td>${this.formatDate(l.unloadingDate)}</td>
             <td>${l.vehicleNo}</td>
@@ -1240,7 +1284,8 @@ export class FreightBillNagpurComponent {
       }
 
       excelData.push([
-        shouldShowLrNo ? l.lrNo : "",
+        shouldShowLrNo && !this.customPrintLrStatus ? l.customLrNo : "",
+        shouldShowLrNo && this.customPrintLrStatus ? l.lrNo : "",
         this.formatDate(l.lrDate),
         this.formatDate(l.unloadingDate),
         l.vehicleNo,
@@ -1296,5 +1341,16 @@ export class FreightBillNagpurComponent {
 
     // Save the Excel file
     XLSX.writeFile(wb, "nagpur-freight-bill-" + this.billingCommonData.billNo + ".xlsx");
+  }
+
+  changeLrStatus(status: MatButtonToggleChange) {
+    if(status){
+      let lrStatus = status.value;
+      if(lrStatus === "custom-lr"){
+        this.customPrintLrStatus = false;
+      } if(lrStatus === "system-lr"){
+        this.customPrintLrStatus = true;
+      }
+    }
   }
 }

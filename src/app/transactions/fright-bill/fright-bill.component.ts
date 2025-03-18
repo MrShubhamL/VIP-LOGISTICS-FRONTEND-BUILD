@@ -1,11 +1,12 @@
 import {Component, inject} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {StorageService} from '../../services/storage/storage.service';
 import {ApiService} from '../../services/api/api.service';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import * as XLSX from 'xlsx';
 import {WebSocketService} from '../../services/api/web-socket.service';
+
 declare var $: any;
 
 @Component({
@@ -21,7 +22,7 @@ export class FrightBillComponent {
   routeData: any[] = [];
   billingCommonData: any;
   savedBillData: any;
-
+  customPrintLrStatus: boolean = true;
   billingCharges: any[] = [];
   totalUnloadingCharges: number = 0;
   totalLoadingCharges: number = 0;
@@ -43,6 +44,7 @@ export class FrightBillComponent {
 
   constructor() {
     this.form = this.formBuilder.group({
+      customLrStatus: new FormControl('system-lr'),
       freightBillReportId: new FormControl(''),
       billNo: new FormControl('', Validators.required),
       billDate: new FormControl(''),
@@ -71,7 +73,7 @@ export class FrightBillComponent {
       cgst: new FormControl(''),
       sgst: new FormControl(''),
       grandTotal: new FormControl(''),
-    })
+    });
   }
 
   ngOnInit() {
@@ -137,7 +139,7 @@ export class FrightBillComponent {
       this.checkFreightBillExist(billNo);
       this.apiService.getMumbaiFreightByBillNo(billNo, event).subscribe(res => {
         if (res !== 0) {
-
+          console.log(res);
           this.billingData = res.mumbaiFreightBillDtos;
           this.billingCommonData = res.commonFreightBillDataDto;
           this.billingCharges = res.mumbaiExtraCharges;
@@ -186,6 +188,7 @@ export class FrightBillComponent {
           });
           this.form.get('billNo')?.disable();
           this.form.get('route.routeName')?.disable();
+
         }
       }, err => {
         console.log(err)
@@ -193,8 +196,13 @@ export class FrightBillComponent {
     }
   }
 
-  checkFreightBillExist(billNo: any){
-    this.apiService.getMumbaiSavedFreightByBillNo(billNo).subscribe(res=>{
+  customLrData: { [key: number]: string } = {};
+  updateCustomLr(index: number, value: string): void {
+    this.customLrData[index] = value;
+  }
+
+  checkFreightBillExist(billNo: any) {
+    this.apiService.getMumbaiSavedFreightByBillNo(billNo).subscribe(res => {
       if (res) {
         this.savedBillData = res;
         this.writeEnabled = false;
@@ -221,11 +229,11 @@ export class FrightBillComponent {
     });
   }
 
-  deleteMumbaiFreightBill(){
+  deleteMumbaiFreightBill() {
     let freightId = this.form.get('freightBillReportId')?.value;
-    if(freightId){
-      this.apiService.deleteMumbaiFreightBill(freightId).subscribe(res=>{
-        if(res){
+    if (freightId) {
+      this.apiService.deleteMumbaiFreightBill(freightId).subscribe(res => {
+        if (res) {
           this.clearField();
           $.toast({
             heading: 'Bill Removed!',
@@ -237,7 +245,7 @@ export class FrightBillComponent {
             loader: false,
           });
         }
-      }, err=>{
+      }, err => {
         console.log(err);
       })
     } else {
@@ -401,6 +409,26 @@ export class FrightBillComponent {
       formObj.isVerified = true;
     }
 
+
+    const combinedData: any[] = [];
+    this.billingData.forEach((item, index) => {
+      const existingEntry = combinedData.find(entry => entry.lrNo === item.lrNo);
+      if (existingEntry) {
+        if (this.customLrData[index]) {
+          existingEntry.customLrNo +=
+            existingEntry.customLrNo
+              ? `, ${this.customLrData[index]}`
+              : this.customLrData[index];
+        }
+      } else {
+        combinedData.push({
+          lrNo: item.lrNo,
+          customLrNo: this.customLrData[index] || ''
+        });
+      }
+    });
+
+
     this.apiService.saveMumbaiFreight(formObj).subscribe(res => {
       if (res) {
         this.clearField();
@@ -415,6 +443,18 @@ export class FrightBillComponent {
           bgColor: '#257b26',
           loader: false,
         });
+
+        if(combinedData.length !== 0) {
+          this.apiService.saveCustomLorryReceiptNumber(combinedData).subscribe(res=> {
+            if(res){
+              console.log(res);
+            }
+          }, error => {
+            console.log(error);
+          });
+        }
+
+
       }
     }, error => {
       $.toast({
@@ -431,11 +471,13 @@ export class FrightBillComponent {
   }
 
   clearField() {
+    this.customPrintLrStatus = true;
     this.form.reset();
     this.billingData = [];
     this.form.get('sacNo')?.setValue('996511');
     this.form.get('mlCode')?.setValue('ML485');
     this.form.get('vCode')?.setValue('30008227');
+    this.form.get("customLrStatus")?.setValue('system-lr');
     this.form.get('billNo')?.enable();
     this.form.get('route.routeName')?.disable();
   }
@@ -488,6 +530,16 @@ export class FrightBillComponent {
     return words;
   }
 
+  changeLrStatus(event: any) {
+    if(event){
+      let lrStatus = event.value;
+      if(lrStatus === "custom-lr"){
+        this.customPrintLrStatus = false;
+      } if(lrStatus === "system-lr"){
+        this.customPrintLrStatus = true;
+      }
+    }
+  }
 
   printFreight() {
     let printWindow = window.open('', '');
@@ -504,7 +556,8 @@ export class FrightBillComponent {
 
         return `
         <tr>
-            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle text-bold">${l.lrNo}</td>` : ""}
+            ${shouldShowLrNo && !this.customPrintLrStatus ? `<td rowspan="${rowSpan}" class="text-center align-middle text-bold">${l.customLrNo}</td>` : ""}
+            ${shouldShowLrNo && this.customPrintLrStatus ? `<td rowspan="${rowSpan}" class="text-center align-middle text-bold">${l.lrNo}</td>` : ""}
             <td>${this.formatDate(l.lrDate)}</td>
             <td>${this.formatDate(l.unloadingDate)}</td>
             <td>${l.from}</td>
@@ -514,16 +567,16 @@ export class FrightBillComponent {
             <td>${l.quantity}</td>
             <td>${l.vehicleNo}</td>
             <td width="40">${l.rate || '-'}</td>
-            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayTotalFreight(l.lrNo).toFixed(2)}</td>` : ""}
-            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayLoadingCharges(l.lrNo)}</td>` : ""}
-            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayUnloadingCharges(l.lrNo)}</td>` : ""}
-            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayPlywoodCharges(l.lrNo)}</td>` : ""}
-            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayDetentionCharges(l.lrNo)}</td>` : ""}
-            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplaySTCharges(l.lrNo) || 0}</td>` : ""}
-            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplaySubTotal(l.lrNo).toFixed(2)}</td>` : ""}
-            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplaySGST(l.lrNo).toFixed(2)}</td>` : ""}
-            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayCGST(l.lrNo).toFixed(2)}</td>` : ""}
-            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle">${this.getTotalBillValue(l.lrNo).toFixed(2)}</td>` : ""}
+            ${shouldShowLrNo ? `<td style="width: 70px;" rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayTotalFreight(l.lrNo).toFixed(2)}</td>` : ""}
+            ${shouldShowLrNo ? `<td style="width: 70px;" rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayLoadingCharges(l.lrNo)}</td>` : ""}
+            ${shouldShowLrNo ? `<td style="width: 70px;" rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayUnloadingCharges(l.lrNo)}</td>` : ""}
+            ${shouldShowLrNo ? `<td style="width: 70px;" rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayPlywoodCharges(l.lrNo)}</td>` : ""}
+            ${shouldShowLrNo ? `<td style="width: 70px;" rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayDetentionCharges(l.lrNo)}</td>` : ""}
+            ${shouldShowLrNo ? `<td style="width: 70px;" rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplaySTCharges(l.lrNo) || 0}</td>` : ""}
+            ${shouldShowLrNo ? `<td style="width: 70px;" rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplaySubTotal(l.lrNo).toFixed(2)}</td>` : ""}
+            ${shouldShowLrNo ? `<td style="width: 70px;" rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplaySGST(l.lrNo).toFixed(2)}</td>` : ""}
+            ${shouldShowLrNo ? `<td style="width: 70px;" rowspan="${rowSpan}" class="text-center align-middle">${this.getDisplayCGST(l.lrNo).toFixed(2)}</td>` : ""}
+            ${shouldShowLrNo ? `<td style="width: 70px;" rowspan="${rowSpan}" class="text-center align-middle">${this.getTotalBillValue(l.lrNo).toFixed(2)}</td>` : ""}
         </tr>
         `;
       }).join('');
@@ -586,7 +639,7 @@ export class FrightBillComponent {
               @media print {
                   th,
                   td {
-                      font-size: 8px;
+                      font-size: 7px;
                       font-weight: 500;
                   }
                   .printButton {
@@ -637,7 +690,7 @@ export class FrightBillComponent {
                     overflow: hidden;  /* Hides overflow text */
                     white-space: nowrap;  /* Prevents text from wrapping */
                     text-overflow: ellipsis;  /* Adds '...' when text overflows */
-                    max-width: 80px;  /* Set a maximum width for truncation */
+                    max-width: 95px;  /* Set a maximum width for truncation */
                 }
 
               .invoice {
@@ -738,15 +791,15 @@ export class FrightBillComponent {
                                           <tbody class="d-block-center">
                                               <tr>
                                                   <th>SAC:</th>
-                                                  <td>345345345</td>
+                                                  <td>996511</td>
                                               </tr>
                                               <tr>
                                                   <th>ML CODE:</th>
-                                                  <td>ML345</td>
+                                                  <td>ML485</td>
                                               </tr>
                                               <tr>
                                                   <th>V CODE:</th>
-                                                  <td>3000012</td>
+                                                  <td>30008227</td>
                                               </tr>
                                           </tbody>
                                       </table>
@@ -766,7 +819,7 @@ export class FrightBillComponent {
                                                   <th>BA Code</th>
                                                   <td>30008227</td>
                                                   <th>GSTIN</th>
-                                                  <td>27AKJPP0760D1Z9</td>
+                                                  <td style="max-width: 105px">27AKJPP0760D1Z9</td>
                                               </tr>
                                               <tr>
                                                   <th>PAN No</th>
@@ -864,7 +917,8 @@ export class FrightBillComponent {
 
         return `
         <tr>
-            ${shouldShowLrNo ? `<td rowspan="${rowSpan}" class="text-center align-middle text-bold">${l.lrNo}</td>` : ""}
+            ${shouldShowLrNo && !this.customPrintLrStatus ? `<td rowspan="${rowSpan}" class="text-center align-middle text-bold">${l.customLrNo}</td>` : ""}
+            ${shouldShowLrNo && this.customPrintLrStatus ? `<td rowspan="${rowSpan}" class="text-center align-middle text-bold">${l.lrNo}</td>` : ""}
             <td>${this.formatDate(l.lrDate)}</td>
             <td>${this.formatDate(l.unloadingDate)}</td>
             <td>${l.from}</td>
@@ -1252,7 +1306,8 @@ export class FrightBillComponent {
       }
 
       excelData.push([
-        shouldShowLrNo ? l.lrNo : "",
+        shouldShowLrNo && !this.customPrintLrStatus ? l.customLrNo : "",
+        shouldShowLrNo && this.customPrintLrStatus ? l.lrNo : "",
         this.formatDate(l.lrDate),
         this.formatDate(l.unloadingDate),
         l.from,
@@ -1296,9 +1351,7 @@ export class FrightBillComponent {
     XLSX.utils.book_append_sheet(wb, ws, "Billing Data");
 
     // Save the Excel file
-    XLSX.writeFile(wb, "mumbai-freight-bill-"+this.billingCommonData.billNo+".xlsx");
+    XLSX.writeFile(wb, "mumbai-freight-bill-" + this.billingCommonData.billNo + ".xlsx");
   }
-
-
 
 }
